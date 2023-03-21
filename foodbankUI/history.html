@@ -44,12 +44,16 @@
   <table class='table table-striped border-1'>
       <thead class='table-dark'>
           <tr>
-              <th>ID</th>
-              <th>Name</th>
+              <th>Order ID</th>
+              <th>FoodBank ID</th>
+              <th>Restaurant ID</th>
+              <th>Dish ID</th>
+              <th>Quantity</th>
+              <th>Status</th>
               
           </tr>
       </thead>
-    <tbody id="studentTable"></tbody>
+    <tbody id="orderTable"></tbody>
 </table>
   <a id="addBookBtn" class="btn btn-primary" 
 href="add-book.html">Add a book</a>
@@ -59,7 +63,7 @@ href="add-book.html">Add a book</a>
   // Helper function to display error message
   function showError(message) {
       // Hide the table and button in the event of error
-      $('#studentTable').hide();
+      $('#orderTable').hide();
       $('#addBookBtn').hide();
 
       // Display an error under the main container
@@ -71,7 +75,7 @@ href="add-book.html">Add a book</a>
   // - using await requires the function that calls it to be async
   $(async() => {           
       // Change serviceURL to your own
-      var serviceURL = "http://127.0.0.1:5000/students";
+      var serviceURL = "http://127.0.0.1:5000/orders";
 
       try {
           const response =
@@ -85,13 +89,17 @@ href="add-book.html">Add a book</a>
                                              // the returned result
               // for loop to setup all table rows with obtained book data
               var rows = "";
-              for (const student of students) {
-                 eachRow ="<td>" + student.sid + "</td>" +
-                          "<td>" + student.sname + "</td>";
+              for (const order of orders) {
+                 eachRow ="<td>" + order.order_id + "</td>" +
+                          "<td>" + order.foodbank_id + "</td>"+ 
+                          "<td>" + order.restaurant_id + "</td>" +
+                          "<td>" + order.dish_id + "</td>" +
+                          "<td>" + order.quantity_check + "</td>" +
+                          "<td>" + order.status + "</td>";
                  rows += "<tr>" + eachRow + "</tr>";
               }
                   // add all the rows to the table
-                  $('#studentTable').append(rows);
+                  $('#orderTable').append(rows);
               } else if (response.status == 404) {
                   // No books
                   showError(result.message);
