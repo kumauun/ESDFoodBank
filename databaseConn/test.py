@@ -49,7 +49,7 @@ def get_all():
     return jsonify(
         {
             "code": 404,
-            "message": "There are no students."
+            "message": "There are no orders found."
         }
     ), 404
 
