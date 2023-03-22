@@ -1,86 +1,100 @@
+from flask import Flask, jsonify, request, abort
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_cors import CORS
 
-# app.py
-from flask import Flask, jsonify, request, make_response
-from flask_mysqldb import MySQL
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'your_user'
-app.config['MYSQL_PASSWORD'] = 'your_password'
-app.config['MYSQL_DB'] = 'your_database'
+app.secret_key = 'zhongli'
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/user"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-mysql = MySQL(app)
-bcrypt = Bcrypt(app)
-login_manager = LoginManager(app)
+CORS(app, supports_credentials=True, resources={r"/logout": {"origins": "*"}, r"*": {"origins": "*"}})
+
+login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'signin'
+login_manager.login_view = 'login'
 
-class User(UserMixin):
-    def __init__(self, id, username, password):
-        self.id = id
-        self.username = username
-        self.password = password
+class User(db.Model, UserMixin):
+    __tablename__ = 'users2'
+
+    user_id = db.Column(db.Integer, primary_key=True)
+    user_email = db.Column(db.String(255), unique=True, nullable=False)
+    user_type = db.Column(db.Enum('restaurant', 'foodbank', 'driver'), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    def get_id(self):
+        return self.user_id
 
 @login_manager.user_loader
 def load_user(user_id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
-    user = cur.fetchone()
-    if user:
-        return User(user[0], user[1], user[2])
-    return None
+    print('Received user_id:', user_id)
+    return User.query.get(int(user_id))
 
-@app.route('/api/signup', methods=['POST'])
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user_email = data.get('email')
+    password = data.get('password')
+
+    user = User.query.filter_by(user_email=user_email).first()
+    if user and user.check_password(password):
+        login_user(user)
+        return jsonify({'message': 'Logged in successfully', 'user_id': user.user_id})
+    else:
+        abort(401)
+
+@app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
+    user_email = data.get('user_email')
+    print(user_email)
+    user_type = data.get('user_type')
+    password = data.get('password')
+    username = data.get('username')
 
-    if not data or not data.get('username') or not data.get('password'):
-        return make_response(jsonify({'message': 'Invalid data'}), 400)
+    # Check if the user_email or username already exists
+    existing_email = User.query.filter_by(user_email=user_email).first()
+    existing_username = User.query.filter_by(username=username).first()
 
-    username = data['username']
-    password = data['password']
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    if existing_email or existing_username:
+        return jsonify({'message': 'Email or username already exists'}), 409
 
-    cur = mysql.connection.cursor()
-    cur.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
-    mysql.connection.commit()
-    cur.close()
+    # Create a new user
+    new_user = User(user_email=user_email, user_type=user_type, username=username)
+    new_user.set_password(password)
 
-    return jsonify({'message': 'Account created'})
+    # Save the new user to the database
+    db.session.add(new_user)
+    db.session.commit()
 
-@app.route('/api/signin', methods=['POST'])
-def signin():
-    data = request.get_json()
+    # Log the user in
+    login_user(new_user, remember=True)
 
-    if not data or not data.get('username') or not data.get('password'):
-        return make_response(jsonify({'message': 'Invalid data'}), 400)
+    return jsonify({'message': 'User created successfully', 'user_id': new_user.user_id}), 201
 
-    username = data['username']
-    password = data['password']
-
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cur.fetchone()
-
-    if user and bcrypt.check_password_hash(user[2], password):
-        login_user(User(user[0], user[1], user[2]))
-        return jsonify({'message': 'Signed in', 'username': user[1]})
-    else:
-        return make_response(jsonify({'message': 'Invalid credentials'}), 401)
-
-@app.route('/api/signout', methods=['POST'])
+@app.route('/logout')
 @login_required
-def signout():
+def logout():
+    print('masuk sini')
     logout_user()
-    return jsonify({'message': 'Signed out'})
+    return jsonify({'message': 'Logged out successfully'})
 
-@app.route('/api/dashboard', methods=['GET'])
+@app.route('/protected')
 @login_required
-def dashboard():
-    return jsonify({'message': 'Welcome', 'username': current_user.username})
+def protected():
+    return jsonify({'message': 'Welcome, user!', 'user_id': current_user.id})
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
