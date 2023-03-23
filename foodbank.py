@@ -37,7 +37,10 @@ class Foodbank(db.Model):
 
         return dto
 
-#get food by id
+#get foodbank by id
+@app.route("/get_foodbank/<foodbank_id>")
+def get_foodbank_by_id(foodbank_id):
+    pass  #edit ini dong hehe
 
 @app.route("/new_foodbank", methods=['POST'])
 def create_foodbank():

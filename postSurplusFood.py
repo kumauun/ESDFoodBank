@@ -1,5 +1,8 @@
-#dapet dari restoran UI, add new order, kirim request ke order management buat update status, receive reponse 
-#dari order management, fire back to retoran UI
+
+#/post_food
+#dapet dari restoran UI, add new order, tunggu reponse dari order management microservice
+# notify foodbank di region thaqt there is new post (message-based),
+# fire response back to retoran UI
 
 
 
