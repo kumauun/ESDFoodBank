@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
-
+import requests
 
 app = Flask(__name__)
 app.secret_key = 'zhongli'
@@ -40,6 +40,10 @@ def load_user(user_id):
     print('Received user_id:', user_id)
     return User.query.get(int(user_id))
 
+@app.route('/login', methods=['GET'])
+def show_login_form():
+    return jsonify({'message': 'Please send a POST request to log in'})
+
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -57,8 +61,11 @@ def login():
 def signup():
     data = request.get_json()
     user_email = data.get('user_email')
-    print(user_email)
     user_type = data.get('user_type')
+    phone_number = data.get('phone_number')
+    region = data.get('region')
+    postal_code = data.get('postal_code')
+    address = data.get('address')
     password = data.get('password')
     username = data.get('username')
 
@@ -72,10 +79,57 @@ def signup():
     # Create a new user
     new_user = User(user_email=user_email, user_type=user_type, username=username)
     new_user.set_password(password)
+    
 
     # Save the new user to the database
     db.session.add(new_user)
     db.session.commit()
+
+    if new_user.user_type == 'restaurant':
+
+        payload = {
+            'restaurant_id': new_user.user_id,
+            'restaurant_name': username,
+            'phone_number': phone_number,
+            'address': address,
+            'postal_code': postal_code,
+            'region': region,
+        }
+
+         # Send a POST request to the other microservice
+        url = "http://localhost:5001/new_restaurant"
+        response = requests.post(url, json=payload)
+
+    elif new_user.user_type == 'foodbank':
+
+        payload = {
+            'foodbank_id': new_user.user_id,
+            'foodbank_name': username,
+            'phone_number': phone_number,
+            'address': address,
+            'postal_code': postal_code,
+            'region': region,
+        }
+
+        url = "http://localhost:5002/new_foodbank"
+        response = requests.post(url, json=payload)
+
+    elif new_user.user_type == 'driver':
+
+        payload = {
+            'driver_id': new_user.user_id,
+            'driver_name': username,
+            'phone_number': phone_number,
+            'region': region,
+            'availability': False
+        }
+
+        url = "http://localhost:5003/new_driver"
+        response = requests.post(url, json=payload)
+
+
+    if response.status_code != 201:
+        return jsonify({'message': 'Error communicating with the other microservice'}), 500
 
     # Log the user in
     login_user(new_user, remember=True)
@@ -88,11 +142,6 @@ def logout():
     print('masuk sini')
     logout_user()
     return jsonify({'message': 'Logged out successfully'})
-
-@app.route('/protected')
-@login_required
-def protected():
-    return jsonify({'message': 'Welcome, user!', 'user_id': current_user.id})
 
 if __name__ == '__main__':
     with app.app_context():

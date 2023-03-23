@@ -12,13 +12,11 @@
             <div v-if="!userId">
                 <h1>Sign up</h1>
                 <form @submit.prevent="submitSignUpForm">
-                    <label for="user_email">Email:</label>
-                    <input type="email" v-model="user_email" required>
+                    Email: <input type="email" v-model="user_email" required>
                     <br>
-                    <label for="username">Username:</label>
-                    <input type="text" v-model="username" required>
+                    Username: <input type="text" v-model="username" required>
                     <br>
-                    <label for="user_type">User type:</label>
+                    User type:
                     <br>
                     <input type="radio" id="restaurant" value="restaurant" v-model="user_type" required> <label for="restaurant">Restaurant</label>
                     <br>
@@ -26,6 +24,30 @@
                     <br>
                     <input type="radio" id="driver" value="driver" v-model="user_type" required> <label for="driver">Driver</label>
                     <br>
+
+                    Phone Number: <input type="text" v-model="phone_number" required>
+                    <br>
+                    Region:
+                    <br>
+                    <input type="radio" value="Central" v-model="region" required> Central
+                    <br>
+                    <input type="radio" value="North" v-model="region" required> North
+                    <br>
+                    <input type="radio" value="West" v-model="region" required> West
+                    <br>
+                    <input type="radio" value="East" v-model="region" required> East
+                    <br>
+                    <input type="radio" value="North-West" v-model="region" required> North-West
+                    <br>
+
+                    <span v-if="notDriver">
+                        Postal Code: <input type="number" v-model="postal_code" :required="notDriver">
+                        <br>
+                        Address: <input type="text" v-model="address" :required="notDriver">
+                        <br>
+                    </span>
+
+                    
                     <label for="password">Password:</label>
                     <input type="password" v-model="password" required>
                     <br>
@@ -57,11 +79,28 @@
         const app = Vue.createApp({
             data() {
                 return {
+                    //Sign up stuff
+                    user_email: '',
+                    username: '',
+                    user_type: '',
+                    phone_number: '',
+                    region: '',
+                    postal_code: '',
+                    address: '',
+
+                    //Sign in stuff
                     login_email: '',
                     login_password: '',
+
+                    //Verification 
                     userId: '',
                     message: ''
                 };
+            },
+            computed: {
+                notDriver() {
+                    return this.user_type === "restaurant" || this.user_type === "foodbank"
+                }
             },
             methods: {
                 async submitSignUpForm() {
@@ -75,13 +114,17 @@
                                 user_email: this.user_email,
                                 username: this.username,
                                 user_type: this.user_type,
+                                phone_number: this.phone_number,
+                                region: this.region,
+                                postal_code: this.postal_code,
+                                address: this.address,
                                 password: this.password,
                             })
                         });
 
-                        if (!response.ok) {
-                            throw new Error('Error during sign up');
-                        }
+                        // if (!response.ok) {
+                        //     throw new Error('Error during sign up');
+                        // }
 
                         const data = await response.json();
                         this.message = data.message;
