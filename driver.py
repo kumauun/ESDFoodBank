@@ -34,6 +34,13 @@ class driver(db.Model):
         }
 
         return dto
+    
+    
+#get driver by id
+
+#get driver by region and availability
+
+#update driver availability
 
 @app.route("/new_driver", methods=['POST'])
 def create_driver():

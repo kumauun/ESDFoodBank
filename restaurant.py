@@ -37,6 +37,8 @@ class Restaurant(db.Model):
 
         return dto
 
+#get resttaurant by id
+
 @app.route("/new_restaurant", methods=['POST'])
 def create_restaurant():
     data = request.get_json()
