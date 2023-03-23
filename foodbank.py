@@ -42,6 +42,12 @@ class Foodbank(db.Model):
 def get_foodbank_by_id(foodbank_id):
     pass  #edit ini dong hehe
 
+#get foodbank by region
+@app.route("/get_foodbank/<region>")
+def get_foodbank_by_region(region):
+    pass  #edit ini dong hehe
+
+
 @app.route("/new_foodbank", methods=['POST'])
 def create_foodbank():
     print('hallo')

@@ -1,10 +1,51 @@
-#accept order
-#dapet dari driver UI, kirim request ke order management buat update status, receive reponse 
-#dari order management jadi 'picked up', 
-#kirim request ke driver microservice update driver status, receive response from driver microservice,
-#fire back to retoran UI
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+import os, sys
+from os import environ
+
+import requests
+
+##import amqp_setup
+import pika
+import json
+
+app = Flask(__name__)
+CORS(app)
 
 
-#finish delivery
-#dapet request dari driver UI, kirim request ke order management buat update status order jadi 'delivered'
-#update driver availability jadi 'availabile' lagi
+#accept order dapet dari driver UI
+@app.route("/accept_order", methods=['PUT'])
+def accept_order():
+    pass
+    # 1. update status ordernya jadi 'picked up'
+    # 2. retrieve phone number foodbank and restoran
+    # 3. notification ke foodbank using the foodbank phone number yang didapet dr previous request
+    # 4. notification ke restaurant using the restaurant phone number yang didapet dr previous request
+    # 5. update order buat include the driver_id
+    # 6. update status driver jadi 'unavailable' ato False ( kayanya ini Boolean si coba cek di database )
+    # 7. send back response to driver UI
+
+
+#order_delivered
+@app.route("/order_delivered", methods=['PUT'])
+def order_delivered():
+    pass
+    # 1. update status ordernya jadi 'delivered'
+    # 2. retrieve phone number foodbank and restoran
+    # 3. notification ke foodbank using the foodbank phone number yang didapet dr previous request
+    # 4. notification ke restaurant using the restaurant phone number yang didapet dr previous request
+    # 5. update status driver jadi 'available' ato True ( kayanya ini Boolean si coba cek di database )
+    # 6. Send back response to driver UI 
+
+#cancel_order_dari driver
+@app.route("/order_cancelled", methods=['PUT'])
+def order_cancelled():
+    pass
+    # 1. update status ordernya balik jadi 'ordered'
+    # 2. retrieve phone number foodbank and restoran
+    # 3. notification ke foodbank using the foodbank phone number yang didapet dr previous request
+    # 4. notification ke restaurant using the restaurant phone number yang didapet dr previous request
+    # 5. update order to remove the driver_id 
+    # 6. update status driver jadi 'available' ato True ( kayanya ini Boolean si coba cek di database )
+    # 7. Send back response to driver UI 
