@@ -53,7 +53,12 @@ def login():
     user = User.query.filter_by(user_email=user_email).first()
     if user and user.check_password(password):
         login_user(user)
-        return jsonify({'message': 'Logged in successfully', 'user_id': user.user_id})
+        print(user)
+        return jsonify({
+            'message': 'Logged in successfully', 
+            'user_id': user.user_id, 
+            'user_type' : user.user_type
+            })
     else:
         abort(401)
 
@@ -134,7 +139,10 @@ def signup():
     # Log the user in
     login_user(new_user, remember=True)
 
-    return jsonify({'message': 'User created successfully', 'user_id': new_user.user_id}), 201
+    return jsonify({
+        'message': 'User created successfully', 
+        'user_id': new_user.user_id,
+        'user_type' : new_user.user_type }), 201
 
 @app.route('/logout')
 @login_required

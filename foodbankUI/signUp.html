@@ -68,6 +68,7 @@
             </div>
             <p>{{ message }}</p>
             <p v-if="userId">Logged in as: {{ userId }}</p>
+            <p v-if="userType">You are a {{ userType }}</p>
             <button v-if="userId" @click="logout">Logout</button>
         </div>
         
@@ -94,6 +95,7 @@
 
                     //Verification 
                     userId: '',
+                    userType: '',
                     message: ''
                 };
             },
@@ -129,7 +131,10 @@
                         const data = await response.json();
                         this.message = data.message;
                         this.userId = data.user_id;
+                        this.userType = data.user_type;
                         localStorage.setItem('userId', data.user_id);
+                        localStorage.setItem('userType', data.user_type);
+                        window.location.href = './index.html';
                         } catch (error) {
                             this.message = error.message;
                         }
@@ -156,7 +161,10 @@
                         const data = await response.json();
                         this.message = data.message;
                         this.userId = data.user_id;
+                        this.userType = data.user_type;
                         localStorage.setItem('userId', data.user_id);
+                        localStorage.setItem('userType', data.user_type);
+                        window.location.href = './index.html';
 
                     } catch (error) {
                         this.message = error.message;
@@ -180,7 +188,10 @@
                         const data = await response.json();
                         this.message = data.message;
                         this.userId = '';
+                        this.userType = '';
                         localStorage.removeItem('userId');
+                        localStorage.removeItem('userType');
+                        window.location.href = './signUp.html';
                     } catch (error) {
                         this.message = error.message;
                     }
