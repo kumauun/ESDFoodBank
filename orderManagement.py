@@ -1,3 +1,4 @@
+#bikin db modelnya 
 
 
 #1. add new order (order_id, foodbank_id, resto_id, status, )
@@ -12,3 +13,6 @@
 # #)
 #tentatif kalo mau implement cancel, ganti balik jadi 'ordered' 
 #trs notify semua user yg bersangkutan, delete the driver id
+
+
+#jangan lupa set postnya ama the __main__ stuff
