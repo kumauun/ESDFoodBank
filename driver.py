@@ -48,13 +48,12 @@ def get_driver_region_availaibility(region):
     pass #edit ini
 
 #update driver availability
-@app.route("/update_driver/<to_be_status>")
-def update_driver_status(to_be_status):
+@app.route("/update_driver_status")
+def update_driver_status():
     pass #edit ini
 
 @app.route("/new_driver", methods=['POST'])
 def create_driver():
-    print('hallo')
     data = request.get_json()
 
     print('ini datanya', data)
