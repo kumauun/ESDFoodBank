@@ -37,14 +37,23 @@ class driver(db.Model):
     
     
 #get driver by id
+@app.route("/get_driver/<driver_id>")
+def get_driver_by_id(driver_id):
+    pass  #edit ini dong hehe
 
-#get driver by region and availability
+#get driver by region and availability=true
+@app.route("get_driver_region/<region>")
+def get_driver_region_availaibility(region):
+    availability = True
+    pass #edit ini
 
 #update driver availability
+@app.route("/update_driver_status")
+def update_driver_status():
+    pass #edit ini
 
 @app.route("/new_driver", methods=['POST'])
 def create_driver():
-    print('hallo')
     data = request.get_json()
 
     print('ini datanya', data)

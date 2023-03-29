@@ -37,7 +37,11 @@ class Restaurant(db.Model):
 
         return dto
 
-#get resttaurant by id
+#get restaurant by id
+@app.route("/get_restaurant/<restaurant_id>")
+def get_restaurant_by_id(restaurant_id):
+    pass #edit ini hehe
+
 
 @app.route("/new_restaurant", methods=['POST'])
 def create_restaurant():
