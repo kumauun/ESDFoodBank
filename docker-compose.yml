@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # front-end 
+  driver-frontend:
+    build: ./driver-frontend
+    ports:
+      - "8081:5000"
+    environment:
+      - VUE_APP_DRIVER_API_URL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/driver
+
+  restaurant-frontend:
+    build: ./restaurant-frontend
+    ports:
+      - "8082:5000"
+    environment:
+      - VUE_APP_RESTAURANT_API_URL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/restaurant
+
+  foodbank-frontend:
+    build: ./foodbank-frontend
+    ports:
+      - "8083:5000"
+    environment:
+      - VUE_APP_FOODBANK_API_URL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/foodbank
+
+#  back-end
+  driver:
+    build: ./driver
+    container_name: driver_microservice
+    ports:
+      - "5003:5000"
+    environment:
+      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/driver
+
+  restaurant:
+    build: ./restaurant
+    container_name: restaurant_microservice
+    ports:
+      - "5001:5000"
+    environment:
+      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/restaurant
+
+  foodbank:
+    build: ./foodbank
+    container_name: foodbank_microservice
+    ports:
+      - "5002:5000"
+    environment:
+      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/foodbank
