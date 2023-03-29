@@ -150,6 +150,7 @@
 
 </body>
 
+<!-- Dashboard toggle starts -->
 <script>
   const app = Vue.createApp({
   data() {
@@ -173,6 +174,67 @@
 });
 app.mount('#app');
 </script>
+<!-- Dashboard toggle ends -->
+
+<!-- History tbody (start)-->
+<script>
+  // Helper function to display error message
+  function showError(message) {
+      // Hide the table and button in the event of error
+      $('#orderTable').hide();
+      //$('#addBookBtn').hide();
+
+      // Display an error under the main container
+      $('#main-container')
+          .append("<label>"+ message +"</label>");
+  }
+
+  // anonymous async function 
+  // - using await requires the function that calls it to be async
+  $(async() => {           
+      // Change serviceURL to your own
+      var serviceURL = "http://127.0.0.1:5000/orders";
+
+      try {
+          const response =
+           await fetch(
+             serviceURL, { method: 'GET' }
+          );
+          const result = await response.json();
+           if (response.status === 200) {
+              // success case
+              var orders = result.data.order; //the array is in orders within data of 
+                                             // the returned result
+              // for loop to setup all table rows with obtained orders data
+              var rows = "";
+              for (const order of orders) {
+                 eachRow ="<td>" + order.order_id + "</td>" +
+                          "<td>" + order.foodbank_id + "</td>"+ 
+                          "<td>" + order.restaurant_id + "</td>" +
+                          "<td>" + order.dish_id + "</td>" +
+                          "<td>" + order.quantity_check + "</td>" +
+                          "<td>" + order.status + "</td>";
+                 rows += "<tr>" + eachRow + "</tr>";
+              }
+                  // add all the rows to the table
+                  $('#orderTable').append(rows);
+              } else if (response.status == 404) {
+                  // No order
+                  showError(result.message);
+              } else {
+                  // unexpected outcome, throw the error
+                  throw response.status;
+                }
+            } catch (error) {
+                // Errors when calling the service; such as network error, 
+                // service offline, etc
+                showError
+    ('There is a problem retrieving order data, please try again later.<br />' + error);
+            } // error
+    });
+</script>
+<!-- History tbody (end)-->
+
 
 
 <!-- Footer -->
