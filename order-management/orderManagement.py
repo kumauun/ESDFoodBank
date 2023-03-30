@@ -81,7 +81,7 @@ def create_order():
     quantity_check=data.get('quantity_check')
     status=data.get('status')
     created_at=data.get('created_at')
-    new_order = Order(foodbank_id=foodbank_id,foodbank_address=foodbank_address,foodbank_postalcode=foodbank_postalcode,restaurant_id=restaurant_id,restaurant_address=restaurant_address,restaurant_postalcode=restaurant_postalcode,dish_id=,status=status,created_at=created_at)
+    new_order = Order(foodbank_id=foodbank_id,foodbank_address=foodbank_address,foodbank_postalcode=foodbank_postalcode,restaurant_id=restaurant_id,restaurant_address=restaurant_address,restaurant_postalcode=restaurant_postalcode,dish_id=dish_id,status=status,created_at=created_at)
 
 
     try:
@@ -98,7 +98,7 @@ def create_order():
     return jsonify(
         { 
             "code": 201,
-            "data": order.json()
+            "data": new_order.json()
         }
     ), 201
 
