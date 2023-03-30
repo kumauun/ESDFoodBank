@@ -19,10 +19,10 @@ CORS(app)
 def accept_order():
     pass
     # 1. update status ordernya jadi 'picked up'
-    # 2. retrieve phone number foodbank and restoran
+    # 2. retrieve phone number foodbank and restoran from order table
     # 3. notification ke foodbank using the foodbank phone number yang didapet dr previous request
     # 4. notification ke restaurant using the restaurant phone number yang didapet dr previous request
-    # 5. update order buat include the driver_id
+    # 5. update order buat include the driver_id and driver phone number
     # 6. update status driver jadi 'unavailable' ato False ( kayanya ini Boolean si coba cek di database )
     # 7. send back response to driver UI
 

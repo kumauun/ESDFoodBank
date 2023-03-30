@@ -19,9 +19,9 @@ CORS(app)
 @app.route("/place_order", methods=['PUT'])
 def accept_order():
     pass
-    # 1. update order status to 'ordered'
-    # 2. retrieve restaurant id dari order table
-    # 3. retrieve phone number restorannya 
+    # 1. retrieve phone number of foodbank that places the order from the foodbank table
+    # 2. update order status to 'ordered' and order foodbank number with the #1 output
+    # 3. retrieve resto phone number from order table  
     # 4. notify restoran yang bersangkutan
     # 5. retrieve phone number driver yang ada di regionnya
     # 6. notify driver yang ada di regionnya
