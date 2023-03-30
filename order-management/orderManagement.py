@@ -54,15 +54,15 @@ class Order(db.Model):
     def json(self):
         return {
             'order_id': self.order_id,
-            'foodbank_id': self.foodbank_id
+            'foodbank_id': self.foodbank_id,
             'foodbank_address': self.foodbank_address,
             'foodbank_postalcode': self.foodbank_postalcode,
             'restaurant_id': self.restaurant_id,
             'restaurant_address': self.restaurant_address,
             'restaurant_postalcode': self.restaurant_postalcode,
             'dish_id': self.dish_id,
-            'quantity_check': self.quantity_check
-            'status': self.status
+            'quantity_check': self.quantity_check,
+            'status': self.status,
             'created_at': self.created_at
     }
 
@@ -81,11 +81,11 @@ def create_order():
     quantity_check=data.get('quantity_check')
     status=data.get('status')
     created_at=data.get('created_at')
-    new_order = Order(foodbank_id=foodbank_id,foodbank_address=foodbank_address,foodbank_postalcode=foodbank_postalcode,restaurant_id=restaurant_id,restaurant_address=restaurant_address,restaurant_postalcode=restaurant_postalcode,dish_id,status=status,created_at=created_at)
+    new_order = Order(foodbank_id=foodbank_id,foodbank_address=foodbank_address,foodbank_postalcode=foodbank_postalcode,restaurant_id=restaurant_id,restaurant_address=restaurant_address,restaurant_postalcode=restaurant_postalcode,dish_id=dish_id,status=status,created_at=created_at)
 
 
     try:
-        db.session.add(order)
+        db.session.add(new_order)
         db.session.commit()
     except Exception as e:
         return jsonify(
@@ -98,10 +98,14 @@ def create_order():
     return jsonify(
         { 
             "code": 201,
-            "data": order.json()
+            "data": new_order.json()
         }
     ), 201
 
+@app.route("/get_order/<region>")
+def get_order_by_region(region):
+    pass
+    
 
 if __name__ == '__main__':
     with app.app_context():
