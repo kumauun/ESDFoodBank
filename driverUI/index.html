@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Driver</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous"/>
 </head>
@@ -40,26 +40,26 @@
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col"><h5 class="card-title">Pick-up</h5></div>
-              <div class="col"><h5 class="card-title">Drop-off</h5></div>
+              <div class="col"><h5 class="card-title">PICK UP</h5></div>
+              <div class="col"><h5 class="card-title">DROP OFF</h5></div>
               <div class="col" style="text-align: right; color: orange;">
-              <div class="dropdown">
-                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Status
+                <div class="dropdown" id="dropdownstatus">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="statusDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ status }}
                   </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
+                  <div class="dropdown-menu" aria-labelledby="statusDropdown">
+                    <a class="dropdown-item" href="#" v-on:click="updateStatus('Active')">Active</a>
+                    <a class="dropdown-item" href="#" v-on:click="updateStatus('Inactive')">Inactive</a>
+                    <a class="dropdown-item" href="#" v-on:click="updateStatus('Pending')">Pending</a>
+                  </div>
                 </div>
               </div> 
             </div>
 
     
             <div class="row">
-              <div class="col" style="text-align: left;">MakanMakan</div> 
-              <div class="col" style="text-align: left;">Bye Hunger Foodbank</div> 
+              <div class="col" style="text-align: left;"><h3>MakanMakan</h3></div> 
+              <div class="col" style="text-align: left;"><h3>Bye Hunger Foodbank</h3></div> 
               <div class="col" style="text-align: right;">Order Created today at 18:10</div> 
             </div>
             
@@ -82,19 +82,17 @@
     <div id="toggle" class="mt-3" v-show="showNew">
       <h3>Delivery Requests</h3>
 
-      <div class="mx-auto">
-        Change Delivery Region: 
-        <div class="dropdown mx-auto ">
-          <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Region
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Action</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
-            <li><a class="dropdown-item" href="#">Something else here</a></li>
-          </ul>
-        </div>
-
+      <div class="text-center mb-3">
+        <form>
+          <label for="region"><h4>Select Region:</h4></label>
+          <select name="region" id="region" style="width:100px;height:30px;" class="mx-3">
+            <option value="North">North</option>
+            <option value="South">South</option>
+            <option value="East">East</option>
+            <option value="West">West</option>
+            <option value="Central">Central</option>
+          </select>
+        </form>
       </div>
         
       <div class="row row-cols-1 row-cols-md-3 g-4 mx-auto">
@@ -110,12 +108,14 @@
                   <h6 class="card-title">PICK UP</h6>
                   <h3 class="card-text">BakerBoy</h3>
                   <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">298188</p>
                   <p class="card-text">+6587654321</p>
                 </div>
                 <div class="col">
                   <h6 class="card-title">DROP OFF</h6>
                   <h3 class="card-text">Helpyelp</h3>
                   <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">298188</p>
                   <p class="card-text">+6587654321</p>
                 </div>
               </div>
@@ -145,12 +145,15 @@
                   <h6 class="card-title">PICK UP</h6>
                   <h3 class="card-text">BakerBoy</h3>
                   <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">298188</p>
                   <p class="card-text">+6587654321</p>
+                  
                 </div>
                 <div class="col">
                   <h6 class="card-title">DROP OFF</h6>
                   <h3 class="card-text">Helpyelp</h3>
                   <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">291766</p>
                   <p class="card-text">+6587654321</p>
                 </div>
               </div>
@@ -181,12 +184,14 @@
                   <h6 class="card-title">PICK UP</h6>
                   <h3 class="card-text">BakerBoy</h3>
                   <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">298188</p>
                   <p class="card-text">+6587654321</p>
                 </div>
                 <div class="col">
                   <h6 class="card-title">DROP OFF</h6>
                   <h3 class="card-text">Helpyelp</h3>
-                  <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">60 Sunrise Road</p>
+                  <p class="card-text">291766</p>
                   <p class="card-text">+6587654321</p>
                 </div>
               </div>
@@ -218,8 +223,8 @@
                 <tr>
                     <th>Order ID</th>
                     <th>Date</th>
+                    <th>Restaurant Name</th>
                     <th>Foodbank Name</th>
-                    <th>Dish Name</th>
                     <th>Status</th>
                     
                 </tr>
@@ -228,22 +233,22 @@
                 <tr>
                 <th>12345</th>
                 <td>01/02/2023</td>
+                <td>Atlas Resto</td>
                 <td>Helpyelp</td>
-                <td>Bento boxes</td>
                 <td>Done</td>
                 </tr>
                 <tr>
                 <th>54321</th>
                 <td>05/02/2023</td>
+                <td>Atlas Resto</td>
                 <td>Foodbank Singapore</td>
-                <td>Chicken and veggies</td>
                 <td>Cancelled</td>
                 </tr>
                 <tr>
                 <th>55555</th>
                 <td>06/03/2023</td>
+                <td>Atlas Resto</td>
                 <td>Mom's Shelter</td>
-                <td>lunchboxes</td>
                 <td>Done</td>
                 </tr>
             </tbody>
@@ -363,7 +368,22 @@ app2.mount('#toggle');
 </script>
 <!-- Dashboard toggle ends -->
 
-  
+
+<script>
+  const app3 = Vue.createApp( {
+    data() {
+      return {
+        status: 'Picked up'
+      }
+    },
+    methods: {
+      updateStatus(newStatus) {
+        this.status = newStatus;
+      }
+    }
+  });
+  app3.mount('#dropdownstatus')
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
