@@ -122,3 +122,9 @@ def post_food():
     status_code = 200
 
     return jsonify(response_message), status_code
+
+
+if __name__ == "__main__":
+    print("This is flask " + os.path.basename(__file__) +
+          " for posting surplus food")
+    app.run(host="0.0.0.0", port=5100, debug=True)
