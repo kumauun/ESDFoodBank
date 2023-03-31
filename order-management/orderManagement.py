@@ -168,6 +168,7 @@ def get_self_postings():
 @app.route("/update_order_ordered", methods=['PUT'])
 def update_order_details():
     try:
+        
         order_data = request.get_json()
         order_id = order_data['order_id']
         new_status = order_data['status']
@@ -178,8 +179,7 @@ def update_order_details():
             return jsonify(
                 {
                     "message": "Invalid status."
-                }
-                ), 400
+                }), 400
 
         order = Order.query.filter_by(order_id=order_id).first()
 
@@ -205,13 +205,70 @@ def update_order_details():
     
 
 
-@app.route("/update_order_accepted")
+@app.route("/update_order_accepted",methods=['PUT'])
 def update_order_accepted():
-    pass
+    try:
+        
+        order_data = request.get_json()
+        order_id = order_data['order_id']
+        new_status = order_data['status']
+        driver_id = order_data.get('driver_id', None)
+
+        valid_statuses = ['pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done']
+        if new_status not in valid_statuses:
+            return jsonify(
+                {
+                    "message": "Invalid status."
+                }), 400
+
+        order = Order.query.filter_by(order_id=order_id).first()
+
+        if not order:
+            return jsonify({"message": "Order not found."}), 404
+
+        order.status = new_status
+
+        # Add foodbank_id to the order when the status is 'ordered'
+        if new_status == 'accepted' and driver_id:
+            order.driver_id = driver_id
+
+        db.session.commit()
+
+        return jsonify({
+            "message": "Order status updated successfully.",
+            "order": order.json()
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500 
 
 @app.route("/update_order_status")
 def update_order_status():
-    pass
+    try:
+        order_data = request.get_json()
+        order_id = order_data['order_id']
+        new_status = order_data['status']
+
+        # Check if the input status is valid
+        valid_statuses = ['pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done']
+        if new_status not in valid_statuses:
+            return jsonify({"message": "Invalid status."}), 400
+
+        order = Order.query.filter_by(order_id=order_id).first()
+
+        if not order:
+            return jsonify({"message": "Order not found."}), 404
+
+        order.status = new_status
+        db.session.commit()
+
+        return jsonify({
+            "message": "Order status updated successfully.",
+            "order": order.json()
+        }), 200
+
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
 
 
 
