@@ -79,7 +79,10 @@ def signup():
     existing_username = User.query.filter_by(username=username).first()
 
     if existing_email or existing_username:
-        return jsonify({'message': 'Email or username already exists'}), 409
+        return jsonify({
+            'code': 409,
+            'message': 'Email or username already exists'
+        }), 409
 
     # Create a new user
     new_user = User(user_email=user_email, user_type=user_type, username=username)
@@ -134,12 +137,16 @@ def signup():
 
 
     if response.status_code != 201:
-        return jsonify({'message': 'Error communicating with the other microservice'}), 500
+        return jsonify({
+            'code': 500,
+            'message': 'Error communicating with the other microservice'
+        }), 500
 
     # Log the user in
     login_user(new_user, remember=True)
 
     return jsonify({
+        'code': 201,
         'message': 'User created successfully', 
         'user_id': new_user.user_id,
         'user_type' : new_user.user_type }), 201

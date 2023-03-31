@@ -5,6 +5,7 @@ import os, sys
 from os import environ
 
 import requests
+from invokes import invoke_http
 
 #import amqp_setup
 import pika
@@ -12,6 +13,9 @@ import json
 
 app = Flask(__name__)
 CORS(app)
+
+order_URL = "http://localhost:5005/new_order"
+
 
 
 #/post_food
