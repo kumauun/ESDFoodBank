@@ -20,7 +20,7 @@ login_manager.login_view = 'login'
 class User(db.Model, UserMixin):
     __tablename__ = 'users2'
 
-    user_id = db.Column(db.flaskInteger, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     user_email = db.Column(db.String(255), unique=True, nullable=False)
     user_type = db.Column(db.Enum('restaurant', 'foodbank', 'driver'), nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
@@ -129,7 +129,7 @@ def signup():
             'driver_name': username,
             'phone_number': phone_number,
             'region': region,
-            'availability': False
+            'availability': True
         }
 
         url = "http://localhost:5003/new_driver"

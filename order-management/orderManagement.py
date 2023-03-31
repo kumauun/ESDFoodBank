@@ -165,9 +165,45 @@ def get_self_postings():
 
     pass
 
-@app.route("/update_order_ordered")
-def update_order_accepted():
-    pass
+@app.route("/update_order_ordered", methods=['PUT'])
+def update_order_details():
+    try:
+        order_data = request.get_json()
+        order_id = order_data['order_id']
+        new_status = order_data['status']
+        foodbank_id = order_data.get('foodbank_id', None)
+
+        valid_statuses = ['pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done']
+        if new_status not in valid_statuses:
+            return jsonify(
+                {
+                    "message": "Invalid status."
+                }
+                ), 400
+
+        order = Order.query.filter_by(order_id=order_id).first()
+
+        if not order:
+            return jsonify({"message": "Order not found."}), 404
+
+        order.status = new_status
+
+        # Add foodbank_id to the order when the status is 'ordered'
+        if new_status == 'ordered' and foodbank_id:
+            order.foodbank_id = foodbank_id
+
+        db.session.commit()
+
+        return jsonify({
+            "message": "Order status updated successfully.",
+            "order": order.json()
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500 
+
+    
+
 
 @app.route("/update_order_accepted")
 def update_order_accepted():
@@ -176,6 +212,8 @@ def update_order_accepted():
 @app.route("/update_order_status")
 def update_order_status():
     pass
+
+
 
 if __name__ == '__main__':
     with app.app_context():
