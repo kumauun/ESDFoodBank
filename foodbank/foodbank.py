@@ -39,7 +39,7 @@ class Foodbank(db.Model):
 
 
 #get foodbank by id
-@app.route("/get_foodbank/<foodbank_id>")
+@app.route("/get_foodbank/<int:foodbank_id>")
 def get_foodbank_by_id(foodbank_id):
     foodbank = Foodbank.query.filter_by(foodbank_id=foodbank_id).first()
     if foodbank:
