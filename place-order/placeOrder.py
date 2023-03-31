@@ -13,7 +13,6 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-
 #dapet dari foodbank UI, kirim request ke order management for update order, receive reponse 
 #dari order management, fire back to foodbank UI
 @app.route("/place_order", methods=['PUT'])
