@@ -86,7 +86,7 @@ def update_driver_status(driver_id):
         if driver.availability:
             driver.availability = False
         elif driver.availability == False:
-            driver.availiability = True
+            driver.availability = True
 
         db.session.commit()
         return jsonify(
