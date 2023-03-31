@@ -1,10 +1,6 @@
 import pika
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import json
 from twilio.rest import Client
-
-app = Flask(__name__)
-CORS(app)
 
 # Set your Twilio account SID and auth token
 TWILIO_ACCOUNT_SID = 'your_twilio_account_sid'
@@ -16,11 +12,19 @@ twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 # Set up the connection to RabbitMQ
 RABBITMQ_HOST = 'localhost'
-RABBITMQ_QUEUE = 'notification_queue'
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST))
 channel = connection.channel()
-channel.queue_declare(queue=RABBITMQ_QUEUE)
+
+# Declare the queues
+channel.queue_declare(queue='driver_foodbank_order_region')
+channel.queue_declare(queue='foodbank_driver_arrival')
+channel.queue_declare(queue='foodbank_driver_pickup')
+channel.queue_declare(queue='foodbank_new_posting')
+channel.queue_declare(queue='restaurant_driver_pickup')
+channel.queue_declare(queue='restaurant_foodbank_order')
+channel.queue_declare(queue='restaurant_new_surplus_food')
+
 
 def send_sms(ch, method, properties, body):
     data = json.loads(body)
@@ -43,7 +47,13 @@ def send_sms(ch, method, properties, body):
         print(f"Failed to send SMS: {str(e)}")
 
 # Set up the callback function for processing messages from RabbitMQ
-channel.basic_consume(queue=RABBITMQ_QUEUE, on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='driver_foodbank_order_region', on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='foodbank_driver_arrival', on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='foodbank_driver_pickup', on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='foodbank_new_posting', on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='restaurant_driver_pickup', on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='restaurant_foodbank_order', on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='restaurant_new_surplus_food', on_message_callback=send_sms, auto_ack=True)
 
 if __name__ == '__main__':
     try:

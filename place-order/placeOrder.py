@@ -20,16 +20,19 @@ orderManagement_URL="http://localhost:5005/orderManagement"
 #dari order management, fire back to foodbank UI
 # Function to update the order in the order management microservice
 def update_order(order_id, foodbank_phone):
-    url = orderManagement_URL + "/update_order"
+    url = orderManagement_URL + "/update_order" #bnrin url
     headers = {'Content-Type': 'application/json'}
-    data = {'order_id': order_id, 'status': 'ordered', 'foodbank_phone': foodbank_phone}
+    data = {'order_id': order_id, 'status': 'ordered', 'foodbank_phone': foodbank_phone} #tambahin foodbank_id
     response = requests.put(url, headers=headers, json=data)
     return response.json()
 
+#decide if we want to use invoke_http or requests ya soalnya postSurplus pakenya invoke_http
 
 # Function to notify the restaurant about the new order
 def notify_restaurant(restaurant_phone, order_id):
-    url = restaurant_URL + "/notify"
+    url = restaurant_URL + "/notify" #ganti pake line bawah ama bikin message
+    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="restaurant.foodbank_order", 
+    #         body=message, properties=pika.BasicProperties(delivery_mode = 2))
     headers = {'Content-Type': 'application/json'}
     data = {'order_id': order_id}
     response = requests.post(url, headers=headers, json=data)
@@ -38,16 +41,18 @@ def notify_restaurant(restaurant_phone, order_id):
 
 # Function to retrieve driver phone numbers in the same region as the foodbank
 def get_drivers(region):
-    url = orderManagement_URL + "/get_drivers"
+    url = orderManagement_URL + "/get_available_driver_region/" + region
     headers = {'Content-Type': 'application/json'}
-    data = {'region': region}
-    response = requests.post(url, headers=headers, json=data)
+    data = {'region': region} # no need for this??
+    response = requests.post(url, headers=headers, json=data) #ganti jadi get
     return response.json()
 
 
 # Function to notify drivers about the new order
-def notify_drivers(drivers, order_id):
-    url = orderManagement_URL + "/notify_drivers"
+def notify_drivers(drivers, order_id): #idt perlu order_id si, kasitaua aja ada new order di the area
+    url = orderManagement_URL + "/notify_drivers" # change to line below, add body message with template msg and phone number
+    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="driver.foodbank_order_region", 
+    #         body=message, properties=pika.BasicProperties(delivery_mode = 2))
     headers = {'Content-Type': 'application/json'}
     data = {'order_id': order_id, 'drivers': drivers}
     response = requests.post(url, headers=headers, json=data)
@@ -59,16 +64,17 @@ def notify_drivers(drivers, order_id):
 def place_order():
     # 1. retrieve phone number of foodbank that places the order from the foodbank table
     foodbank_id = request.json['foodbank_id']
-    response = requests.get(foodbank_URL + "/get_phone_number/" + foodbank_id)
+    response = requests.get(foodbank_URL + "/get_foodbank/" + foodbank_id)
     foodbank_phone = response.json()['phone_number']
 
     # 2. update order status to 'ordered' and order foodbank number with the #1 output
     order_id = request.json['order_id']
-    update_order(order_id, foodbank_phone)
+    update_order(order_id, foodbank_phone) # add foodbank_id buat payload update status
 
     # 3. retrieve restaurant phone number from order table
     response = requests.get(orderManagement_URL + "/get_order/" + order_id)
-    restaurant_id = response.json()['restaurant_id']
+    #ini variabel 'response' mau consider ganti ga biar g ke overwrite in case butuh?
+    restaurant_id = response.json()['restaurant_id'] #both resto id and resto phone bs didapet dr request di atas
     response = requests.get(restaurant_URL + "/get_phone_number/" + restaurant_id)
     restaurant_phone = response.json()['phone_number']
 
@@ -84,17 +90,23 @@ def place_order():
 
     # 7. Send back response to foodbank UI
     return jsonify({'message': 'Order placed successfully.'})
+
 @app.route("/load_listings", methods=['GET'])
 def load_listings():
     # 1. ambil region dari foodbank table
-   
-    order_id = request.json['order_id']
-    response = requests.get(orderManagement_URL + "/get_order/" + order_id)
-    close_region = response.json()['region']
-    # 2. take all the listings from the listings table where region = #1 output
-    listings= requests.get(orderManagement_URL + "/get_order/" + close_region)
-    return listings
+    foodbank_id = request.json['foodbank_id']
+    response = requests.get(foodbank_URL + "/get_foodbank/" + foodbank_id)
+    region = response.json()['region']
+    # 2. ambil food listings dari order table pake filter region 
+    listings = requests.get(orderManagement_URL + "/get_order/" + region)
     
+    return {
+        "code": 201,
+        "data": {
+           listings
+        }
+    } #help reformat and test gw buat ini jam 3 subuh g yakin bener
+
 if __name__ == '__main__':
     print("This is flask for " + os.path.basename(__file__) + ": foodbank")
     app.run(host='0.0.0.0', port=5008, debug=True)

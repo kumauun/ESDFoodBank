@@ -31,6 +31,8 @@ def publish_message_to_foodbank(region, phone_number):
     }
     message = json.dumps(message)
     
+    #!!!!udh setup di amqp_setup, no need to write again here (line 36-47)
+
     # establish a connection to RabbitMQ
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
