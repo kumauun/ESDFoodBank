@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 CORS(app)
 
 class Order(db.Model):
-    __tablename__ = 'orders2'
+    __tablename__ = 'orders'
 
     order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'), nullable=False)

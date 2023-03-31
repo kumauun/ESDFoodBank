@@ -5,13 +5,14 @@ base_url = "http://127.0.0.1:5003"
 
 # Test create_driver
 data = {
-    "driver_name": "Test Driver2",
+    "driver_name": "Test Driver",
     "phone_number": "1234578",
     "region": "Central",
     "availability": True
 }
-response = requests.post(f"{base_url}/new_driver", json=data)
-print("Test create_driver:", response.json())
+
+# response = requests.post(f"{base_url}/new_driver", json=data)
+# print("Test create_driver:", response.json())
 
 # Test get_driver_by_id
 driver_id = 1

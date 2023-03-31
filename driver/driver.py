@@ -16,9 +16,9 @@ db = SQLAlchemy(app)
 CORS(app)
 
 class Driver(db.Model):
-    __tablename__ = 'drivers2'
+    __tablename__ = 'drivers'
 
-    driver_id = db.Column(db.Integer, primary_key=True)
+    driver_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     driver_name = db.Column(db.String(255), unique=True, nullable=False)
     phone_number = db.Column(db.String(255), nullable=False)
     region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'), nullable=False)
@@ -74,8 +74,6 @@ def get_driver_region_availaibility(region):
             "message": "There are no drivers."
         }
     ), 404
-    
-    pass #edit ini
 
 #update driver availability
 @app.route("/update_driver_status/<int:driver_id>", methods=['PUT'])
@@ -109,16 +107,13 @@ def update_driver_status(driver_id):
 def create_driver():
     data = request.get_json()
 
-    print('ini datanya', data)
-    driver_id = data.get('driver_id')
     driver_name = data.get('driver_name')
     phone_number = data.get('phone_number')
     region = data.get('region')
     availability = data.get('availability')
 
-    new_driver = Driver(driver_id = driver_id, driver_name=driver_name, phone_number=phone_number, region=region, availability=availability)
+    new_driver = Driver(driver_name=driver_name, phone_number=phone_number, region=region, availability=availability)
 
-    print(driver_id)
     try:
         db.session.add(new_driver)
         db.session.commit()

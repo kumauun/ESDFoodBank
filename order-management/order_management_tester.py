@@ -4,26 +4,26 @@ import json
 base_url = "http://127.0.0.1:5005"  # Update the port number if your microservice is running on a different port
 
 # Test creating a new order
-# new_order_data = {
-#     "region": "Central",
-#     "foodbank_id": 3,
-#     "foodbank_phone_number": "123456789",
-#     "restaurant_id": 1,
-#     "restaurant_phone_number": "987654321",
-#     "dish_name": "Pizza",
-# }
+new_order_data = {
+    "region": "Central",
+    "foodbank_id": 3,
+    "foodbank_phone_number": "123456789",
+    "restaurant_id": 1,
+    "restaurant_phone_number": "987654321",
+    "dish_name": "Pizza",
+}
 
 
-# response = requests.post(f"{base_url}/new_order", json=new_order_data)
-# print("New Order Response:", json.dumps(response.json(), indent=2))
+response = requests.post(f"{base_url}/new_order", json=new_order_data)
+print("New Order Response:", json.dumps(response.json(), indent=2))
 
 # Test getting orders by region
-response = requests.get(f"{base_url}/get_order/Central")
-print("Get Orders by Region Response:", json.dumps(response.json(), indent=2))
+# response = requests.get(f"{base_url}/get_order/Central")
+# print("Get Orders by Region Response:", json.dumps(response.json(), indent=2))
 
 # Test getting self postings
-response = requests.get(f"{base_url}/get_self_postings")
-print("Get Self Postings Response:", json.dumps(response.json(), indent=2))
+# response = requests.get(f"{base_url}/get_self_postings")
+# print("Get Self Postings Response:", json.dumps(response.json(), indent=2))
 
 # Test updating order status to 'ordered'
 update_order_data = {
