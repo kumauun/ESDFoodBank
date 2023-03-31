@@ -241,6 +241,7 @@
 
 </body>
 <script>
+  ORDER_API_URL = 'http://127.0.0.1:5005'
   const app = Vue.createApp({
       data() {
         return {
@@ -269,7 +270,7 @@
         },
         async loadListings() {
         //   try {
-        //     const response = await fetch(`/signup`, {
+        //     const response = await fetch("${ORDER_API_URL}/get_order/<region>", {
         //         method: 'POST',
         //         headers: {
         //             'Content-Type': 'application/json'
