@@ -57,7 +57,7 @@ def get_driver_by_id(driver_id):
 #get driver by region and availability=true
 @app.route("/get_available_driver_region/<region>")
 def get_driver_region_availaibility(region):
-    driverlist = Driver.query.filter_by(region=region).filter_by(availability=True)
+    driverlist = Driver.query.filter_by(region=region).filter_by(availability=True).all()
 
     if len(driverlist):
         return jsonify(
@@ -104,7 +104,7 @@ def update_driver_status(driver_id):
         }
     ), 404
     
-
+# add new driver 
 @app.route("/new_driver", methods=['POST'])
 def create_driver():
     data = request.get_json()
@@ -142,7 +142,7 @@ def create_driver():
         }
     ), 201
 
-#chaneg driver region
+#change driver region
 @app.route("/update_driver_region/<int:driver_id>", methods=['PUT'])
 def update_driver_region(driver_id):
     driver = Driver.query.filter_by(driver_id=driver_id).first()
