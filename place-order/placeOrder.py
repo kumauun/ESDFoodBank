@@ -26,3 +26,9 @@ def accept_order():
     # 5. retrieve phone number driver yang ada di regionnya
     # 6. notify driver yang ada di regionnya
     # 6. Send back response to foodbank UI 
+
+@app.route("/load_listings", methods=['GET'])
+def load_listings():
+    pass
+    # 1. ambil region dari foodbank table
+    # 2. ambil food listings dari order table pake filter region 
