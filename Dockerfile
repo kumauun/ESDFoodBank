@@ -11,10 +11,10 @@ COPY requirements.txt ./
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
 # Copy the source code for the restaurant microservice into the working directory
-COPY ./userAuthentication.py ./
+COPY ./orderManagement.py .
 
 # Expose the port the application will run on
 EXPOSE 5001
 
 # Set the command to start the application
-CMD [ "python", "./userAuthentication.py" ]
+CMD [ "python", "./orderManagement.py" ]

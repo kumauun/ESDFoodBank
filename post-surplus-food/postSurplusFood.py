@@ -5,6 +5,7 @@ import os, sys
 from os import environ
 
 import requests
+from invokes import invoke_http
 
 #import amqp_setup
 import pika
@@ -34,6 +35,9 @@ def close_connection():
     
     
 foodbank_URL= "http://localhost:5002/get_foodbank/<foodbank_id>"
+
+order_URL = "http://localhost:5005/new_order"
+
 
 
 #/post_food
@@ -68,8 +72,7 @@ def post_food():
     
     
     # 5. send back response to restaurant UI
-    response_data = {'order_id': order_id, 'status': 'pending'}
-    return jsonify(response_data)
+
 
 
 #port and __name__ = __main__ stuff
