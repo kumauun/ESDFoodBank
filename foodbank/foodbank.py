@@ -37,15 +37,45 @@ class Foodbank(db.Model):
 
         return dto
 
+
 #get foodbank by id
 @app.route("/get_foodbank/<foodbank_id>")
 def get_foodbank_by_id(foodbank_id):
-    pass  #edit ini dong hehe
+    foodbank = Foodbank.query.filter_by(foodbank_id=foodbank_id).first()
+    if foodbank:
+        return jsonify(
+            {
+                "code": 200,
+                "data": foodbank.json()
+            }
+        )
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Foodbank not found"
+            }
+        ), 404
+
 
 #get foodbank by region
 @app.route("/get_foodbank/<region>")
 def get_foodbank_by_region(region):
-    pass  #edit ini dong hehe
+    foodbanks = Foodbank.query.filter_by(region=region).all()
+    if foodbanks:
+        return jsonify(
+            {
+                "code": 200,
+                "data": [foodbank.json() for foodbank in foodbanks]
+            }
+        )
+    else:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Foodbanks not found"
+            }
+        ), 404
 
 
 @app.route("/new_foodbank", methods=['POST'])
