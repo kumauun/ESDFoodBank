@@ -40,7 +40,21 @@ class Restaurant(db.Model):
 #get restaurant by id
 @app.route("/get_restaurant/<restaurant_id>")
 def get_restaurant_by_id(restaurant_id):
-    pass #edit ini hehe
+    restaurant = Restaurant.query.filter_by(restaurant_id=restaurant_id).first()
+    if restaurant:
+        return jsonify(
+            {
+                "code": 200,
+                "data": restaurant.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Restaurant not found."
+        }
+    ), 404
+
 
 
 @app.route("/new_restaurant", methods=['POST'])

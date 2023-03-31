@@ -280,13 +280,19 @@
   },
   methods: {
     toggleCurrent() {
-      this.showCurrent = !this.showCurrent;
+      this.showCurrent = true;
+      this.showListing = false;
+      this.showHistory = false;
     },
     toggleListing() {
-      this.showListing = !this.showListing;
+      this.showCurrent = false;
+      this.showListing = true;
+      this.showHistory = false;
     },
     toggleHistory() {
-      this.showHistory = !this.showHistory;
+      this.showCurrent = false;
+      this.showListing = false;
+      this.showHistory = true;
     }
   }
 });
