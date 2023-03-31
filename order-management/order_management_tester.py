@@ -1,40 +1,34 @@
 import requests
 import json
 
-base_url = "http://localhost:5005"
+base_url = "http://127.0.0.1:5005"  # Update the port number if your microservice is running on a different port
 
 # Test creating a new order
-new_order_data = {
-    "region": 'North',
-    "restaurant_id": 2,
-    "restaurant_address": "123 Street",
-    "restaurant_postalcode": 12345,
-    "dish_id": 1,
-    "quantity_check": True
-}
+# new_order_data = {
+#     "region": "Central",
+#     "foodbank_id": 3,
+#     "foodbank_phone_number": "123456789",
+#     "restaurant_id": 1,
+#     "restaurant_phone_number": "987654321",
+#     "dish_name": "Pizza",
+# }
 
-response = requests.post(f"{base_url}/new_order", json=new_order_data)
-print("New Order Response:", json.dumps(response.json(), indent=2))
+
+# response = requests.post(f"{base_url}/new_order", json=new_order_data)
+# print("New Order Response:", json.dumps(response.json(), indent=2))
 
 # Test getting orders by region
-get_order_data = {
-    "user_type": "foodbank"
-}
-response = requests.get(f"{base_url}/get_order/Central", json=get_order_data)
+response = requests.get(f"{base_url}/get_order/Central")
 print("Get Orders by Region Response:", json.dumps(response.json(), indent=2))
 
 # Test getting self postings
-get_self_postings_data = {
-    "restaurant_id": 1
-}
-response = requests.get(f"{base_url}/get_self_postings", json=get_self_postings_data)
+response = requests.get(f"{base_url}/get_self_postings")
 print("Get Self Postings Response:", json.dumps(response.json(), indent=2))
 
 # Test updating order status to 'ordered'
 update_order_data = {
     "order_id": 1,
-    "status": "ordered",
-    "foodbank_id": 2
+    "status": "ordered"
 }
 response = requests.put(f"{base_url}/update_order_ordered", json=update_order_data)
 print("Update Order to 'ordered' Response:", json.dumps(response.json(), indent=2))
@@ -42,13 +36,12 @@ print("Update Order to 'ordered' Response:", json.dumps(response.json(), indent=
 # Test updating order status to 'accepted'
 update_order_data = {
     "order_id": 1,
-    "status": "accepted",
-    "driver_id": 3
+    "status": "accepted"
 }
 response = requests.put(f"{base_url}/update_order_accepted", json=update_order_data)
 print("Update Order to 'accepted' Response:", json.dumps(response.json(), indent=2))
 
-# Test updating order status to 'picked up'
+# Test updating order status
 update_order_data = {
     "order_id": 1,
     "status": "picked up"

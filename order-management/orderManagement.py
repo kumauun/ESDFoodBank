@@ -1,22 +1,3 @@
-#bikin db modelnya 
-
-
-#1. add new order (order_id, foodbank_id, resto_id, status, )
-
-
-# #2. update order status (
-# #pas di posting statusnya 'pending', 
-#  pas foodbank accept statusnya 'ordered'
-#pas dpt driver status 'accepted'
-#pas lagi di jalan statusnya 'picked up'
-# pas udh nyampe statusnya 'delivered'
-# #)
-#tentatif kalo mau implement cancel, ganti balik jadi 'ordered' 
-#trs notify semua user yg bersangkutan, delete the driver id
-
-
-#jangan lupa set postnya ama the __main__ stuff
-
 import os
 from datetime import datetime
 from flask import Flask, request, jsonify
@@ -28,7 +9,7 @@ import json
 from os import environ
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/foodbank"
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/orders_database"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -38,60 +19,50 @@ CORS(app)
 class Order(db.Model):
     __tablename__ = 'orders2'
 
-    #halo gw tambahin nomor telpon, region foodbank ama restonya di tabel ini biar gampang integrate ama twilionya
-    #tambahin dish name aja ga drpd dish_id??
-
     order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'), nullable=False)
-    foodbank_id = db.Column(db.Integer, nullable=False)
-    foodbank_address = db.Column(db.String(30))
-    foodbank_postalcode = db.Column(db.Integer)
-    foodbank_phone_number = db.Column(db.String(255))
-    restaurant_id = db.Column(db.Integer, nullable=False)
-    restaurant_address = db.Column(db.String(30))
-    restaurant_postalcode = db.Column(db.Integer)
-    restaurant_phone_number = db.Column(db.String(255))
-    dish_id = db.Column(db.Integer, nullable=False) #ini perlu kah?
-    quantity_check = db.Column(db.Boolean, nullable=False, default=True) #ini jg perlu kah
+    foodbank_id = db.Column(db.Integer)
+    foodbank_phone_number = db.Column(db.String(15))
+    restaurant_id = db.Column(db.Integer)
+    restaurant_phone_number = db.Column(db.String(15))
+    dish_name = db.Column(db.String(100))
     status = db.Column(db.Enum('pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done'), nullable=False, default='pending')
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
     def json(self):
         return {
-            'order_id': self.order_id,
-            'region': self.region,
-            'foodbank_id': self.foodbank_id,
-            'foodbank_address': self.foodbank_address,
-            'foodbank_postalcode': self.foodbank_postalcode,
-            'foodbank_phone_number': self.foodbank_phone_number,
-            'restaurant_id': self.restaurant_id,
-            'restaurant_address': self.restaurant_address,
-            'restaurant_postalcode': self.restaurant_postalcode,
-            'restaurant_phone_number': self.restaurant_phone_number,
-            'dish_id': self.dish_id,
-            'quantity_check': self.quantity_check,
-            'status': self.status,
-            'created_at': self.created_at
-    }
-
+        'order_id': self.order_id,
+        'region': self.region,
+        'foodbank_id': self.foodbank_id,
+        'foodbank_phone_number': self.foodbank_phone_number,
+        'restaurant_id': self.restaurant_id,
+        'restaurant_phone_number': self.restaurant_phone_number,
+        'dish_name': self.dish_name,
+        'status': self.status,
+        'created_at': self.created_at
+        } 
 
 @app.route("/new_order", methods=['POST'])
 def create_order():
     data = request.get_json()
-    
-    #foodbank_id=data.get('foodbank_id'),
-    #foodbank_address=data.get('foodbank_address'),
-    #foodbank_postalcode=data.get('foodbank_postalcode'),
-    region = data.get('region'),
-    restaurant_id=data.get('restaurant_id'),
-    restaurant_address=data.get('restaurant_address'),
-    restaurant_postalcode=data.get('restaurant_postalcode'),
-    dish_id=data.get('dish_id'),
-    quantity_check=data.get('quantity_check') #ini masih kepake ga? 
-    created_at=data.get('created_at')
-    new_order = Order(region=region, restaurant_id=restaurant_id, restaurant_address=restaurant_address, restaurant_postalcode=restaurant_postalcode, dish_id=dish_id, status='pending') 
-    #ini tolong line atas consider add dish name or no
+
+    region = data.get('region')
+    foodbank_id = data.get('foodbank_id')
+    foodbank_phone_number = data.get('foodbank_phone_number')
+    restaurant_id = data.get('restaurant_id')
+    restaurant_phone_number = data.get('restaurant_phone_number')
+    dish_name = data.get('dish_name')
+
+    new_order = Order(
+        region=region,
+        foodbank_id=foodbank_id,
+        foodbank_phone_number=foodbank_phone_number,
+        restaurant_id=restaurant_id,
+        restaurant_phone_number=restaurant_phone_number,
+        dish_name=dish_name,
+        status='pending'
+    )
 
     try:
         db.session.add(new_order)
@@ -122,9 +93,9 @@ def get_order_by_region(region):
     elif user_type == 'driver':
         status = 'ordered'
 
-    orderlist = Order.query.filter_by(region=region).filter_by(status=status)
+    orderlist = Order.query.filter_by(region=region).filter_by(status=status).all()
 
-    if len(orderlist):
+    if orderlist:
         return jsonify(
             {
                 "code": 200,
@@ -139,15 +110,15 @@ def get_order_by_region(region):
             "message": "There are no orders."
         }
     ), 404
-    pass
+
 
 @app.route("/get_self_postings")
 def get_self_postings():
     data = request.get_json()
     restaurant_id = data.get('restaurant_id')
-    orderlist = Order.query.filter_by(restaurant_id=restaurant_id)
+    orderlist = Order.query.filter_by(restaurant_id=restaurant_id).all()
 
-    if len(orderlist):
+    if orderlist:
         return jsonify(
             {
                 "code": 200,
@@ -163,12 +134,10 @@ def get_self_postings():
         }
     ), 404
 
-    pass
 
 @app.route("/update_order_ordered", methods=['PUT'])
 def update_order_details():
     try:
-        
         order_data = request.get_json()
         order_id = order_data['order_id']
         new_status = order_data['status']
@@ -188,7 +157,6 @@ def update_order_details():
 
         order.status = new_status
 
-        # Add foodbank_id to the order when the status is 'ordered'
         if new_status == 'ordered' and foodbank_id:
             order.foodbank_id = foodbank_id
 
@@ -228,7 +196,6 @@ def update_order_accepted():
 
         order.status = new_status
 
-        # Add foodbank_id to the order when the status is 'ordered'
         if new_status == 'accepted' and driver_id:
             order.driver_id = driver_id
 
@@ -242,7 +209,7 @@ def update_order_accepted():
     except Exception as e:
         return jsonify({"message": str(e)}), 500 
 
-@app.route("/update_order_status")
+@app.route("/update_order_status", methods=['PUT'])
 def update_order_status():
     try:
         order_data = request.get_json()
