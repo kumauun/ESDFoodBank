@@ -53,7 +53,6 @@ def get_driver_by_id(driver_id):
             "message": "Driver not found."
         }
     ), 404
-    pass  #edit ini dong hehe
 
 #get driver by region and availability=true
 @app.route("/get_available_driver_region/<region>")
@@ -104,7 +103,7 @@ def update_driver_status(driver_id):
             "message": "Driver not found."
         }
     ), 404
-    pass #edit ini
+    
 
 @app.route("/new_driver", methods=['POST'])
 def create_driver():
@@ -142,6 +141,25 @@ def create_driver():
             "data": new_driver.json()
         }
     ), 201
+
+#chaneg driver region
+@app.route("/update_driver_region/<int:driver_id>", methods=['PUT'])
+def update_driver_region(driver_id):
+    driver = Driver.query.filter_by(driver_id=driver_id).first()
+    
+    data = request.get_json()
+    new_region = data.get('region')
+
+    driver.region = new_region
+    db.session.commit()
+        
+    return jsonify(
+        {
+            "code": 200,
+            "data": driver.json()
+        }
+    )
+       
 
 if __name__ == '__main__':
     with app.app_context():
