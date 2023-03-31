@@ -86,10 +86,15 @@ def place_order():
     return jsonify({'message': 'Order placed successfully.'})
 @app.route("/load_listings", methods=['GET'])
 def load_listings():
-    pass
     # 1. ambil region dari foodbank table
-    # 2. ambil food listings dari order table pake filter region 
-
+   
+    order_id = request.json['order_id']
+    response = requests.get(orderManagement_URL + "/get_order/" + order_id)
+    close_region = response.json()['region']
+    # 2. take all the listings from the listings table where region = #1 output
+    listings= requests.get(orderManagement_URL + "/get_order/" + close_region)
+    return listings
+    
 if __name__ == '__main__':
     print("This is flask for " + os.path.basename(__file__) + ": foodbank")
     app.run(host='0.0.0.0', port=5008, debug=True)
