@@ -26,6 +26,7 @@ def update_order(order_id, foodbank_phone):
     response = requests.put(url, headers=headers, json=data)
     return response.json()
 
+#decide if we want to use invoke_http or requests ya soalnya postSurplus pakenya invoke_http
 
 # Function to notify the restaurant about the new order
 def notify_restaurant(restaurant_phone, order_id):
