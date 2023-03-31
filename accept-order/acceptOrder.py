@@ -49,3 +49,7 @@ def order_cancelled():
     # 5. update order to remove the driver_id 
     # 6. update status driver jadi 'available' ato True ( kayanya ini Boolean si coba cek di database )
     # 7. Send back response to driver UI 
+
+if __name__ == '__main__':
+    print("This is flask for " + os.path.basename(__file__) + ": foodbank")
+    app.run(host='0.0.0.0', port=5009, debug=True)

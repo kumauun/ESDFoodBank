@@ -72,4 +72,6 @@ services:
     environment:
       - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/user
   
-  
+#  post surplus port 5007
+#  place order port 5008
+#  accept order port 5009
