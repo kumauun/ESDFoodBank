@@ -56,7 +56,7 @@ def get_driver_by_id(driver_id):
     pass  #edit ini dong hehe
 
 #get driver by region and availability=true
-@app.route("get_available_driver_region/<region>")
+@app.route("/get_available_driver_region/<region>")
 def get_driver_region_availaibility(region):
     driverlist = Driver.query.filter_by(region=region).filter_by(availability=True)
 
