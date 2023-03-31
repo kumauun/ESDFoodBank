@@ -5,6 +5,7 @@ import os, sys
 from os import environ
 
 import requests
+from invokes import invoke_http
 
 #import amqp_setup
 import pika
@@ -12,6 +13,9 @@ import json
 
 app = Flask(__name__)
 CORS(app)
+
+order_URL = "http://localhost:5005/new_order"
+
 
 
 #/post_food
@@ -26,7 +30,7 @@ def post_food():
     # 3. get phone number of foodbank in the region
     # 4. notify foodbank with the phone number retrieved from the request above
     # 5. send back response to restaurant UI
-
+    
 
 
 #port and __name__ = __main__ stuff

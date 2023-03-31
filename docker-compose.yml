@@ -47,3 +47,29 @@ services:
       - "5002:5000"
     environment:
       - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/foodbank
+
+  order-management:
+    build: ./order-management
+    container_name: order-management_microservice
+    ports:
+      - "5004:5000"
+    environment:
+      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/order-management
+
+  notification:
+    build: ./notification
+    container_name: notification_microservice
+    ports:
+      - "5005:5000"
+    environment:
+      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/notification
+
+  user:
+    build: ./user
+    container_name: user_microservice
+    ports:
+      - "5006:5000"
+    environment:
+      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/user
+  
+  

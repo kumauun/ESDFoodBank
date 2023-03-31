@@ -14,7 +14,7 @@ RUN python -m pip install --no-cache-dir -r requirements.txt
 COPY ./orderManagement.py .
 
 # Expose the port the application will run on
-EXPOSE 5001
+EXPOSE 5005
 
 # Set the command to start the application
 CMD [ "python", "./orderManagement.py" ]
