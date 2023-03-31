@@ -75,6 +75,23 @@ class Order(db.Model):
             'created_at': self.created_at
     }
 
+@app.route("/get_order/<int:order_id>")
+def get_order_by_id(order_id):
+    order = Order.query.filter_by(order_id=order_id).first()
+    if order:
+        return jsonify(
+            {
+                "code": 200,
+                "data": order.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Order not found."
+        }
+    ), 404
+    
 
 @app.route("/new_order", methods=['POST'])
 def create_order():
@@ -201,9 +218,6 @@ def update_order_details():
         
     except Exception as e:
         return jsonify({"message": str(e)}), 500 
-
-    
-
 
 @app.route("/update_order_accepted",methods=['PUT'])
 def update_order_accepted():
