@@ -32,3 +32,7 @@ def load_listings():
     pass
     # 1. ambil region dari foodbank table
     # 2. ambil food listings dari order table pake filter region 
+
+if __name__ == '__main__':
+    print("This is flask for " + os.path.basename(__file__) + ": foodbank")
+    app.run(host='0.0.0.0', port=5008, debug=True)
