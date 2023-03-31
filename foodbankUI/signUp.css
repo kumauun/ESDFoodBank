@@ -14,7 +14,7 @@ body {
   background-image: linear-gradient(to right, #000000cb 0%, #00000072 50%, #00000000 100%), url('./img/foodDonation.png');
   background-repeat: no-repeat;
   background-position: right;
-  background-size: cover;
+  background-size: cover; 
 }
 
 .form-signup {
