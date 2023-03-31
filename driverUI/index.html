@@ -25,59 +25,108 @@
 <div class="container mt-5">
 
   <div id="toggle">
-    <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Order</button>
-    <button @click="toggleListing" class="btn btn-success mx-1">Available Orders</button>
-    <button @click="toggleHistory" class="btn btn-warning mx-1">Past Orders</button>
+    <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Delivery</button>
+    <button @click="toggleNew" class="btn btn-success mx-1">Delivery Requests</button>
+    <button @click="toggleHistory" class="btn btn-warning mx-1">Past Deliveries</button>
 
     <!-- Current Delivery -->
     <div id="toggle" class="mt-3 mx-auto" v-show="showCurrent">
-      <h3>Current Order</h3>
+      <h3>Current Delivery</h3>
+      
       <div id="currentOrder">
-        <div class="card d-flex mx-auto">
+        <div class="card d-flex mx-auto mb-3">
           <div class="card-header">
             Order #12233
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col"><h5 class="card-title">Makanmakan</h5></div>
-              <div class="col" style="text-align: left;"><h5>Justin Bieber</h5></div> 
-              <div class="col" style="text-align: right; color: orange;"><h5>Picked Up</h5></div> 
+              <div class="col"><h5 class="card-title">Pick-up</h5></div>
+              <div class="col"><h5 class="card-title">Drop-off</h5></div>
+              <div class="col" style="text-align: right; color: orange;">
+              <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Status
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+                </div>
+              </div> 
             </div>
+
+    
             <div class="row">
-              <div class="col"><p class="card-text">100 Kasai Road</div>
-              <div class="col" style="text-align: left;">SHC7878J </div> 
+              <div class="col" style="text-align: left;">MakanMakan</div> 
+              <div class="col" style="text-align: left;">Bye Hunger Foodbank</div> 
               <div class="col" style="text-align: right;">Order Created today at 18:10</div> 
             </div>
+            
             <div class="row">
-              <div class="col"><p class="card-text">+6581234567</p></div>
-              <div class="col" style="text-align: left;">+6570351268</div> 
+              <div class="col"><p class="card-text">100 Kasai Road</div>
+              <div class="col" style="text-align: left;">10 Sunrise Road </div> 
               <div class="col" style="text-align: right;"></div> 
             </div>
             <div class="row">
-              <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
+              <div class="col"><p class="card-text">+6581234567</p></div>
+              <div class="col" style="text-align: left;">+6588887777</div> 
+              <div class="col" style="text-align: right;"></div> 
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Listing -->
-    <div id="toggle" class="mt-3" v-show="showListing">
-      <h3>Available Orders</h3>
+    <!-- Delivery Requests -->
+    <div id="toggle" class="mt-3" v-show="showNew">
+      <h3>Delivery Requests</h3>
+
+      <div class="mx-auto">
+        Change Delivery Region: 
+        <div class="dropdown mx-auto ">
+          <button class="btn btn-secondary dropdown-toggle mx-auto" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Region
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </div>
+
+      </div>
+        
       <div class="row row-cols-1 row-cols-md-3 g-4 mx-auto">
         <!-- 1st card -->
         <div class="col">
           <div class="card h-100">
             <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
+            <div class="card-header">Order #12345</div>
+
             <div class="card-body">
-              <h3 class="card-title">BakerBoy</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Breads and Cakes</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
+              <div class="row">
+                <div class="col">
+                  <h6 class="card-title">PICK UP</h6>
+                  <h3 class="card-text">BakerBoy</h3>
+                  <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">+6587654321</p>
+                </div>
+                <div class="col">
+                  <h6 class="card-title">DROP OFF</h6>
+                  <h3 class="card-text">Helpyelp</h3>
+                  <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">+6587654321</p>
+                </div>
+              </div>
+              
+              <div class="row mt-3">
+                <div class="mx-auto d-flex col-6">
+                  <button type="button" class="btn btn-success mx-auto">Accept</button>
+                </div>
               </div>
             </div>
+
             <div class="card-footer">
               <small class="text-muted">Created on 26/03/2023 18:10</small>
             </div>
@@ -88,15 +137,31 @@
         <div class="col">
           <div class="card h-100">
             <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
+            <div class="card-header">Order #12345</div>
+
             <div class="card-body">
-              <h3 class="card-title">ChimChim</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Chicken, vegetables and rice</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
+              <div class="row">
+                <div class="col">
+                  <h6 class="card-title">PICK UP</h6>
+                  <h3 class="card-text">BakerBoy</h3>
+                  <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">+6587654321</p>
+                </div>
+                <div class="col">
+                  <h6 class="card-title">DROP OFF</h6>
+                  <h3 class="card-text">Helpyelp</h3>
+                  <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">+6587654321</p>
+                </div>
+              </div>
+              
+              <div class="row mt-3">
+                <div class="mx-auto d-flex col-6">
+                  <button type="button" class="btn btn-success mx-auto">Accept</button>
+                </div>
               </div>
             </div>
+
             <div class="card-footer">
               <small class="text-muted">Created on 26/03/2023 18:10</small>
             </div>
@@ -108,15 +173,31 @@
         <div class="col">
           <div class="card h-100">
             <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
+            <div class="card-header">Order #12345</div>
+
             <div class="card-body">
-              <h3 class="card-title">Tokyoto</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Bento boxes</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
+              <div class="row">
+                <div class="col">
+                  <h6 class="card-title">PICK UP</h6>
+                  <h3 class="card-text">BakerBoy</h3>
+                  <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">+6587654321</p>
+                </div>
+                <div class="col">
+                  <h6 class="card-title">DROP OFF</h6>
+                  <h3 class="card-text">Helpyelp</h3>
+                  <p class="card-text">50 Cecil Street</p>
+                  <p class="card-text">+6587654321</p>
+                </div>
+              </div>
+              
+              <div class="row mt-3">
+                <div class="mx-auto d-flex col-6">
+                  <button type="button" class="btn btn-success mx-auto">Accept</button>
+                </div>
               </div>
             </div>
+
             <div class="card-footer">
               <small class="text-muted">Created on 26/03/2023 18:10</small>
             </div>
@@ -125,46 +206,47 @@
 
         
       </div>
+      
     </div>
     
-    <!-- History -->
+    <!-- Past Deliveries -->
     <div id="toggle" class="mt-3" v-show="showHistory">
       <div id="main-container" class="container">
-        <h3>Past Orders</h3>
+        <h3>Past Deliveries</h3>
         <table class='table table-striped border-1'>
             <thead class='table-dark'>
                 <tr>
                     <th>Order ID</th>
                     <th>Date</th>
-                    <th>Restaurant Name</th>
+                    <th>Foodbank Name</th>
                     <th>Dish Name</th>
                     <th>Status</th>
                     
                 </tr>
             </thead>
-          <tbody id="orderTable">
-            <tr>
-              <th>12345</th>
-              <td>01/02/2023</td>
-              <td>JB eats</td>
-              <td>Bento boxes</td>
-              <td>Done</td>
-            </tr>
-            <tr>
-              <th>54321</th>
-              <td>05/02/2023</td>
-              <td>Hvala</td>
-              <td>Chicken and veggies</td>
-              <td>Cancelled</td>
-            </tr>
-            <tr>
-              <th>55555</th>
-              <td>06/03/2023</td>
-              <td>MBS Hotel</td>
-              <td>lunchboxes</td>
-              <td>Done</td>
-            </tr>
-          </tbody>
+            <tbody id="orderTable">
+                <tr>
+                <th>12345</th>
+                <td>01/02/2023</td>
+                <td>Helpyelp</td>
+                <td>Bento boxes</td>
+                <td>Done</td>
+                </tr>
+                <tr>
+                <th>54321</th>
+                <td>05/02/2023</td>
+                <td>Foodbank Singapore</td>
+                <td>Chicken and veggies</td>
+                <td>Cancelled</td>
+                </tr>
+                <tr>
+                <th>55555</th>
+                <td>06/03/2023</td>
+                <td>Mom's Shelter</td>
+                <td>lunchboxes</td>
+                <td>Done</td>
+                </tr>
+            </tbody>
       </table>
         <!-- <a id="addBookBtn" class="btn btn-primary" 
       href="add-book.html">Add a book</a> -->
@@ -261,7 +343,7 @@
   data() {
     return {
       showCurrent: false,
-      showListing: false,
+      showNew: false,
       showHistory: false,
     };
   },
@@ -269,8 +351,8 @@
     toggleCurrent() {
       this.showCurrent = !this.showCurrent;
     },
-    toggleListing() {
-      this.showListing = !this.showListing;
+    toggleNew() {
+      this.showNew = !this.showNew;
     },
     toggleHistory() {
       this.showHistory = !this.showHistory;

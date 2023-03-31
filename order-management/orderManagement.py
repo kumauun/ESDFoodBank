@@ -38,15 +38,21 @@ CORS(app)
 class Order(db.Model):
     __tablename__ = 'orders2'
 
+    #halo gw tambahin nomor telpon, region foodbank ama restonya di tabel ini biar gampang integrate ama twilionya
+    #tambahin dish name aja ga drpd dish_id??
+
     order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'), nullable=False)
     foodbank_id = db.Column(db.Integer, nullable=False)
     foodbank_address = db.Column(db.String(30))
     foodbank_postalcode = db.Column(db.Integer)
+    foodbank_phone_number = db.Column(db.String(255))
     restaurant_id = db.Column(db.Integer, nullable=False)
     restaurant_address = db.Column(db.String(30))
     restaurant_postalcode = db.Column(db.Integer)
-    dish_id = db.Column(db.Integer, nullable=False)
-    quantity_check = db.Column(db.Boolean, nullable=False, default=True)
+    restaurant_phone_number = db.Column(db.String(255))
+    dish_id = db.Column(db.Integer, nullable=False) #ini perlu kah?
+    quantity_check = db.Column(db.Boolean, nullable=False, default=True) #ini jg perlu kah
     status = db.Column(db.Enum('pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done'), nullable=False, default='pending')
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -54,15 +60,18 @@ class Order(db.Model):
     def json(self):
         return {
             'order_id': self.order_id,
-            'foodbank_id': self.foodbank_id
+            'region': self.region,
+            'foodbank_id': self.foodbank_id,
             'foodbank_address': self.foodbank_address,
             'foodbank_postalcode': self.foodbank_postalcode,
+            'foodbank_phone_number': self.foodbank_phone_number,
             'restaurant_id': self.restaurant_id,
             'restaurant_address': self.restaurant_address,
             'restaurant_postalcode': self.restaurant_postalcode,
+            'restaurant_phone_number': self.restaurant_phone_number,
             'dish_id': self.dish_id,
-            'quantity_check': self.quantity_check
-            'status': self.status
+            'quantity_check': self.quantity_check,
+            'status': self.status,
             'created_at': self.created_at
     }
 
@@ -71,21 +80,21 @@ class Order(db.Model):
 def create_order():
     data = request.get_json()
     
-    foodbank_id=data.get('foodbank_id'),
-    foodbank_address=data.get('foodbank_address'),
-    foodbank_postalcode=data.get('foodbank_postalcode'),
+    #foodbank_id=data.get('foodbank_id'),
+    #foodbank_address=data.get('foodbank_address'),
+    #foodbank_postalcode=data.get('foodbank_postalcode'),
+    region = data.get('region'),
     restaurant_id=data.get('restaurant_id'),
     restaurant_address=data.get('restaurant_address'),
     restaurant_postalcode=data.get('restaurant_postalcode'),
     dish_id=data.get('dish_id'),
-    quantity_check=data.get('quantity_check')
-    status=data.get('status')
+    quantity_check=data.get('quantity_check') #ini masih kepake ga? 
     created_at=data.get('created_at')
-    new_order = Order(foodbank_id=foodbank_id,foodbank_address=foodbank_address,foodbank_postalcode=foodbank_postalcode,restaurant_id=restaurant_id,restaurant_address=restaurant_address,restaurant_postalcode=restaurant_postalcode,dish_id,status=status,created_at=created_at)
-
+    new_order = Order(region=region, restaurant_id=restaurant_id, restaurant_address=restaurant_address, restaurant_postalcode=restaurant_postalcode, dish_id=dish_id, status='pending') 
+    #ini tolong line atas consider add dish name or no
 
     try:
-        db.session.add(order)
+        db.session.add(new_order)
         db.session.commit()
     except Exception as e:
         return jsonify(
@@ -98,10 +107,75 @@ def create_order():
     return jsonify(
         { 
             "code": 201,
-            "data": order.json()
+            "data": new_order.json()
         }
     ), 201
 
+@app.route("/get_order/<region>")
+def get_order_by_region(region):
+    data = request.get_json()
+    user_type = data.get('user_type')
+
+    #filter is based on who the user_type is
+    if user_type == 'foodbank':
+        status = 'pending'
+    elif user_type == 'driver':
+        status = 'ordered'
+
+    orderlist = Order.query.filter_by(region=region).filter_by(status=status)
+
+    if len(orderlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no orders."
+        }
+    ), 404
+    pass
+
+@app.route("/get_self_postings")
+def get_self_postings():
+    data = request.get_json()
+    restaurant_id = data.get('restaurant_id')
+    orderlist = Order.query.filter_by(restaurant_id=restaurant_id)
+
+    if len(orderlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no postings."
+        }
+    ), 404
+
+    pass
+
+@app.route("/update_order_ordered")
+def update_order_accepted():
+    pass
+
+@app.route("/update_order_accepted")
+def update_order_accepted():
+    pass
+
+@app.route("/update_order_status")
+def update_order_status():
+    pass
 
 if __name__ == '__main__':
     with app.app_context():

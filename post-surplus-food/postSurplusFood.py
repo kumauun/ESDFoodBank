@@ -25,15 +25,11 @@ order_URL = "http://localhost:5005/new_order"
 @app.route("/post_food", methods=['POST'])
 def post_food():
     pass
-    # invoke order microservice
-    print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(order_URL, method='POST', json=order)
-    print('order_result:', order_result)
-    # 1. create new order di tabel order, order status is pending
-
-    # 2. get phone number of foodbank in the region
-    # 3. notify foodbank with the phone number retrieved from the request above
-    # 4. send back response to restaurant UI
+    # 1. retrieve phone number of restaurant that is posting the surplus food
+    # 2. create new order di tabel order, order status is pending, order restaurant phone number from reponse #1
+    # 3. get phone number of foodbank in the region
+    # 4. notify foodbank with the phone number retrieved from the request above
+    # 5. send back response to restaurant UI
 
 
 

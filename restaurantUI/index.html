@@ -25,146 +25,166 @@
 <div class="container mt-5">
 
   <div id="toggle">
-    <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Order</button>
-    <button @click="toggleListing" class="btn btn-success mx-1">Available Orders</button>
-    <button @click="toggleHistory" class="btn btn-warning mx-1">Past Orders</button>
+    <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Posts</button>
+    <button @click="toggleNew" class="btn btn-success mx-1">Create New Post</button>
+    <button @click="toggleHistory" class="btn btn-warning mx-1">Past Posts</button>
 
     <!-- Current Delivery -->
     <div id="toggle" class="mt-3 mx-auto" v-show="showCurrent">
-      <h3>Current Order</h3>
+      <h3>Current Posts</h3>
+      
       <div id="currentOrder">
-        <div class="card d-flex mx-auto">
+        <div class="card d-flex mx-auto mb-3">
           <div class="card-header">
             Order #12233
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col"><h5 class="card-title">Makanmakan</h5></div>
+                <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
+                <div class="col" style="text-align: right; color: orange;"><h5>Picked Up</h5></div> 
+            </div>
+
+            <br>
+
+            <div class="row">
+              <div class="col"><h5 class="card-title">Bye Hunger Foodbank</h5></div>
               <div class="col" style="text-align: left;"><h5>Justin Bieber</h5></div> 
-              <div class="col" style="text-align: right; color: orange;"><h5>Picked Up</h5></div> 
+              <div class="col" style="text-align: right;">Order Created today at 18:10</div> 
             </div>
             <div class="row">
               <div class="col"><p class="card-text">100 Kasai Road</div>
               <div class="col" style="text-align: left;">SHC7878J </div> 
-              <div class="col" style="text-align: right;">Order Created today at 18:10</div> 
-            </div>
-            <div class="row">
-              <div class="col"><p class="card-text">+6581234567</p></div>
-              <div class="col" style="text-align: left;">+6570351268</div> 
               <div class="col" style="text-align: right;"></div> 
             </div>
             <div class="row">
-              <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
+              <div class="col"><p class="card-text">+6588887777</p></div>
+              <div class="col" style="text-align: left;">+6570351268</div> 
+              <div class="col" style="text-align: right;"></div> 
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- sample if pending -->
+      <div id="currentOrder">
+        <div class="card d-flex mx-auto mb-3">
+          <div class="card-header">
+            Order #12234
+          </div>
+          <div class="card-body">
+            <div class="row">
+                <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
+                <div class="col" style="text-align: right; color: orange;"><h5>Pending</h5></div> 
+            </div>
+
+            <br>
+
+            <div class="row">
+              <div class="col"><h5 class="card-title"></h5></div>
+              <div class="col" style="text-align: left;"><h5></h5></div> 
+              <div class="col" style="text-align: right;">Order Created today at 18:15</div> 
+            </div>
+            <div class="row">
+              <div class="col"><p class="card-text"></div>
+              <div class="col" style="text-align: left;"> </div> 
+              <div class="col" style="text-align: right;"></div> 
+            </div>
+            <div class="row">
+              <div class="col"><p class="card-text"></p></div>
+              <div class="col" style="text-align: left;"></div> 
+              <div class="col" style="text-align: right;"></div> 
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <!-- sample if ordered -->
+    <div id="currentOrder">
+        <div class="card d-flex mx-auto mb-3">
+          <div class="card-header">
+            Order #12234
+          </div>
+          <div class="card-body">
+            <div class="row">
+                <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
+                <div class="col" style="text-align: right; color: orange;"><h5>Ordered</h5></div> 
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="col"><h5 class="card-title">Bye Hunger Foodbank</h5></div>
+                <div class="col" style="text-align: left;"><h5></h5></div> 
+                <div class="col" style="text-align: right;">Order Created today at 18:15</div> 
+            </div>
+            <div class="row">
+              <div class="col"><p class="card-text">10 Sunrise Road</div>
+              <div class="col" style="text-align: left;"> </div> 
+              <div class="col" style="text-align: right;"></div> 
+            </div>
+            <div class="row">
+              <div class="col"><p class="card-text">+6588887777</p></div>
+              <div class="col" style="text-align: left;"></div> 
+              <div class="col" style="text-align: right;"></div> 
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Listing -->
-    <div id="toggle" class="mt-3" v-show="showListing">
-      <h3>Available Orders</h3>
-      <div class="row row-cols-1 row-cols-md-3 g-4 mx-auto">
-        <!-- 1st card -->
-        <div class="col">
-          <div class="card h-100">
-            <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
-            <div class="card-body">
-              <h3 class="card-title">BakerBoy</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Breads and Cakes</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
-              </div>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">Created on 26/03/2023 18:10</small>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2nd card -->
-        <div class="col">
-          <div class="card h-100">
-            <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
-            <div class="card-body">
-              <h3 class="card-title">ChimChim</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Chicken, vegetables and rice</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
-              </div>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">Created on 26/03/2023 18:10</small>
-            </div>
-          </div>
-        </div>
-
-
-        <!-- 3rd card -->
-        <div class="col">
-          <div class="card h-100">
-            <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
-            <div class="card-body">
-              <h3 class="card-title">Tokyoto</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Bento boxes</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
-              </div>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">Created on 26/03/2023 18:10</small>
-            </div>
-          </div>
-        </div>
-
+    <!-- Create New Post -->
+    <div id="toggle" class="mt-3" v-show="showNew">
+      <h3>Create New Post</h3>
         
-      </div>
+        <div class="row mb-3 mx-auto">
+            <label for="dishName" class="col-sm-2 col-form-label">Dish Name</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" id="dishName">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success">Post</button>
+            </div>
+        </div>
     </div>
     
     <!-- History -->
     <div id="toggle" class="mt-3" v-show="showHistory">
       <div id="main-container" class="container">
-        <h3>Past Orders</h3>
+        <h3>Past Posts</h3>
         <table class='table table-striped border-1'>
             <thead class='table-dark'>
                 <tr>
                     <th>Order ID</th>
                     <th>Date</th>
-                    <th>Restaurant Name</th>
+                    <th>Foodbank Name</th>
                     <th>Dish Name</th>
                     <th>Status</th>
                     
                 </tr>
             </thead>
-          <tbody id="orderTable">
-            <tr>
-              <th>12345</th>
-              <td>01/02/2023</td>
-              <td>JB eats</td>
-              <td>Bento boxes</td>
-              <td>Done</td>
-            </tr>
-            <tr>
-              <th>54321</th>
-              <td>05/02/2023</td>
-              <td>Hvala</td>
-              <td>Chicken and veggies</td>
-              <td>Cancelled</td>
-            </tr>
-            <tr>
-              <th>55555</th>
-              <td>06/03/2023</td>
-              <td>MBS Hotel</td>
-              <td>lunchboxes</td>
-              <td>Done</td>
-            </tr>
-          </tbody>
+            <tbody id="orderTable">
+                <tr>
+                <th>12345</th>
+                <td>01/02/2023</td>
+                <td>Helpyelp</td>
+                <td>Bento boxes</td>
+                <td>Done</td>
+                </tr>
+                <tr>
+                <th>54321</th>
+                <td>05/02/2023</td>
+                <td>Foodbank Singapore</td>
+                <td>Chicken and veggies</td>
+                <td>Cancelled</td>
+                </tr>
+                <tr>
+                <th>55555</th>
+                <td>06/03/2023</td>
+                <td>Mom's Shelter</td>
+                <td>lunchboxes</td>
+                <td>Done</td>
+                </tr>
+            </tbody>
       </table>
         <!-- <a id="addBookBtn" class="btn btn-primary" 
       href="add-book.html">Add a book</a> -->
@@ -261,7 +281,7 @@
   data() {
     return {
       showCurrent: false,
-      showListing: false,
+      showNew: false,
       showHistory: false,
     };
   },
@@ -269,8 +289,8 @@
     toggleCurrent() {
       this.showCurrent = !this.showCurrent;
     },
-    toggleListing() {
-      this.showListing = !this.showListing;
+    toggleNew() {
+      this.showNew = !this.showNew;
     },
     toggleHistory() {
       this.showHistory = !this.showHistory;

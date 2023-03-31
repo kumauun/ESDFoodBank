@@ -15,7 +15,7 @@ db = SQLAlchemy(app)
 
 CORS(app)
 
-class driver(db.Model):
+class Driver(db.Model):
     __tablename__ = 'drivers2'
 
     driver_id = db.Column(db.Integer, primary_key=True)
@@ -37,19 +37,73 @@ class driver(db.Model):
     
     
 #get driver by id
-@app.route("/get_driver/<driver_id>")
+@app.route("/get_driver/<int:driver_id>")
 def get_driver_by_id(driver_id):
+    driver = Driver.query.filter_by(driver_id=driver_id).first()
+    if driver:
+        return jsonify(
+            {
+                "code": 200,
+                "data": driver.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Driver not found."
+        }
+    ), 404
     pass  #edit ini dong hehe
 
 #get driver by region and availability=true
-@app.route("get_driver_region/<region>")
+@app.route("get_available_driver_region/<region>")
 def get_driver_region_availaibility(region):
-    availability = True
+    driverlist = Driver.query.filter_by(region=region).filter_by(availability=True)
+
+    if len(driverlist):
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "drivers": [driver.json() for driver in driverlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no drivers."
+        }
+    ), 404
+    
     pass #edit ini
 
 #update driver availability
-@app.route("/update_driver_status")
-def update_driver_status():
+@app.route("/update_driver_status/<int:driver_id>", methods=['PUT'])
+def update_driver_status(driver_id):
+    driver = Driver.query.filter_by(driver_id=driver_id).first()
+    if driver:
+        if driver.availability:
+            driver.availability = False
+        elif driver.availability == False:
+            driver.availability = True
+
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": driver.json()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "driver_id": driver_id
+            },
+            "message": "Driver not found."
+        }
+    ), 404
     pass #edit ini
 
 @app.route("/new_driver", methods=['POST'])
@@ -63,7 +117,7 @@ def create_driver():
     region = data.get('region')
     availability = data.get('availability')
 
-    new_driver = driver(driver_id = driver_id, driver_name=driver_name, phone_number=phone_number, region=region, availability=availability)
+    new_driver = Driver(driver_id = driver_id, driver_name=driver_name, phone_number=phone_number, region=region, availability=availability)
 
     print(driver_id)
     try:
