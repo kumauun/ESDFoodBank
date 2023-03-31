@@ -36,7 +36,7 @@ def close_connection():
     
 foodbank_URL= "http://localhost:5002/get_foodbank/<foodbank_id>"
 
-order_URL = "http://localhost:5005/new_order"
+order_URL = "http://localhost:5004/get_order"
 
 
 
