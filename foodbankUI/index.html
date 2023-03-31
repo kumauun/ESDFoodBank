@@ -11,9 +11,7 @@
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-<script src="../UI_COMPONENTS/Navbar.js">
-  
-</script>
+
 
 <body>
 
@@ -21,7 +19,7 @@
 <!-- navbar starts  -->
 <div id="app">
   <Navbar></Navbar>
-</div>
+
 <!-- navbar ends  -->
 
 <h1 class = "m-5 "> Welcome to Savood! </h1>
@@ -29,7 +27,7 @@
 
 <div class="container mt-5">
 
-  <div id="toggle">
+  <div>
     <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Order</button>
     <button @click="toggleListing" class="btn btn-success mx-1">Available Orders</button>
     <button @click="toggleHistory" class="btn btn-warning mx-1">Past Orders</button>
@@ -235,7 +233,7 @@
     </div>
   </footer>
 </div>
-<!-- <script src="app.js"></script> -->
+</div>
 
 
 
@@ -248,8 +246,47 @@
         return {
           userId: null,
           userType: null,
+          showCurrent: true,
+          showListing: false,
+          showHistory: false,
         };
       },
+      methods: {
+        toggleCurrent() {
+          this.showCurrent = true;
+          this.showListing = false;
+          this.showHistory = false;
+        },
+        toggleListing() {
+          this.showCurrent = false;
+          this.showListing = true;
+          this.showHistory = false;
+        },
+        toggleHistory() {
+          this.showCurrent = false;
+          this.showListing = false;
+          this.showHistory = true;
+        },
+        async loadListings() {
+        //   try {
+        //     const response = await fetch(`/signup`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({
+        //             user_email: this.user_email,
+        //             username: this.username,
+        //             user_type: this.user_type,
+        //             phone_number: this.phone_number,
+        //             region: this.region,
+        //             postal_code: this.postal_code,
+        //             address: this.address,
+        //             password: this.password,
+        //         })
+        //     });
+        // }
+        },
 
       created() {
         const saveduserId = localStorage.getItem('userId');
@@ -261,44 +298,14 @@
         this.userType = saveduserType
         console.log(this.userId, this.userType)
       }
-    });
+    }});
   </script>
 
- 
+  <script src="../UI_COMPONENTS/Navbar.js"></script>
 
   <script>app.mount('#app');</script>
 
-  <!-- Dashboard toggle starts -->
-<script>
-  const app2 = Vue.createApp({
-  data() {
-    return {
-      showCurrent: false,
-      showListing: false,
-      showHistory: false,
-    };
-  },
-  methods: {
-    toggleCurrent() {
-      this.showCurrent = true;
-      this.showListing = false;
-      this.showHistory = false;
-    },
-    toggleListing() {
-      this.showCurrent = false;
-      this.showListing = true;
-      this.showHistory = false;
-    },
-    toggleHistory() {
-      this.showCurrent = false;
-      this.showListing = false;
-      this.showHistory = true;
-    }
-  }
-});
-app2.mount('#toggle');
-</script>
-<!-- Dashboard toggle ends -->
+
 
   
 
