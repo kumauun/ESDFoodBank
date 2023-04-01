@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from sqlalchemy.sql.expression import not_, or_
 
 from datetime import datetime
 import json
@@ -271,6 +272,22 @@ def get_previous_orders(foodbank_id):
         }
     ), 404
     
+@app.route("/get_non_pending_or_done_orders/<int:foodbank_id>", methods=['GET'])
+def get_non_pending_or_done_orders(foodbank_id):
+    try:
+        orders = Order.query.filter_by(foodbank_id=foodbank_id).filter(Order.status.notin_(['pending', 'done'])).all()
+
+        if not orders:
+            return jsonify({"message": "No orders found."}), 404
+
+        return jsonify({
+            "message": "Orders retrieved successfully.",
+            "orders": [order.json() for order in orders]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
 
 if __name__ == '__main__':
     with app.app_context():
