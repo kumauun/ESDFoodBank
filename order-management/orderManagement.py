@@ -134,15 +134,7 @@ def create_order():
 
 @app.route("/get_order/<region>", methods=['GET'])
 def get_order_by_region(region):
-    data = request.get_json()
-    user_type = data.get('user_type')
-
-    #filter is based on who the user_type is
-    if user_type == 'foodbank':
-        status = 'pending'
-    elif user_type == 'driver':
-        status = 'ordered'
-
+    status = request.args.get('status')
     orderlist = Order.query.filter_by(region=region).filter_by(status=status).all()
 
     if orderlist:
