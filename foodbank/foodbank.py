@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 CORS(app)
 
 class Foodbank(db.Model):
-    __tablename__ = 'foodbanks2'
+    __tablename__ = 'foodbanks'
 
     foodbank_id = db.Column(db.Integer, primary_key=True)
     foodbank_name = db.Column(db.String(255), unique=True, nullable=False)

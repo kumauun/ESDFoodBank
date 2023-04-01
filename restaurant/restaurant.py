@@ -16,7 +16,7 @@ db = SQLAlchemy(app)
 CORS(app)
 
 class Restaurant(db.Model):
-    __tablename__ = 'restaurants2'
+    __tablename__ = 'restaurants'
 
     restaurant_id = db.Column(db.Integer, primary_key=True)
     restaurant_name = db.Column(db.String(255), unique=True, nullable=False)
