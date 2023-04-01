@@ -24,6 +24,7 @@ class Order(db.Model):
     foodbank_id = db.Column(db.Integer)
     foodbank_phone_number = db.Column(db.String(15))
     restaurant_id = db.Column(db.Integer)
+    restaurant_name = db.Column(db.String(200))
     restaurant_phone_number = db.Column(db.String(15))
     dish_name = db.Column(db.String(100))
     status = db.Column(db.Enum('pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done'), nullable=False, default='pending')
@@ -37,6 +38,7 @@ class Order(db.Model):
         'foodbank_id': self.foodbank_id,
         'foodbank_phone_number': self.foodbank_phone_number,
         'restaurant_id': self.restaurant_id,
+        'restaurant_name': self.restaurant_name,
         'restaurant_phone_number': self.restaurant_phone_number,
         'dish_name': self.dish_name,
         'status': self.status,
