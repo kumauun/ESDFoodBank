@@ -22,7 +22,6 @@ class Restaurant(db.Model):
     restaurant_name = db.Column(db.String(255), unique=True, nullable=False)
     phone_number = db.Column(db.String(255), nullable=False)
     restaurant_address = db.Column(db.String(255), nullable=False)
-    postal_code = db.Column(db.String(255), nullable=False)
     region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'), nullable=False)
     
     def json(self):
@@ -31,7 +30,6 @@ class Restaurant(db.Model):
             'restaurant_name': self.restaurant_name,
             'phone_number': self.phone_number,
             'restaurant_address': self.restaurant_address,
-            'postal_code': self.postal_code,
             'region': self.region
         }
 
@@ -66,10 +64,9 @@ def create_restaurant():
     restaurant_name = data.get('restaurant_name')
     phone_number = data.get('phone_number')
     restaurant_address = data.get('address')
-    postal_code = data.get('postal_code')
     region = data.get('region')
 
-    new_restaurant = Restaurant(restaurant_id = restaurant_id, restaurant_name=restaurant_name, phone_number=phone_number,restaurant_address = restaurant_address, postal_code=postal_code, region=region)
+    new_restaurant = Restaurant(restaurant_id = restaurant_id, restaurant_name=restaurant_name, phone_number=phone_number,restaurant_address = restaurant_address, region=region)
 
     print(restaurant_id)
     try:
