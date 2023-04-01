@@ -14,7 +14,11 @@ new_order_data = {
     "restaurant_phone_number": "987654321",
     "restaurant_address": "123 Restaurant St",
     "restaurant_name": "Restaurant 1",
+    "driver_id": 2,
+    "driver_phone_number": "123456789",
+    "driver_name": "Driver 2",
     "dish_name": "pizzamozzarella",
+    
 }
 
 
