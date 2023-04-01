@@ -1,3 +1,6 @@
+import json
+import pika
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -9,9 +12,6 @@ import requests
 file_directory = '../'
 sys.path.append(file_directory)
 import amqp_setup
-import pika
-import json
-
 app = Flask(__name__)
 CORS(app)
 
@@ -30,13 +30,13 @@ def get_restaurant_by_id(restaurant_id):
 
 def publish_message_to_foodbank(region, restaurant_phone_number, foodbank_phone_number):
     message = {
-        "restaurant_phone_number": restaurant_phone_number,"foodbank_phone_number": foodbank_phone_number,
+        "restaurant_phone_number": restaurant_phone_number, "foodbank_phone_number": foodbank_phone_number,
         "region": region
     }
     try:
         # publish message to RabbitMQ exchange
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="foodbank.new_posting", 
-                                         body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="foodbank.new_posting",
+                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
         print("Sent message to RabbitMQ Exchange")
     except Exception as e:
         print("An error occurred while publishing the message: " + str(e))
@@ -46,11 +46,18 @@ def publish_message_to_foodbank(region, restaurant_phone_number, foodbank_phone_
                 "message": "Failed to notify foodbank: " + str(e)
             }
         ), 500
-    
-    
+
 
 @app.route("/post_food", methods=['POST'])
 def post_food():
+
+    if not request.is_json:
+        return jsonify(
+            {
+                "code": 400,
+                "message": "Request does not contain JSON data."
+            }
+        ), 400
 
     # 1. retrieve phone number of restaurant that is posting the surplus food
     restaurant_id = request.json['restaurant_id']
@@ -79,21 +86,16 @@ def post_food():
         "status": "pending"
     }
     try:
-        # invoke order management microservice to add new order
-        result = requests.post(
-            f"{orderManagement_URL}/new_order", json=new_order)
-        order = result.json()['data']
+        result = requests.post(f"{orderManagement_URL}/new_order", json=new_order)
+        response = result.json()
+        print(response)
+        order = response['data']
         print(f"Added new order to order management microservice: {order}")
+
+
     except Exception as e:
         print("Order management microservice is unavailable: " + str(e))
-        return jsonify(
-            {
-                "code": 500,
-                "message": "Failed to create new order: " + str(e),
-                "reason":  result.json()['message']
-                
-            }
-        ), 500
+        return jsonify({"code": 500, "message": "Failed to create new order: " + str(e)})
 
     # 3. get phone number of foodbank in the region
     region = restaurant['region']
@@ -121,24 +123,25 @@ def post_food():
             }
         ), 500
 
-    #return jsonify(
+    # return jsonify(
     #    {
     #        "code": 200,
     #        "data": [foodbank["phone_number"] for foodbank #in foodbanks]
     #    }
-    #), 200
-    
+    # ), 200
+
     # 4. notify foodbank with the phone number retrieved from the request above
     for foodbank_phone_number in foodbank_phone_numbers:
-        publish_message_to_foodbank(region, restaurant_phone_number, foodbank_phone_number)
-    
+        publish_message_to_foodbank(
+            region, restaurant_phone_number, foodbank_phone_number)
+
     return jsonify(
         {
-          "code": 200,
-          "data": "success notify foodbank"  
+            "code": 200,
+            "data": "success notify foodbank"
         }
     ), 200
-    
+
     # 5 send back response to restaurant UI
     # response_message = {
     # "code": 200,
