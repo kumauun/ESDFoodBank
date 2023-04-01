@@ -26,7 +26,6 @@ class Order(db.Model):
     foodbank_address= db.Column(db.String(100))
     foodbank_name= db.Column(db.String(100))
     restaurant_id = db.Column(db.Integer)
-    restaurant_name = db.Column(db.String(200))
     restaurant_phone_number = db.Column(db.String(15))
     restaurant_address = db.Column(db.String(100))
     restaurant_name = db.Column(db.String(100))
@@ -47,7 +46,6 @@ class Order(db.Model):
         'restaurant_name': self.restaurant_name,
         'restaurant_phone_number': self.restaurant_phone_number,
         'restaurant_address': self.restaurant_address,
-        'restaurant_name': self.restaurant_name,
         'dish_name': self.dish_name,
         'status': self.status,
         'created_at': self.created_at
