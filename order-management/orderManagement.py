@@ -79,21 +79,32 @@ def create_order():
     data = request.get_json()
 
     region = data.get('region')
-
-    # start null
     foodbank_id = data.get('foodbank_id')
-    # start null
     foodbank_phone_number = data.get('foodbank_phone_number')
+    foodbank_address = data.get('foodbank_address')
+    foodbank_name = data.get('foodbank_name')
     restaurant_id = data.get('restaurant_id')
     restaurant_phone_number = data.get('restaurant_phone_number')
+    restaurant_address = data.get('restaurant_address')
+    restaurant_name = data.get('restaurant_name')
+    driver_id = data.get('driver_id')
+    driver_phone_number = data.get('driver_phone_number')
+    driver_name = data.get('driver_name')
     dish_name = data.get('dish_name')
 
     new_order = Order(
         region=region,
         foodbank_id=foodbank_id,
         foodbank_phone_number=foodbank_phone_number,
+        foodbank_address = foodbank_address,
+        foodbank_name=foodbank_name,
         restaurant_id=restaurant_id,
         restaurant_phone_number=restaurant_phone_number,
+        restaurant_address = restaurant_address,
+        restaurant_name =   restaurant_name,
+        driver_id = driver_id,
+        driver_phone_number =   driver_phone_number,
+        driver_name = driver_name,
         dish_name=dish_name,
         status='pending'
     )
