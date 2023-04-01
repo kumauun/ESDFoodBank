@@ -161,12 +161,12 @@ def load_orders(foodbank_id):
     response = requests.get(load_order_URL)
     foodbank_response = response.json()['data']
 
-    print('foodbank details:', foodbank_details)
+    print('foodbank details:', foodbank_response)
         
-    foodbank_region = foodbank_details['region']
-    foodbank_name = foodbank_details['foodbank_name']
-    foodbank_phone_number = foodbank_details['phone_number']
-    foodbank_address = foodbank_details['foodbank_address']
+    foodbank_region = foodbank_response['region']
+    foodbank_name = foodbank_response['foodbank_name']
+    foodbank_phone_number = foodbank_response['phone_number']
+    foodbank_address = foodbank_response['foodbank_address']
 
     # foodbank_id = request.json['foodbank_id']
     # response = requests.get(foodbank_URL + "/get_foodbank/" + foodbank_id)
