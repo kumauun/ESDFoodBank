@@ -33,7 +33,7 @@
     <div id="toggle" class="mt-3 mx-auto" v-show="showCurrent">
       <h3>Current Delivery</h3>
       
-      <div id="currentOrder">
+      <div id="currentDelivery">
         <div class="card d-flex mx-auto mb-3">
           <div class="card-header">
             Order #12233
@@ -384,9 +384,10 @@
       // Hide the table and button in the event of error
       $('#orderTable').hide();
       $('#cardContainer').hide()
+      $('#currentDelivery').hide()
 
       // Display an error under the main container
-      $('#main-container')
+      $('#main-container') // blm add #main-container di atas 
           .append("<label>"+message+"</label>");
   }
 
@@ -441,8 +442,7 @@
   
   $(async() => {           
     // Change serviceURL to your own [please change]
-    var region = ""
-    var serviceURL = "http://127.0.0.1:5005/get_order/" + region;
+    var serviceURL = "http://127.0.0.1:5005/get_order/" + region; // have not edited 
 
     try {
         const response =
@@ -467,7 +467,7 @@
               
               eachCard = `<div class="col">
                             <div class="card h-100">
-                              <div class="card-header">Order #12345</div>
+                              <div class="card-header">Order`+ order.order_id + `</div>
 
                               <div class="card-body">
                                 <div class="row">
@@ -525,6 +525,82 @@
    });
 
      //Display Current Delivery [not working, incomplete]
+
+     $(async() => {           
+    // Change serviceURL to your own [please change]
+    var region = ""
+    var serviceURL = "http://127.0.0.1:5005/get_order/" ; // have not changed 
+
+    try {
+        const response =
+         await fetch(
+           serviceURL, { method: 'GET' }
+        );
+        const result = await response.json();
+         if (response.status === 200) {
+            // success case
+            var order = result.data.orders; //blm edit
+                                           // the returned result
+            // for loop to setup all table rows with obtained book data
+    
+
+            for (const orders of order) {
+              
+              eachCard = `<div class="card d-flex mx-auto mb-3">
+                              <div class="card-header">
+                                Order` + order.order_id+ `
+                              </div>
+                              <div class="card-body">
+                                <div class="row">
+                                  <div class="col"><h5 class="card-title">PICK UP</h5></div>
+                                  <div class="col"><h5 class="card-title">DROP OFF</h5></div>
+                                  <div class="col" style="text-align: right; color: blue;">
+                                    <h5>{{ status }}</h5>
+                                  </div>
+
+                        
+                                <div class="row">
+                                  <div class="col" style="text-align: left;"><h3>`+ order.restaurant_name +`</h3></div> 
+                                  <div class="col" style="text-align: left;"><h3> ` + order.foodbank_name + `</h3></div> 
+                                  <div class="col" style="text-align: right;">Order Created ` + order.created_at `</div> 
+                                </div>
+                                
+                                <div class="row">
+                                  <div class="col"><p class="card-text">`+ order.restaurant_address + `</div>
+                                  <div class="col" style="text-align: left;"> `+ order.foodbank_address + ` </div> 
+                                  <div class="col" style="text-align: right;"></div> 
+                                </div>
+                                <div class="row">
+                                  <div class="col"><p class="card-text">+6581234567</p></div>
+                                  <div class="col" style="text-align: left;">+6588887777</div> 
+                                  <div class="col" id="changeStatus" style="text-align: right;">
+                                    <!-- if current status is accepted -->
+                                    <button v-if="status === 'Accepted'" @click="pickedUp()" class="btn btn-primary mx-1">Picked Up</button>
+                                    <!-- if current status is picked up -->
+                                    <button v-if="status === 'Picked Up'" @click="delivered()" class="btn btn-primary mx-1">Delivered</button>
+                                  </div> 
+                                </div>
+                              </div>
+                            </div>
+                          </div>`
+
+            }// add card to the container 
+            $('#currentDelivery').append(eachCard);
+               
+            } else if (response.status == 404) {
+                // No books
+                showError(result.message);
+            } else {
+                // unexpected outcome, throw the error
+                throw response.status;
+            }
+        } catch (error) {
+            // Errors when calling the service; such as network error, 
+            // service offline, etc
+            showError
+              ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
+        } // error
+   });
 
     </script>
 
