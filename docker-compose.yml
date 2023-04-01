@@ -54,7 +54,7 @@ services:
     ports:
       - "5004:5000"
     environment:
-      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/order-management
+      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/order_database
 
   notification:
     build: ./notification
@@ -73,5 +73,21 @@ services:
       - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/user
   
 #  post surplus port 5007
+  post-surplus-food:
+    build: ./port-surplus-food
+    container_name: post_surplus_food_microservice
+    ports:
+      -"5007:5000"
+  
 #  place order port 5008
+  place-order:
+    build: ./place-order
+    container_name: place_order_microservice
+    ports:
+      -"5008:5000"
 #  accept order port 5009
+  accept-order:
+    build: ./accept-order
+    container_name: accept_order_microservice
+    ports:
+      -"5009:5000"
