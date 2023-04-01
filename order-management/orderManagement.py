@@ -24,10 +24,17 @@ class Order(db.Model):
     region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'))
     foodbank_id = db.Column(db.Integer) 
     foodbank_phone_number = db.Column(db.String(15))
+    foodbank_address= db.Column(db.String(100))
+    foodbank_name= db.Column(db.String(100))
     restaurant_id = db.Column(db.Integer)
     restaurant_phone_number = db.Column(db.String(15))
+    restaurant_address = db.Column(db.String(100))
+    restaurant_name = db.Column(db.String(100))
+    driver_id = db.Column(db.Integer)
+    driver_phone_number = db.Column(db.String(15))
+    driver_name = db.Column(db.String(100))
     dish_name = db.Column(db.String(100))
-    status = db.Column(db.Enum('pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done'), nullable=False, default='pending')
+    status = db.Column(db.Enum('pending', 'ordered', 'accepted', 'picked up', 'delivered', 'done'), nullable=False, default='pending')
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
@@ -35,10 +42,17 @@ class Order(db.Model):
         return {
         'order_id': self.order_id,
         'region': self.region,
-        'foodbank_phone_number': self.foodbank_phone_number,
         'foodbank_id': self.foodbank_id,
+        'foodbank_phone_number': self.foodbank_phone_number,
+        'foodbank_address': self.foodbank_address,
+        'foodbank_name': self.foodbank_name,
         'restaurant_id': self.restaurant_id,
         'restaurant_phone_number': self.restaurant_phone_number,
+        'restaurant_address': self.restaurant_address,
+        'restaurant_name': self.restaurant_name,
+        'driver_id': self.driver_id,
+        'driver_phone_number': self.driver_phone_number,
+        'driver_name': self.driver_name,
         'dish_name': self.dish_name,
         'status': self.status,
         'created_at': self.created_at
