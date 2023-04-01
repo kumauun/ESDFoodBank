@@ -101,44 +101,6 @@
           </div>
         </div>
       </div>
-
-       <!-- sample if ordered -->
-    <div id="currentOrder">
-        <div class="card d-flex mx-auto mb-3">
-          <div class="card-header">
-            Order #12234
-          </div>
-          <div class="card-body">
-            <div class="row">
-                <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
-                <div class="col" style="text-align: right; color: orange;"><h5>Ordered</h5></div> 
-            </div>
-
-            <br>
-
-            <div class="row">
-                <div class="col"><h5 class="card-title">Bye Hunger Foodbank</h5></div>
-                <div class="col" style="text-align: left;"><h5></h5></div> 
-                <div class="col" style="text-align: right;">Order Created today at 18:15</div> 
-            </div>
-            <div class="row">
-              <div class="col"><p class="card-text">10 Sunrise Road</div>
-              <div class="col" style="text-align: left;"> </div> 
-              <div class="col" style="text-align: right;"></div> 
-            </div>
-            <div class="row">
-              <div class="col"><p class="card-text">298188</div>
-              <div class="col" style="text-align: left;"> </div> 
-              <div class="col" style="text-align: right;"></div> 
-            </div>
-            <div class="row">
-              <div class="col"><p class="card-text">+6588887777</p></div>
-              <div class="col" style="text-align: left;"></div> 
-              <div class="col" style="text-align: right;"></div> 
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Create New Post -->
@@ -160,7 +122,8 @@
     <div id="toggle" class="mt-3" v-show="showHistory">
       <div id="main-container" class="container">
         <h3>Past Posts</h3>
-        <table class='table table-striped border-1'>
+        <h1 v-if="message">{{message}}</h1>
+        <table v-if="previous_orders" class='table table-striped border-1'>
             <thead class='table-dark'>
                 <tr>
                     <th>Order ID</th>
@@ -168,88 +131,26 @@
                     <th>Foodbank Name</th>
                     <th>Dish Name</th>
                     <th>Status</th>
-                    
                 </tr>
             </thead>
             <tbody id="orderTable">
-                <tr>
-                <th>12345</th>
-                <td>01/02/2023</td>
-                <td>Helpyelp</td>
-                <td>Bento boxes</td>
-                <td>Done</td>
-                </tr>
-                <tr>
-                <th>54321</th>
-                <td>05/02/2023</td>
-                <td>Foodbank Singapore</td>
-                <td>Chicken and veggies</td>
-                <td>Cancelled</td>
-                </tr>
-                <tr>
-                <th>55555</th>
-                <td>06/03/2023</td>
-                <td>Mom's Shelter</td>
-                <td>lunchboxes</td>
-                <td>Done</td>
+                <tr v-for="previous_order of previous_orders">
+                <th>{{previous_order.order_id}}</th>
+                <td>{{previous_order.created_at}}</td>
+                <td>{{previous_order.foodbank_name}}</td>
+                <td>{{previous_order.dish_name}}</td>
+                <td>{{previous_order.status}}</td>
                 </tr>
             </tbody>
-      </table>
-        <!-- <a id="addBookBtn" class="btn btn-primary" 
-      href="add-book.html">Add a book</a> -->
+        </table>
       </div>
     </div>
 
   </div>
 </div>
 
-  <!-- Footer -->
-<div class="container">
-  <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top">
-    <div class="col mb-3">
-      <a href="/" class="d-flex align-items-center mb-3 link-dark text-decoration-none">
-        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-      </a>
-      <p class="text-muted">© 2022</p>
-    </div>
-
-    <div class="col mb-3">
-
-    </div>
-
-    <div class="col mb-3">
-      <h5>Section</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Home</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Features</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Pricing</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">FAQs</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">About</a></li>
-      </ul>
-    </div>
-
-    <div class="col mb-3">
-      <h5>Section</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Home</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Features</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Pricing</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">FAQs</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">About</a></li>
-      </ul>
-    </div>
-
-    <div class="col mb-3">
-      <h5>Section</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Home</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Features</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Pricing</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">FAQs</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">About</a></li>
-      </ul>
-    </div>
-  </footer>
+<!--If the footer component fails, insert here-->
+  <Footer></Footer>
 </div>
 </div>
 
@@ -264,9 +165,14 @@
           userId: null,
           userType: null,
           userNameSession: null,
+          message: null,
           showCurrent: true,
           showNew: false,
           showHistory: false,
+          
+
+          //previous order:
+          previous_orders: null
         };
       },
       methods: {
@@ -276,16 +182,51 @@
           this.showHistory = false;
           this.loadListings()
         },
+
         toggleNew() {
           this.showCurrent = false;
           this.showNew = true;
           this.showHistory = false;
         },
+
         toggleHistory() {
           this.showCurrent = false;
           this.showNew = false;
           this.showHistory = true;
+          this.get_previous_postings();
+          console.log(this.previous_orders, this.message)
         },
+
+        async get_previous_postings(){
+          try{
+            const response = await fetch(`http://127.0.0.1:5005/get_previous_postings/${this.userId}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+
+            // if (!response.ok) {
+            //   this.message = 'Error when fetching previous postings';
+            //   throw new Error('Error during previous postings fetch');
+            // }
+
+            const result = await response.json()
+            console.log(result)
+            if(result.code == 200){
+              this.previous_orders = result.data.orders
+              console.log(this.previous_orders)
+            } else {
+              this.message = result.message
+            }
+
+            
+            
+          } catch (error) {
+            console.log('error retrieving past orders')
+          }
+        },
+
         async loadListings() {
           try {
               const response = await fetch(`http://127.0.0.1:5005/get_self_postings/${this.userId}`, {
@@ -299,7 +240,7 @@
           }
 
           console.log(response)
-        },
+        }},
 
       created() {
         const saveduserId = localStorage.getItem('userId');
@@ -311,234 +252,177 @@
         }
         this.userType = saveduserType
         this.userNameSession = saveduserNameSession
-        console.log(this.userId, this.userType)
+        console.log(this.userId, this.userType, this.userNameSession)
       }
-    }});
+    });
   </script>
 
 <script>
-  // Helper function to display error message
-  function showError(message) {
-      // Hide the table and button in the event of error
-      $('#orderTable').hide();
-      $('#cardContainer').hide()
-      $('#currentDelivery').hide()
-
-      // Display an error under the main container
-      $('#main-container') // blm add #main-container di atas 
-          .append("<label>"+message+"</label>");
-  }
-
-  //Get Foodbank_id
-
-   //Display Past Orders
-  $(async() => {           
-      // Change serviceURL to your own 
-      var driver_ID = saveduserId
-      var serviceURL = "http://127.0.0.1:5005/get_previous_orders/" + driver_ID ;
-
-      try {
-          const response =
-           await fetch(
-             serviceURL, { method: 'GET' }
-          );
-          const result = await response.json();
-           if (response.status === 200) {
-              // success case
-              var orders = result.data.orders; //the array is in books within data of 
-                                             // the returned result
-              // for loop to setup all table rows with obtained book data
-              var rows = "";
-              for (const order of orders) {
-                 eachRow ="<th>" + order.order_id + "</th>" +
-                          "<td>" + order.created_at + "</td>" +
-                          "<td>" + order.restaurant_name + "</td>" +
-                          "<td>" + order.foodbank_name + "</td>"+
-                          "<td>" + order.status + "</td>";
-
-                 rows += "<tr>" + eachRow + "</tr>";
-
-              }
-                  // add all the rows to the table
-                  $('#orderTable').append(rows);
-              } else if (response.status == 404) {
-                  // No books
-                  showError(result.message);
-              } else {
-                  // unexpected outcome, throw the error
-                  throw response.status;
-              }
-          } catch (error) {
-              // Errors when calling the service; such as network error, 
-              // service offline, etc
-              showError
-                ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
-          } // error
-     });
      
   //Display Available Orders
   
-  $(async() => {           
-    // Change serviceURL to your own [please change]
-    var serviceURL = "http://127.0.0.1:5005/get_order/" + region; // have not edited 
+  // $(async() => {           
+  //   // Change serviceURL to your own [please change]
+  //   var serviceURL = "http://127.0.0.1:5005/get_order/" + region; // have not edited 
 
-    try {
-        const response =
-         await fetch(
-           serviceURL, { method: 'GET' }
-        );
-        const result = await response.json();
-         if (response.status === 200) {
-            // success case
-            var order = result.data.orders; //the array is in books within data of 
-                                           // the returned result
-            // for loop to setup all table rows with obtained book data
+  //   try {
+  //       const response =
+  //        await fetch(
+  //          serviceURL, { method: 'GET' }
+  //       );
+  //       const result = await response.json();
+  //        if (response.status === 200) {
+  //           // success case
+  //           var order = result.data.orders; //the array is in books within data of 
+  //                                          // the returned result
+  //           // for loop to setup all table rows with obtained book data
             
-            var eachCardrow = "";
+  //           var eachCardrow = "";
 
 
-            for (const orders of order) {
-              counter = 0
-              if (counter % 3 == 0){
-                eachCardrow += "<div class='row row-cols-1 row-cols-md-3 g-4 mx-auto'>";
-              }
+  //           for (const orders of order) {
+  //             counter = 0
+  //             if (counter % 3 == 0){
+  //               eachCardrow += "<div class='row row-cols-1 row-cols-md-3 g-4 mx-auto'>";
+  //             }
               
-              eachCard = `<div class="col">
-                            <div class="card h-100">
-                              <div class="card-header">Order`+ order.order_id + `</div>
+  //             eachCard = `<div class="col">
+  //                           <div class="card h-100">
+  //                             <div class="card-header">Order`+ order.order_id + `</div>
 
-                              <div class="card-body">
-                                <div class="row">
-                                  <div class="col">
-                                    <h6 class="card-title">PICK UP</h6>
-                                    <h3 class="card-text">`+ order.restaurant_name + `</h3>
-                                    <p class="card-text">` + order.restaurant_address + `</p>
-                                    <p class="card-text">` + order.restaurant_phone_number + `</p>
+  //                             <div class="card-body">
+  //                               <div class="row">
+  //                                 <div class="col">
+  //                                   <h6 class="card-title">PICK UP</h6>
+  //                                   <h3 class="card-text">`+ order.restaurant_name + `</h3>
+  //                                   <p class="card-text">` + order.restaurant_address + `</p>
+  //                                   <p class="card-text">` + order.restaurant_phone_number + `</p>
                                     
-                                  </div>
-                                  <div class="col">
-                                    <h6 class="card-title">DROP OFF</h6>
-                                    <h3 class="card-text">` + order.foodbank_name + `</h3>
-                                    <p class="card-text"> `+ order.foodbank_address + `</p>
-                                    <p class="card-text">` + order.foodbank_phone_number + `</p>
-                                  </div>
-                                </div>
+  //                                 </div>
+  //                                 <div class="col">
+  //                                   <h6 class="card-title">DROP OFF</h6>
+  //                                   <h3 class="card-text">` + order.foodbank_name + `</h3>
+  //                                   <p class="card-text"> `+ order.foodbank_address + `</p>
+  //                                   <p class="card-text">` + order.foodbank_phone_number + `</p>
+  //                                 </div>
+  //                               </div>
                                 
-                                <div class="row mt-3">
-                                  <div class="mx-auto d-flex col-6">
-                                    <button type="button" class="btn btn-success mx-auto"> Accept </button>
-                                  </div>
-                                </div>
-                              </div>
+  //                               <div class="row mt-3">
+  //                                 <div class="mx-auto d-flex col-6">
+  //                                   <button type="button" class="btn btn-success mx-auto"> Accept </button>
+  //                                 </div>
+  //                               </div>
+  //                             </div>
 
-                              <div class="card-footer">
-                                <small class="text-muted"> Created on ` + order.created_at + `</small>
-                              </div>
-                            </div>
-                          </div>`
+  //                             <div class="card-footer">
+  //                               <small class="text-muted"> Created on ` + order.created_at + `</small>
+  //                             </div>
+  //                           </div>
+  //                         </div>`
               
-                        counter += 1
-              eachCardrow += eachCard
+  //                       counter += 1
+  //             eachCardrow += eachCard
 
-              if (counter % 3 == 0){
-                eachCardrow += "</div>"
-              }
+  //             if (counter % 3 == 0){
+  //               eachCardrow += "</div>"
+  //             }
                
-            }
-                // add all the rows to the table
-                $('#cardContainer').append(eachCardrow);
-            } else if (response.status == 404) {
-                // No books
-                showError(result.message);
-            } else {
-                // unexpected outcome, throw the error
-                throw response.status;
-            }
-        } catch (error) {
-            // Errors when calling the service; such as network error, 
-            // service offline, etc
-            showError
-              ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
-        } // error
-   });
+  //           }
+  //               // add all the rows to the table
+  //               $('#cardContainer').append(eachCardrow);
+  //           } else if (response.status == 404) {
+  //               // No books
+  //               showError(result.message);
+  //           } else {
+  //               // unexpected outcome, throw the error
+  //               throw response.status;
+  //           }
+  //       } catch (error) {
+  //           // Errors when calling the service; such as network error, 
+  //           // service offline, etc
+  //           showError
+  //             ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
+  //       } // error
+  //  });
 
      //Display Current Delivery [not working, incomplete]
 
-     $(async() => {           
-    // Change serviceURL to your own [please change]
-    var region = ""
-    var serviceURL = "http://127.0.0.1:5005/get_order/" ; // have not changed 
+  //    $(async() => {           
+  //   // Change serviceURL to your own [please change]
+  //   var region = ""
+  //   var serviceURL = "http://127.0.0.1:5005/get_order/" ; // have not changed 
 
-    try {
-        const response =
-         await fetch(
-           serviceURL, { method: 'GET' }
-        );
-        const result = await response.json();
-         if (response.status === 200) {
-            // success case
-            var order = result.data.orders; //blm edit
-                                           // the returned result
-            // for loop to setup all table rows with obtained book data
+  //   try {
+  //       const response =
+  //        await fetch(
+  //          serviceURL, { method: 'GET' }
+  //       );
+  //       const result = await response.json();
+  //        if (response.status === 200) {
+  //           // success case
+  //           var order = result.data.orders; //blm edit
+  //                                          // the returned result
+  //           // for loop to setup all table rows with obtained book data
     
 
-            for (const orders of order) {
+  //           for (const orders of order) {
               
-              eachCard = `<div class="card-header">
-                              Order` + order.order_id + `
-                            </div>
-                            <div class="card-body">
-                              <div class="row">
-                                  <div class="col"><p class="card-text">` + order.dish_name +`</p></div>
-                                  <div class="col" style="text-align: right; color: orange;"><h5>`+ order.status +`</h5></div> 
-                              </div>
+  //             eachCard = `<div class="card-header">
+  //                             Order` + order.order_id + `
+  //                           </div>
+  //                           <div class="card-body">
+  //                             <div class="row">
+  //                                 <div class="col"><p class="card-text">` + order.dish_name +`</p></div>
+  //                                 <div class="col" style="text-align: right; color: orange;"><h5>`+ order.status +`</h5></div> 
+  //                             </div>
 
-                              <br>
+  //                             <br>
 
-                              <div class="row">
-                                <div class="col"><h5 class="card-title">` + order.foodbank_name + `</h5></div>
-                                <div class="col" style="text-align: left;"><h5>` + order.driver_name + `</h5></div> 
-                                <div class="col" style="text-align: right;">Order Created on` + order.created_at + `</div> 
-                              </div>
-                              <div class="row">
-                                <div class="col"><p class="card-text">`+ order.foodbank_address+ `</div>
-                                <div class="col" style="text-align: left;">SHC7878J </div> 
-                                <div class="col" style="text-align: right;"></div> 
-                              </div>
-                              <div class="row">
-                                <div class="col"><p class="card-text">298188</div>
-                                <div class="col" style="text-align: left;"> </div> 
-                                <div class="col" style="text-align: right;"></div> 
-                              </div>
-                              <div class="row">
-                                <div class="col"><p class="card-text">+6588887777</p></div>
-                                <div class="col" style="text-align: left;">+6570351268</div> 
-                                <div class="col" style="text-align: right;"></div> 
-                              </div>
-                            </div>
-                          </div>`
+  //                             <div class="row">
+  //                               <div class="col"><h5 class="card-title">` + order.foodbank_name + `</h5></div>
+  //                               <div class="col" style="text-align: left;"><h5>` + order.driver_name + `</h5></div> 
+  //                               <div class="col" style="text-align: right;">Order Created on` + order.created_at + `</div> 
+  //                             </div>
+  //                             <div class="row">
+  //                               <div class="col"><p class="card-text">`+ order.foodbank_address+ `</div>
+  //                               <div class="col" style="text-align: left;">SHC7878J </div> 
+  //                               <div class="col" style="text-align: right;"></div> 
+  //                             </div>
+  //                             <div class="row">
+  //                               <div class="col"><p class="card-text">298188</div>
+  //                               <div class="col" style="text-align: left;"> </div> 
+  //                               <div class="col" style="text-align: right;"></div> 
+  //                             </div>
+  //                             <div class="row">
+  //                               <div class="col"><p class="card-text">+6588887777</p></div>
+  //                               <div class="col" style="text-align: left;">+6570351268</div> 
+  //                               <div class="col" style="text-align: right;"></div> 
+  //                             </div>
+  //                           </div>
+  //                         </div>`
 
-            }// add card to the container 
-            $('#currentDelivery').append(eachCard);
+  //           }// add card to the container 
+  //           $('#currentDelivery').append(eachCard);
                
-            } else if (response.status == 404) {
-                // No books
-                showError(result.message);
-            } else {
-                // unexpected outcome, throw the error
-                throw response.status;
-            }
-        } catch (error) {
-            // Errors when calling the service; such as network error, 
-            // service offline, etc
-            showError
-              ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
-        } // error
-   });
+  //           } else if (response.status == 404) {
+  //               // No books
+  //               showError(result.message);
+  //           } else {
+  //               // unexpected outcome, throw the error
+  //               throw response.status;
+  //           }
+  //       } catch (error) {
+  //           // Errors when calling the service; such as network error, 
+  //           // service offline, etc
+  //           showError
+  //             ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
+  //       } // error
+  //  });
 
 </script>
 
 <script src="../UI_COMPONENTS/Navbar.js"></script>
+<script src="../UI_COMPONENTS/Footer.js"></script>
 
 <script>app.mount('#app');</script>
 
