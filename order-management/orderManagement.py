@@ -146,10 +146,8 @@ def get_order_by_region(region):
     ), 404
 
 
-@app.route("/get_self_postings", methods=['GET'])
-def get_self_postings():
-    data = request.get_json()
-    restaurant_id = data.get('restaurant_id')
+@app.route("/get_self_postings/<int:restaurant_id>", methods=['GET'])
+def get_self_postings(restaurant_id):
     orderlist = Order.query.filter_by(restaurant_id=restaurant_id).all()
 
     if orderlist:

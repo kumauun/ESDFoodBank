@@ -326,6 +326,7 @@ app2.mount('#toggle');
           this.showCurrent = true;
           this.showNew = false;
           this.showHistory = false;
+          this.loadListings()
         },
         toggleNew() {
           this.showCurrent = false;
@@ -338,24 +339,18 @@ app2.mount('#toggle');
           this.showHistory = true;
         },
         async loadListings() {
-        //   try {
-        //     const response = await fetch("${ORDER_API_URL}/get_order/<region>", {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify({
-        //             user_email: this.user_email,
-        //             username: this.username,
-        //             user_type: this.user_type,
-        //             phone_number: this.phone_number,
-        //             region: this.region,
-        //             postal_code: this.postal_code,
-        //             address: this.address,
-        //             password: this.password,
-        //         })
-        //     });
-        // }
+          try {
+              const response = await fetch(`http://127.0.0.1:5005/get_self_postings/${this.userId}`, {
+                  method: 'GET',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  }
+              });
+          } catch (error) {
+              this.message = error.message;
+          }
+
+          console.log(response)
         },
 
       created() {
