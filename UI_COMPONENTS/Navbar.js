@@ -49,6 +49,7 @@ app.component('Navbar', {
             this.message = data.message;
             this.userId = '';
             this.userType = '';
+            this.userNameSession = '';
             const userType = localStorage.getItem('userType');
             if(userType == 'restaurant'){
               href_page = '../foodbankUI/signUp.html'
@@ -59,6 +60,8 @@ app.component('Navbar', {
             }
             localStorage.removeItem('userId');
             localStorage.removeItem('userType');
+            localStorage.removeItem('userNameSession');
+
             window.location.href = href_page;
         } catch (error) {
             this.message = error.message;

@@ -214,11 +214,13 @@
       created() {
         const saveduserId = localStorage.getItem('userId');
         const saveduserType = localStorage.getItem('userType');
+        const saveduserNameSession = localStorage.getItem('userNameSession')
         console.log(saveduserId, saveduserType)
         if (saveduserId) {
             this.userId = parseInt(saveduserId);
         }
         this.userType = saveduserType
+        this.userNameSession = saveduserNameSession
         console.log(this.userId, this.userType)
       }
     }});
