@@ -60,6 +60,7 @@ def post_food():
     restaurant_name=restaurant['restaurant_name']
     restaurant_address=restaurant['restaurant_address']
     phone_number = restaurant['phone_number']
+    region=restaurant['region']
     
     
     
@@ -68,6 +69,7 @@ def post_food():
         "restaurant_phone_number": phone_number,
         "restaurant_name": restaurant_name,
         "restaurant_address": restaurant_address,
+        "region": region,
         "status": "pending"
     }
     try:
