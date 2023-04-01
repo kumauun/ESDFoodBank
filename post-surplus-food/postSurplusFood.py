@@ -142,15 +142,6 @@ def post_food():
         }
     ), 200
 
-    # 5 send back response to restaurant UI
-    # response_message = {
-    # "code": 200,
-    # "message": "Surplus food posted successfully."
-    # }
-    #status_code = 200
-
-    # return jsonify(response_message), status_code
-
 
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) +
