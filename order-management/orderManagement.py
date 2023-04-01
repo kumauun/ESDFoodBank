@@ -271,7 +271,50 @@ def get_previous_orders(foodbank_id):
             "message": "There are no postings."
         }
     ), 404
+
+@app.route("/get_previous_postings/<int:restaurant_id>")
+def get_previous_orders(restaurant_id):
     
+    orderlist = Order.query.filter_by(restaurant_id=restaurant_id, status='done').all()
+    print(orderlist)
+
+    if orderlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no postings."
+        }
+    ), 404
+    
+@app.route("/get_non_done_postings/<int:restaurant_id>", methods=['GET'])
+def get_non_done_postings(restaurant_id):
+    orderlist = Order.query.filter(Order.restaurant_id == restaurant_id, Order.status != 'done').all()
+    print(orderlist)
+
+    if orderlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no postings."
+        }
+    ), 404
+
 @app.route("/get_non_pending_or_done_orders/<int:foodbank_id>", methods=['GET'])
 def get_non_pending_or_done_orders(foodbank_id):
     try:
