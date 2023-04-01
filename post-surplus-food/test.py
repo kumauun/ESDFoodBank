@@ -3,8 +3,8 @@ import json
 
 # Set up test data
 data_passed= {
-    'restaurant_id': '2',
-    'dish_name': 'pizzamozzarella'
+    'restaurant_id': 2,
+    'dish_name': 'mozzarella'
 }
 
 

@@ -20,7 +20,7 @@ class Order(db.Model):
     __tablename__ = 'orders'
 
     order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'), nullable=False)
+    region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'))
     foodbank_id = db.Column(db.Integer)
     foodbank_phone_number = db.Column(db.String(15))
     foodbank_address= db.Column(db.String(100))
@@ -72,7 +72,10 @@ def create_order():
     data = request.get_json()
 
     region = data.get('region')
+
+    # start null
     foodbank_id = data.get('foodbank_id')
+    # start null
     foodbank_phone_number = data.get('foodbank_phone_number')
     foodbank_address= data.get('foodbank_address')
     foodbank_name= data.get('foodbank_name')
