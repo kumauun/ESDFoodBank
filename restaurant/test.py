@@ -4,7 +4,7 @@ import requests
 flask_url = "http://localhost:5001/"
 
 # Replace this with the ID of the restaurant you want to retrieve
-restaurant_id = 2
+restaurant_id = 7
 
 # Make an HTTP GET request to the /get_restaurant/<restaurant_id> endpoint
 response = requests.get(f"{flask_url}/get_restaurant/{restaurant_id}")
