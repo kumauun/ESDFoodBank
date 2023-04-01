@@ -5,7 +5,6 @@ import os, sys
 from os import environ
 
 import requests
-from invokes import invoke_http
 
 import amqp_setup
 import pika
@@ -62,10 +61,10 @@ def processPlaceOrder(order):
 
     # order = dict
 
-    #2. change the order status from pending to ordered + update food details 
+    #2. Change the order status from pending to ordered + update food details 
     foodbank_order_URL = order_URL + "/update_order_ordered"
     print('\n-----Invoking order microservice-----')
-    order_result = invoke_http(updateOrder_URL, method='PUT', json=order)
+    order_result = requests.put(foodbank_order_URL, json=order)
     print('order_result:', order_result)
 
     #3. notify the restaurant about the new order
@@ -83,11 +82,10 @@ def processPlaceOrder(order):
 
     #4. find the driver that is in same region as the foodbank
     region = order.get('region')
-    driver_region_URL = driver_URL + "/get_available_driver_region/{region}"
+    driver_region_URL = driver_URL + f"/get_available_driver_region/{region}"
     print('\n-----Invoking driver microservice-----')
 
-    response = invoke_http(driver_region_URL, method='GET')
-    
+    response = requests.get(driver_region_URL)
     
     drivers_result = response.json() # all the driver json that is in that region 
     
