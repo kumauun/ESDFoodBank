@@ -14,10 +14,10 @@ app = Flask(__name__)
 CORS(app)
 
 # all URL 
-restaurant_URL="http://localhost:5001/restaurant"
-foodbank_URL= "http://localhost:5002/foodbank"
-driver_URL = "http://localhost:5002/driver"
-order_URL = "http://localhost:5005/orderManagement"
+restaurant_URL="http://localhost:5001/"
+foodbank_URL= "http://localhost:5002/"
+driver_URL = "http://localhost:5002/"
+order_URL = "http://localhost:5005/"
 
 @app.route("/place_order", methods=['POST'])
 def place_order():
@@ -25,11 +25,14 @@ def place_order():
     if request.is_json:
         try:
             order = request.get_json()
+            
             print("\nReceived an order in JSON:", order)
-
+            #order_dict=json.loads(order)
+            order_json= json.dumps(order)
+            
             # do the actual work
             # 1. Send order info {cart items}
-            result = processPlaceOrder(order)
+            result = processPlaceOrder(order_json)
             print('\n------------------------')
             print('\nresult: ', result)
             return jsonify(result), result["code"]
@@ -44,6 +47,7 @@ def place_order():
             return jsonify({
                 "code": 500,
                 "message": "place_order.py internal error: " + ex_str
+                #"message" :order
             }), 500
         
     # if reached here, not a JSON request.
@@ -58,7 +62,7 @@ def place_order():
 
 # Function to update the order in the order management microservice
 def processPlaceOrder(order):
-
+    \
     # order = dict
 
     #2. Change the order status from pending to ordered + update food details 
@@ -66,14 +70,14 @@ def processPlaceOrder(order):
     print('\n-----Invoking order microservice-----')
     order_result = requests.put(foodbank_order_URL, json=order)
     print('order_result:', order_result)
-
+    foodbank_phone_number= order_result.json().get('foodbank_phone_number')
     #3. notify the restaurant about the new order
     print('\n\n-----Publishing the (order info) message with routing_key=order.info-----')
     
 
     template_msg = f'Your order is accepted by a foodbank, please proceed to prepare your food'
     
-    message = { "code": 200, "message": { "phone_number": foodbank_phone_number, "template_msg": template_msg} }
+    message = { "code": 200, "message": foodbank_phone_number, "template_msg": template_msg} 
 
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="restaurant.foodbank_order",
         body=message, properties=pika.BasicProperties(delivery_mode = 2))

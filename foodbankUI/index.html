@@ -319,16 +319,16 @@
     //         } // error
     //    });
        
-    //Display Current Delivery
-
-
-
     // Get FoodBank Region
     const foodbanksApiBaseUrl = "http://127.0.0.1:5002";
     const foodbanksApiUrl = `${foodbanksApiBaseUrl}/get_foodbank/${this.userId}`;
     console.log(foodbanksApiUrl)
 
-    // Fetch foodbank data
+    //Display Current Delivery
+    
+    
+
+    // Fetch foodbank data & display available postings
     fetch(foodbanksApiUrl)
       .then(response => response.json())
       .then(data => {
@@ -406,10 +406,6 @@
         .catch(error => {
             console.error("Error fetching foodbank region:", error);
         });
-
-
-    
-
 
       </script>
 

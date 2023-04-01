@@ -158,6 +158,7 @@ def get_self_postings():
 def update_order_details():
     try:
         order_data = request.get_json()
+        return jsonify(order_data), 200
         order_id = order_data.get('order_id')
         new_status = order_data.get('status')
         foodbank_id = order_data.get('foodbank_id')
