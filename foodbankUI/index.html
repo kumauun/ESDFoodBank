@@ -74,70 +74,11 @@
     <!-- Listing -->
     <div id="toggle" class="mt-3" v-show="showListing">
       <h3>Available Orders</h3>
-      <div class="row row-cols-1 row-cols-md-3 g-4 mx-auto">
-        <!-- 1st card -->
-        <div class="col">
-          <div class="card h-100">
-            <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
-            <div class="card-body">
-              <h3 class="card-title">BakerBoy</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">298187</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Breads and Cakes</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
-              </div>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">Created on 26/03/2023 18:10</small>
-            </div>
-          </div>
-        </div>
-
-        <!-- 2nd card -->
-        <div class="col">
-          <div class="card h-100">
-            <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
-            <div class="card-body">
-              <h3 class="card-title">ChimChim</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">298187</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Chicken, vegetables and rice</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
-              </div>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">Created on 26/03/2023 18:10</small>
-            </div>
-          </div>
-        </div>
-
-
-        <!-- 3rd card -->
-        <div class="col">
-          <div class="card h-100">
-            <!-- <img src="img/restoABC.jpeg" class="card-img-top" alt="..."> -->
-            <div class="card-body">
-              <h3 class="card-title">Tokyoto</h3>
-              <p class="card-text">50 Cecil Street</p>
-              <p class="card-text">298187</p>
-              <p class="card-text">+6587654321</p>
-              <p class="card-text">Bento boxes</p>
-              <div class="mx-auto d-flex col-6">
-                <button type="button" class="btn btn-dark mx-auto">Order</button>
-              </div>
-            </div>
-            <div class="card-footer">
-              <small class="text-muted">Created on 26/03/2023 18:10</small>
-            </div>
-          </div>
-        </div>
-
+      <div id = "cardContainer">
         
       </div>
+      
+      
     </div>
     
     <!-- History -->
@@ -283,23 +224,25 @@
     }});
   </script>
 
-  <!-- Display Past Orders -->
+  
   <script>
     // Helper function to display error message
     function showError(message) {
         // Hide the table and button in the event of error
         $('#orderTable').hide();
+        $('#cardContainer').hide()
 
         // Display an error under the main container
         $('#main-container')
             .append("<label>"+message+"</label>");
     }
 
-    // anonymous async function 
-    // - using await requires the function that calls it to be async
+    //Get Foodbank_id
+
+     //Display Past Orders
     $(async() => {           
-        // Change serviceURL to your own
-        var serviceURL = "http://127.0.0.1:5005/get_previous_orders/3";
+        // Change serviceURL to your own 
+        var serviceURL = "http://127.0.0.1:5005/get_previous_orders/3" //+ foodbank_id;
 
         try {
             const response =
@@ -338,7 +281,83 @@
                   ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
             } // error
        });
-  </script>
+       
+    //Display Current Delivery
+
+    //Display Available orders [not working not complete]
+    
+    $(async() => {           
+      // Change serviceURL to your own [please change]
+      var serviceURL = "http://127.0.0.1:5005/get_order/Central" //+ foodbank_region;
+
+      try {
+          const response =
+           await fetch(
+             serviceURL, { method: 'GET' }
+          );
+          const result = await response.json();
+           if (response.status === 200) {
+              // success case
+              var order = result.data.orders; //the array is in books within data of 
+                                             // the returned result
+              // for loop to setup all table rows with obtained book data
+              
+              var eachCardrow = "";
+              for (const orders of order) {
+                counter = 0
+                if (counter % 3 == 0){
+                  eachCardrow += "<div class='row row-cols-1 row-cols-md-3 g-4 mx-auto'>";
+                }
+                
+                eachCard = `<div class='col'> 
+                              <div class = 'card h-100'>
+                                <div class = 'card-body'>
+                                  <h3 class= 'card-title'>`+ order.restaurant_name +`</h3>
+                                  <p class= 'card-text'>`+ order.restaurant_address + `</p>
+                                  <p class= 'card-text'>`+ order.restaurant_phone_number + `</p>
+                                  <p class= 'card-text'>`+ order.dish_name + `</p>
+                                  <div class= 'mx-auto d-flex col-6'>
+                                    <button type="button" class="btn btn-dark mx-auto"> Order </button>
+                                  </div>
+
+                                </div>  
+
+                                <div class = "card-footer">
+                                    <small class = 'text-muted'>`+order.created_at +`
+                                </div>
+                              </div>  
+                            </div>`
+                
+                          counter += 1
+                eachCardrow += eachCard
+
+                if (counter % 3 == 0){
+                  eachCardrow += "</div>"
+                }
+                 
+              }
+                  // add all the rows to the table
+                  $('#cardContainer').append(eachCardrow);
+              } else if (response.status == 404) {
+                  // No books
+                  showError(result.message);
+              } else {
+                  // unexpected outcome, throw the error
+                  throw response.status;
+              }
+          } catch (error) {
+              // Errors when calling the service; such as network error, 
+              // service offline, etc
+              showError
+                ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
+          } // error
+     });
+
+
+      </script>
+
+
+  
 
 
   <script src="../UI_COMPONENTS/Navbar.js"></script>
