@@ -192,6 +192,7 @@
                     //Verification 
                     userId: '',
                     userType: '',
+                    userNameSession: '',
                     message: '',
 
                     //show register and login
@@ -232,8 +233,10 @@
                         this.message = data.message;
                         this.userId = data.user_id;
                         this.userType = data.user_type;
+                        this.userNameSession = data.username;
                         localStorage.setItem('userId', data.user_id);
                         localStorage.setItem('userType', data.user_type);
+                        localStorage.setItem('userNameSession', data.username);
                         if (this.userType == 'foodbank'){
                             window.location.href = './index.html';
                         } else if (this.userType == 'restaurant'){
@@ -269,8 +272,10 @@
                         this.message = data.message;
                         this.userId = data.user_id;
                         this.userType = data.user_type;
+                        this.userNameSession = data.username
                         localStorage.setItem('userId', data.user_id);
                         localStorage.setItem('userType', data.user_type);
+                        localStorage.setItem('userNameSession', data.username);
                         if (this.userType == 'foodbank'){
                             window.location.href = './index.html';
                         } else if (this.userType == 'restaurant'){
@@ -304,6 +309,7 @@
                         this.userType = '';
                         localStorage.removeItem('userId');
                         localStorage.removeItem('userType');
+                        localStorage.removeItem('userNameSession');
                         window.location.href = './signUp.html';
                     } catch (error) {
                         this.message = error.message;
