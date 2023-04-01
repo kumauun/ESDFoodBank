@@ -16,12 +16,39 @@ exchangename = "notification_topic"
 exchangetype = "topic"
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 
-queue_names = ['foodbank', 'restaurant', 'driver']
+queue_names = {
+    'restaurant': [
+        'restaurant_foodbank_order',
+        'restaurant_driver_pickup',
+        'restaurant_new_surplus_food'
+    ],
+    'foodbank': [
+        'foodbank_new_posting',
+        'foodbank_driver_pickup',
+        'foodbank_driver_arrival'
+    ],
+    'driver': [
+        'driver_foodbank_order_region'
+    ]
+}
 
-for queue_name in queue_names:
-    channel.queue_declare(queue=queue_name, durable=True)
-    routing_key = f"{queue_name}.notification"
-    channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key)
+routing_keys = {
+    'restaurant_foodbank_order': 'restaurant.foodbank_order',
+    'restaurant_driver_pickup': 'restaurant.driver_pickup',
+    'restaurant_new_surplus_food': 'restaurant.new_surplus_food',
+    'foodbank_new_posting': 'foodbank.new_posting',
+    'foodbank_driver_pickup': 'foodbank.driver_pickup',
+    'foodbank_driver_arrival': 'foodbank.driver_arrival',
+    'driver_foodbank_order_region': 'driver.foodbank_order_region'
+}
+
+for key, queues in queue_names.items():
+    for queue_name in queues:
+        channel.queue_declare(queue=queue_name, durable=True)
+        routing_key = routing_keys[queue_name]
+        channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key)
+
+print("Queues and exchange set up successfully.")
 
 def check_setup():
     global connection, channel, hostname, port, exchangename, exchangetype
