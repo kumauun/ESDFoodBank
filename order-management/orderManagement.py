@@ -277,8 +277,8 @@ def update_order_status():
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-@app.route("/get_previous_orders/<int:foodbank_id>")
-def get_previous_orders(foodbank_id):
+@app.route("/get_previous_orders_f/<int:foodbank_id>")
+def get_previous_orders_f(foodbank_id):
     
     orderlist = Order.query.filter_by(foodbank_id=foodbank_id, status='completed').all()
 
@@ -298,8 +298,8 @@ def get_previous_orders(foodbank_id):
         }
     ), 404
 
-@app.route("/get_previous_orders/<int:driver_id>")
-def get_previous_orders(driver_id):
+@app.route("/get_previous_orders_d/<int:driver_id>")
+def get_previous_orders_d(driver_id):
     
     orderlist = Order.query.filter_by(driver_id=driver_id, status='done').all()
 
@@ -319,8 +319,8 @@ def get_previous_orders(driver_id):
         }
     ), 404
 
-@app.route("/get_previous_orders/<int:restaurant_id>")
-def get_previous_orders(restaurant_id):
+@app.route("/get_previous_orders_r/<int:restaurant_id>")
+def get_previous_orders_r(restaurant_id):
     
     orderlist = Order.query.filter_by(restaurant_id=restaurant_id, status='done').all()
 
