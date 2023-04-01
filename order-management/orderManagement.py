@@ -242,7 +242,7 @@ def update_order_details():
         order_id = order_data.get('order_id')
         new_status = order_data.get('status')
         foodbank_id = order_data.get('foodbank_id')
-        foodbank_phone_number = data.get('foodbank_phone_number')
+        foodbank_phone_number = order_data.get('foodbank_phone_number')
         
         order = Order.query.filter_by(order_id=order_id).first()
 
