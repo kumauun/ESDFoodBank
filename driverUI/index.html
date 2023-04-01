@@ -395,7 +395,8 @@
    //Display Past Orders
   $(async() => {           
       // Change serviceURL to your own 
-      var serviceURL = "http://127.0.0.1:5005/get_previous_orders/3" //+ foodbank_id;
+      var driver_ID = saveduserId
+      var serviceURL = "http://127.0.0.1:5005/get_previous_orders/" + driver_ID ;
 
       try {
           const response =
@@ -405,16 +406,16 @@
           const result = await response.json();
            if (response.status === 200) {
               // success case
-              var order = result.data.orders; //the array is in books within data of 
+              var orders = result.data.orders; //the array is in books within data of 
                                              // the returned result
               // for loop to setup all table rows with obtained book data
               var rows = "";
-              for (const orders of order) {
-                 eachRow ="<th>" + orders.order_id + "</th>" +
-                          "<td>" + orders.created_at + "</td>" +
-                          "<td>" + orders.restaurant_name + "</td>" +
-                          "<td>" + orders.foodbank_name + "</td>"+
-                          "<td>" + orders.status + "</td>";
+              for (const order of orders) {
+                 eachRow ="<th>" + order.order_id + "</th>" +
+                          "<td>" + order.created_at + "</td>" +
+                          "<td>" + order.restaurant_name + "</td>" +
+                          "<td>" + order.foodbank_name + "</td>"+
+                          "<td>" + order.status + "</td>";
 
                  rows += "<tr>" + eachRow + "</tr>";
 
@@ -436,13 +437,12 @@
           } // error
      });
      
-  //Display Current Delivery
-
-  //Display Available orders [not working not complete]
+  //Display Available Orders
   
   $(async() => {           
     // Change serviceURL to your own [please change]
-    var serviceURL = "http://127.0.0.1:5005/get_order/Central" //+ foodbank_region;
+    var region = ""
+    var serviceURL = "http://127.0.0.1:5005/get_order/" + region;
 
     try {
         const response =
@@ -524,6 +524,7 @@
         } // error
    });
 
+     //Display Current Delivery [not working, incomplete]
 
     </script>
 
