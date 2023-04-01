@@ -22,7 +22,6 @@ class Foodbank(db.Model):
     foodbank_name = db.Column(db.String(255), unique=True, nullable=False)
     phone_number = db.Column(db.String(255), nullable=False)
     foodbank_address = db.Column(db.String(255), nullable=False)
-    postal_code = db.Column(db.String(255), nullable=False)
     region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'), nullable=False)
     
     def json(self):
@@ -31,7 +30,6 @@ class Foodbank(db.Model):
             'foodbank_name': self.foodbank_name,
             'phone_number': self.phone_number,
             'foodbank_address': self.foodbank_address,
-            'postal_code': self.postal_code,
             'region': self.region
         }
 
@@ -88,10 +86,9 @@ def create_foodbank():
     foodbank_name = data.get('foodbank_name')
     phone_number = data.get('phone_number')
     foodbank_address = data.get('address')
-    postal_code = data.get('postal_code')
     region = data.get('region')
 
-    new_foodbank = Foodbank(foodbank_id = foodbank_id, foodbank_name=foodbank_name, phone_number=phone_number,foodbank_address = foodbank_address, postal_code=postal_code, region=region)
+    new_foodbank = Foodbank(foodbank_id = foodbank_id, foodbank_name=foodbank_name, phone_number=phone_number,foodbank_address = foodbank_address, region=region)
 
     print(foodbank_id)
     try:

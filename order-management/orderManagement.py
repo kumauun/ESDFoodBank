@@ -234,7 +234,27 @@ def update_order_status():
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
+@app.route("/get_previous_orders/<int:foodbank_id>")
+def get_previous_orders(foodbank_id):
+    
+    orderlist = Order.query.filter_by(foodbank_id=foodbank_id, status='done').all()
 
+    if orderlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no postings."
+        }
+    ), 404
+    
 
 if __name__ == '__main__':
     with app.app_context():
