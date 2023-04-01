@@ -176,13 +176,40 @@ def get_self_postings(restaurant_id):
             "message": "There are no postings."
         }
     ), 404
+@app.route("/place_order/<int:order_id>", methods=['PUT'])
+def place_order(order_id):
+    data = request.get_json()
+    foodbank_id = data.get('foodbank_id')
+    foodbank_phone_number = data.get('foodbank_phone_number')
+    foodbank_address = data.get('foodbank_address')
+    foodbank_name = data.get('foodbank_name')
+    try:
+        order = Order.query.filter_by(order_id=order_id).first()
 
+        if not order:
+            return jsonify({"message": "Order not found."}), 404
 
+        order.status = 'ordered'
+        order.foodbank_id = foodbank_id
+        order.foodbank_phone_number = foodbank_phone_number
+        order.foodbank_address = foodbank_address
+        order.foodbank_name = foodbank_name
+        
+        db.session.commit()
+
+        return jsonify({
+            "message": "Order placed successfully.",
+            "order": order.json()
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+    
 @app.route("/update_order_ordered", methods=['PUT'])
 def update_order_details():
     try:
         order_data = request.get_json()
-        return jsonify(order_data), 200
+       
         order_id = order_data.get('order_id')
         new_status = order_data.get('status')
         foodbank_id = order_data.get('foodbank_id')
