@@ -13,17 +13,17 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-restaurant_URL="http://localhost:5001/restaurant"
-foodbank_URL= "http://localhost:5002/foodbank"
-orderManagement_URL="http://localhost:5005/orderManagement"
+restaurant_URL="http://localhost:5001/"
+foodbank_URL= "http://localhost:5002/"
+orderManagement_URL="http://localhost:5005/"
 
 def get_restaurant_by_id(restaurant_id):
-    result = invoke_http(restaurant_URL + f"/get_restaurant/{restaurant_id}", method='GET')
-    if result['code'] == 200:
-        return result['data']
+    result = requests.get(f"{restaurant_URL}/get_restaurant/{restaurant_id}")
+    if result.status_code == 200:
+        return result.json()['data']
     else:
         return None
-
+    
 def publish_message_to_foodbank(region, phone_number):
     message = {
         "region": region,
@@ -51,11 +51,19 @@ def post_food():
     restaurant_id=request.json['restaurant_id']
     dish_name=request.json['dish_name']
     restaurant = get_restaurant_by_id(restaurant_id)
-    print(f"Restaurant: {restaurant}")
+    if restaurant is None:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Restaurant not found."
+            }
+        ), 404
     restaurant_name=restaurant['restaurant_name']
     restaurant_address=restaurant['restaurant_address']
     restaurant_phone_number = restaurant['phone_number']
     region=restaurant['region']
+   
+    
     
     
     
@@ -72,8 +80,8 @@ def post_food():
     }
     try:
         # invoke order management microservice to add new order
-        result = invoke_http(orderManagement_URL + "/new_order", method='POST', json=new_order)
-        order = result['data']
+        result = response = requests.post(f"{orderManagement_URL}/new_order", json=new_order)
+        order = result.json()['data']
         print(f"Added new order to order management microservice: {order}")
     except Exception as e:
         print("Order management microservice is unavailable: " + str(e))
@@ -83,6 +91,13 @@ def post_food():
                 "message": "Failed to create new order: " + str(e)
             }
     ), 500
+    
+    return jsonify(
+            {
+                "code": 200,
+                "message": "works till here"
+            }
+        ), 200
     # 3. get phone number of foodbank in the region
     region = restaurant['region']
     try:
@@ -101,6 +116,8 @@ def post_food():
         ), 500
     
     # 4. notify foodbank with the phone number retrieved from the request above
+    
+
     '''message = {
         "restaurant_phone_number": phone_number,
         "foodbank_phone_number": foodbank_phone_number,
@@ -121,13 +138,14 @@ def post_food():
         ), 500
     '''
     #5 send back response to restaurant UI    
-    response_message = {
-    "code": 200,
-    "message": "Surplus food posted successfully."
-    }
-    status_code = 200
+    #response_message = {
+    #"code": 200,
+    #"message": "Surplus food posted successfully."
+    #}
+    #status_code = 200
 
-    return jsonify(response_message), status_code
+    #return jsonify(response_message), status_code
+
 
 
 if __name__ == "__main__":

@@ -3,9 +3,13 @@ import json
 
 # Set up test data
 data_passed= {
-    'restaurant_id': '7',
+    'restaurant_id': '2',
     'dish_name': 'rellarellarella'
 }
+
+
+
+
 
 
 # Start the services first before running this test
@@ -13,7 +17,12 @@ data_passed= {
 # Test the complex microservice
 #response = requests.get(f"http://localhost:5001/get_restaurant/{restaurant_id}")
 response = requests.post('http://localhost:5100/post_food', json=data_passed)
+print("New Order Response:", json.dumps(response.json(), indent=2))
 
+if response.status_code == 200:
+    print("Test passed")
+else:
+    print("Test failed")
 # Check the response message
 
 
