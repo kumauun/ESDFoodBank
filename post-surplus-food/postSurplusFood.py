@@ -45,10 +45,10 @@ def publish_message_to_foodbank(region, phone_number):
     connection.close()
 
 @app.route("/post_food", methods=['POST'])
-def post_food():
+def post_food(dish_name, restaurant_id):
     
     # 1. retrieve phone number of restaurant that is posting the surplus food
-    restaurant_id = request.form.get('restaurant_id')
+    
     restaurant = get_restaurant_by_id(restaurant_id)
     if not restaurant:
         return jsonify(
@@ -59,14 +59,15 @@ def post_food():
         ), 404
     restaurant_name=restaurant['restaurant_name']
     restaurant_address=restaurant['restaurant_address']
-    phone_number = restaurant['phone_number']
+    restaurant_phone_number = restaurant['phone_number']
     region=restaurant['region']
+    
     
     
     
     # 2. create new order di tabel order, order status is pending, order restaurant phone number from reponse #1
     new_order = {
-        "restaurant_phone_number": phone_number,
+        "restaurant_phone_number": restaurant_phone_number,
         "restaurant_name": restaurant_name,
         "restaurant_address": restaurant_address,
         "region": region,
@@ -74,7 +75,7 @@ def post_food():
     }
     try:
         # invoke order management microservice to add new order
-        result = invoke_http(orderManagement_URL + "/add_order", method='POST', json=new_order)
+        result = invoke_http(orderManagement_URL + "/new_order", method='POST', json=new_order)
         order = result['data']
         print(f"Added new order to order management microservice: {order}")
     except Exception as e:
