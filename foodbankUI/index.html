@@ -21,14 +21,12 @@
 <!-- navbar starts  -->
 <div id="app">
   <Navbar></Navbar>
-
 <!-- navbar ends  -->
 
 <h1 class = "m-5 "> Welcome to Savood! </h1>
 
-
 <div class="container mt-5">
-
+  <!-- {{orders}} -->
   <div>
     <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Order</button>
     <button @click="toggleListing" class="btn btn-success mx-1">Available Orders</button>
@@ -82,7 +80,7 @@
     </div>
     
     <!-- History -->
-    <div id="toggle" class="mt-3" v-show="showHistory">
+    <div id="toggle" class="mt-3" v-show="showHistory" v-if="orders">
       <div id="main-container" class="container">
         <h3>Past Orders</h3>
         <table class='table table-striped border-1'>
@@ -95,8 +93,17 @@
                     <th>Status</th>
                     
                 </tr>
+                
             </thead>
-          <tbody id="orderTable"></tbody>
+          <tbody id="orderTable">
+            <tr v-for="order of orders">
+              <td>{{order.order_id}}</td>
+              <td>{{order.created_at}}</td>
+              <td>{{order.restaurant_name}}</td>
+              <td>{{order.dish_name}}</td>
+              <td>{{order.status}}</td>
+            </tr>
+          </tbody>
          
       </table>
         <!-- <a id="addBookBtn" class="btn btn-primary" 
@@ -158,10 +165,8 @@
 </div>
 
 
-
-
-
 </body>
+
 <script>
   ORDER_API_URL = 'http://127.0.0.1:5005'
   const app = Vue.createApp({
@@ -172,6 +177,8 @@
           showCurrent: true,
           showListing: false,
           showHistory: false,
+          orders: null,
+
         };
       },
       methods: {
@@ -189,8 +196,10 @@
           this.showCurrent = false;
           this.showListing = false;
           this.showHistory = true;
+          this.fetchPreviousOrders();
         },
-        async loadListings() {
+
+        // async loadListings() {
         //   try {
         //     const response = await fetch("${ORDER_API_URL}/get_order/<region>", {
         //         method: 'POST',
@@ -209,21 +218,55 @@
         //         })
         //     });
         // }
+        
+        //},
+
+        async fetchPreviousOrders() {
+          const serviceURL = `http://127.0.0.1:5005/get_previous_orders/${this.userId}`;
+
+        try {
+          const response = await fetch(serviceURL, { method: 'GET' });
+          // console.log('halo')
+
+          // console.log(response)
+
+          // if (response.status === 200) {
+          //   console.log('200')
+          //   // this.orders = hellow;
+          //   console.log(response)
+          // }
+
+          if (response.status === 200) {
+            const result = await response.json();
+            console.log('status 200')
+            this.orders = result.data.orders;
+            console.log(this.orders)
+          } else if (response.status === 404) {
+            console.log('error 404')
+            console.log(this.error)
+          } else {
+            throw response.status;
+          }
+        } catch (error) {
+          console.log('error')
+          this.error = `There is a problem retrieving previous orders data, please try again later.<br />${error}`;
+          }
         },
+
+      },
 
       created() {
         const saveduserId = localStorage.getItem('userId');
         const saveduserType = localStorage.getItem('userType');
-        const saveduserNameSession = localStorage.getItem('userNameSession')
         console.log(saveduserId, saveduserType)
         if (saveduserId) {
             this.userId = parseInt(saveduserId);
         }
         this.userType = saveduserType
-        this.userNameSession = saveduserNameSession
         console.log(this.userId, this.userType)
       }
-    }});
+
+    });
   </script>
 
   
@@ -232,77 +275,49 @@
 
     
 
-    // Helper function to display error message
-    function showError(message) {
-        // Hide the table and button in the event of error
-        $('#orderTable').hide();
-        $('#cardContainer').hide()
-
-        // Display an error under the main container
-        $('#main-container')
-            .append("<label>"+message+"</label>");
-    }
-
-    //Get Foodbank_id
-    const foodbank_id = localStorage.getItem('userId');
-
-        // Check if foodbank_id exists
-        if (foodbank_id) {
-            console.log("Foodbank ID:", foodbank_id);
-
-            // Use foodbank_id for your purpose
-        } 
-        else {
-            console.log("Foodbank ID not found");
-        }
-
     
-
-
-
-
     //Display Past Orders
-    $(async() => {           
-        // Change serviceURL to your own 
-        var serviceURL = "http://127.0.0.1:5005/get_previous_orders/" + this.foodbank_id;
+    
+    // $(async() => {           
+    //     // Change serviceURL to your own 
+    //     var serviceURL = "http://127.0.0.1:5005/get_previous_orders/" + this.userId;
 
-        try {
-            const response =
-             await fetch(
-               serviceURL, { method: 'GET' }
-            );
-            const result = await response.json();
-             if (response.status === 200) {
-                // success case
-                var order = result.data.orders; //the array is in books within data of 
-                                               // the returned result
-                // for loop to setup all table rows with obtained book data
-                var rows = "";
-                for (const orders of order) {
-                   eachRow ="<td>" + orders.order_id + "</td>" +
-                            "<td>" + orders.created_at + "</td>" +
-                            "<td>" + orders.restaurant_name + "</td>" +
-                            "<td>" + orders.dish_name + "</td>"+
-                            "<td>" + orders.status + "</td>";
+    //     try {
+    //         const response = await fetch(
+    //            serviceURL, { method: 'GET' }
+    //         );
+    //         const result = await response.json();
+    //          if (response.status === 200) {
+    //             // success case
+    //             var order = result.data.orders; //the array is in books within data of 
+    //                                            // the returned result
+    //             // for loop to setup all table rows with obtained book data
+    //             var rows = "";
+    //             for (const orders of order) {
+    //                eachRow ="<td>" + orders.order_id + "</td>" +
+    //                         "<td>" + orders.created_at + "</td>" +
+    //                         "<td>" + orders.restaurant_name + "</td>" +
+    //                         "<td>" + orders.dish_name + "</td>"+
+    //                         "<td>" + orders.status + "</td>";
 
-                   rows += "<tr>" + eachRow + "</tr>";
-                }
-                    // add all the rows to the table
-                    $('#orderTable').append(rows);
-                } else if (response.status == 404) {
-                    // No books
-                    showError(result.message);
-                } else {
-                    // unexpected outcome, throw the error
-                    throw response.status;
-                }
-            } catch (error) {
-                // Errors when calling the service; such as network error, 
-                // service offline, etc
-                showError
-                  ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
-            } // error
-       });
+    //                rows += "<tr>" + eachRow + "</tr>";
+    //             }
+    //                 // add all the rows to the table
+    //                 $('#orderTable').append(rows);
+    //             } else if (response.status == 404) {
+    //                 // No books
+    //                 showError(result.message);
+    //             } else {
+    //                 // unexpected outcome, throw the error
+    //                 throw response.status;
+    //             }
+    //         } catch (error) {
+    //             // Errors when calling the service; such as network error, 
+    //             // service offline, etc
+    //             showError
+    //               ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
+    //         } // error
+    //    });
        
     //Display Current Delivery
 
@@ -310,7 +325,8 @@
 
     // Get FoodBank Region
     const foodbanksApiBaseUrl = "http://127.0.0.1:5002";
-    const foodbanksApiUrl = `${foodbanksApiBaseUrl}/get_foodbank/${foodbank_id}`;
+    const foodbanksApiUrl = `${foodbanksApiBaseUrl}/get_foodbank/${this.userId}`;
+    console.log(foodbanksApiUrl)
 
     // Fetch foodbank data
     fetch(foodbanksApiUrl)
