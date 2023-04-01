@@ -1,3 +1,4 @@
+import amqp_setup
 import json
 import pika
 
@@ -11,7 +12,6 @@ from os import environ
 import requests
 file_directory = '../'
 sys.path.append(file_directory)
-import amqp_setup
 app = Flask(__name__)
 CORS(app)
 
@@ -86,12 +86,12 @@ def post_food():
         "status": "pending"
     }
     try:
-        result = requests.post(f"{orderManagement_URL}/new_order", json=new_order)
+        result = requests.post(
+            f"{orderManagement_URL}/new_order", json=new_order)
         response = result.json()
         print(response)
         order = response['data']
         print(f"Added new order to order management microservice: {order}")
-
 
     except Exception as e:
         print("Order management microservice is unavailable: " + str(e))

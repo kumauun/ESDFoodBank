@@ -7,11 +7,6 @@ data_passed= {
     'dish_name': 'cheese'
 }
 
-
-
-
-
-
 # Start the services first before running this test
 
 # Test the complex microservice
