@@ -55,9 +55,9 @@ class Order(db.Model):
         'dish_name': self.dish_name,
         'status': self.status,
         'created_at': self.created_at,
-        'driver_id' : db.Column(db.Integer),
-        'driver_phone_number' : db.Column(db.String(15)),
-        'driver_name' : db.Column(db.String(100))
+        'driver_id' : self.driver_id,
+        'driver_phone_number' : self.driver_phone_number,
+        'driver_name' : self.driver_name
         } 
 
 @app.route("/get_order/<order_id>", methods=['GET'])
