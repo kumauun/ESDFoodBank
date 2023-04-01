@@ -10,6 +10,8 @@
 </head>
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 
 
 
@@ -281,12 +283,12 @@
     }});
   </script>
 
+  <!-- Display Past Orders -->
   <script>
     // Helper function to display error message
     function showError(message) {
         // Hide the table and button in the event of error
         $('#orderTable').hide();
-        
 
         // Display an error under the main container
         $('#main-container')
@@ -297,7 +299,7 @@
     // - using await requires the function that calls it to be async
     $(async() => {           
         // Change serviceURL to your own
-        var serviceURL = "http://127.0.0.1:5005/get_previous_orders/";
+        var serviceURL = "http://127.0.0.1:5005/get_previous_orders/3";
 
         try {
             const response =
@@ -307,19 +309,21 @@
             const result = await response.json();
              if (response.status === 200) {
                 // success case
-                var books = result.data.books; //the array is in books within data of 
+                var order = result.data.orders; //the array is in books within data of 
                                                // the returned result
                 // for loop to setup all table rows with obtained book data
                 var rows = "";
-                for (const book of books) {
-                   eachRow ="<td>" + book.title + "</td>" +
-                            "<td>" + book.isbn13 + "</td>" +
-                            "<td>" + book.price + "</td>" +
-                            "<td>" + book.availability + "</td>";
+                for (const orders of order) {
+                   eachRow ="<td>" + orders.order_id + "</td>" +
+                            "<td>" + orders.created_at + "</td>" +
+                            "<td>" + orders.restaurant_id + "</td>" +
+                            "<td>" + orders.dish_name + "</td>"+
+                            "<td>" + orders.status + "</td>";
+
                    rows += "<tr>" + eachRow + "</tr>";
                 }
                     // add all the rows to the table
-                    $('#booksTable').append(rows);
+                    $('#orderTable').append(rows);
                 } else if (response.status == 404) {
                     // No books
                     showError(result.message);
@@ -331,9 +335,9 @@
                 // Errors when calling the service; such as network error, 
                 // service offline, etc
                 showError
-    ('There is a problem retrieving books data, please try again later.<br />' + error);
+                  ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
             } // error
-    });
+       });
   </script>
 
 
