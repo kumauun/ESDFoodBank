@@ -80,7 +80,7 @@ def post_food():
     }
     try:
         # invoke order management microservice to add new order
-        result = response = requests.post(f"{orderManagement_URL}/new_order", json=new_order)
+        result = requests.post(f"{orderManagement_URL}/new_order", json=new_order)
         order = result.json()['data']
         print(f"Added new order to order management microservice: {order}")
     except Exception as e:
@@ -93,19 +93,29 @@ def post_food():
     ), 500
     
     return jsonify(
-            {
-                "code": 200,
-                "message": "works till here"
-            }
-        ), 200
+        {
+        "code": 200,
+        "data": "Order created successfully."
+        }
+    ), 200
     # 3. get phone number of foodbank in the region
     region = restaurant['region']
     try:
-        # invoke foodbank microservice to get the phone number of foodbank in the region
-        result = invoke_http(foodbank_URL + f"/get_foodbank_by_region/{region}", method='GET')
-        foodbank = result['data']
-        foodbank_phone_number = foodbank['phone_number']
-        print(f"Retrieved foodbank phone number in region {region}: {foodbank_phone_number}")
+        # invoke foodbank microservice to get the phone number of foodbanks in the region
+        result = requests.get(foodbank_URL + f"/get_foodbank/{region}")
+        foodbanks = result.json()['data']
+        foodbank_phone_numbers = [foodbank['phone_number'] for foodbank in foodbanks]
+
+        
+        if not foodbank_phone_numbers:
+            return jsonify(
+        {
+            "code": 404,
+            "message": "No foodbanks found in this region."
+        }
+    ), 404
+            
+            
     except Exception as e:
         print("Foodbank microservice is unavailable: " + str(e))
         return jsonify(
@@ -114,7 +124,13 @@ def post_food():
                 "message": "Failed to retrieve foodbank phone number: " + str(e)
             }
         ), 500
-    
+        
+    return jsonify(
+        {
+        "code": 200,
+        "data": [foodbank.json() for foodbank in foodbanks]
+        }
+    ), 200
     # 4. notify foodbank with the phone number retrieved from the request above
     
 

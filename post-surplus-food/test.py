@@ -4,7 +4,7 @@ import json
 # Set up test data
 data_passed= {
     'restaurant_id': '2',
-    'dish_name': 'rellarellarella'
+    'dish_name': 'pizzamozzarella'
 }
 
 
