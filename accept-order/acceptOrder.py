@@ -6,9 +6,12 @@ from os import environ
 
 import requests
 
-##import amqp_setup
+import amqp_setup
 import pika
 import json
+
+from invoke import invoke_http
+
 
 app = Flask(__name__)
 CORS(app)
@@ -17,6 +20,20 @@ CORS(app)
 #accept order dapet dari driver UI
 @app.route("/accept_order", methods=['PUT'])
 def accept_order():
+    if request.is_json:
+        try:
+            # ada driver id, driver phone number, status jadi accepted
+            driver = request.get_json()
+            result = processAcceptOrder(driver)
+            return jsonify(result), result["code"]
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+            return jsonify({
+                "code": 500,
+                "message": "acceptOrder.py internal error: " + ex_str
+            }), 500
     pass
     # 1. update status ordernya jadi 'picked up'
     # 2. retrieve phone number foodbank and restoran from order table
@@ -25,7 +42,12 @@ def accept_order():
     # 5. update order buat include the driver_id and driver phone number
     # 6. update status driver jadi 'unavailable' ato False ( kayanya ini Boolean si coba cek di database )
     # 7. send back response to driver UI
+def processAcceptOrder():
+    accept_order_result = invoke_http("http://localhost:5004/update_order_accepted", method='PUT', json=accept_order)
+    code = accept_order_result["code"]
+    message = json.dumps(accept_order_result)
 
+    order_result = invoke_http("http://localhost:5004/update_order_accepted", method='PUT', json=accept_order)
 
 #order_delivered
 @app.route("/order_delivered", methods=['PUT'])

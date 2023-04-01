@@ -43,6 +43,22 @@ class Order(db.Model):
         'created_at': self.created_at
         } 
 
+@app.route("/get_order/<order_id>", methods=['GET'])
+def get_order(order_id):
+    try:
+        order = Order.query.filter_by(order_id=order_id).first()
+
+        if not order:
+            return jsonify({"message": "Order not found."}), 404
+
+        return jsonify({
+            "message": "Order retrieved successfully.",
+            "order": order.json()
+        }), 200
+
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
 @app.route("/new_order", methods=['POST'])
 def create_order():
     data = request.get_json()
@@ -82,7 +98,7 @@ def create_order():
         }
     ), 201
 
-@app.route("/get_order/<region>")
+@app.route("/get_order/<region>", methods=['GET'])
 def get_order_by_region(region):
     data = request.get_json()
     user_type = data.get('user_type')
@@ -112,7 +128,7 @@ def get_order_by_region(region):
     ), 404
 
 
-@app.route("/get_self_postings")
+@app.route("/get_self_postings", methods=['GET'])
 def get_self_postings():
     data = request.get_json()
     restaurant_id = data.get('restaurant_id')
@@ -139,17 +155,11 @@ def get_self_postings():
 def update_order_details():
     try:
         order_data = request.get_json()
-        order_id = order_data['order_id']
-        new_status = order_data['status']
-        foodbank_id = order_data.get('foodbank_id', None)
-
-        valid_statuses = ['pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done']
-        if new_status not in valid_statuses:
-            return jsonify(
-                {
-                    "message": "Invalid status."
-                }), 400
-
+        order_id = order_data.get('order_id')
+        new_status = order_data.get('status')
+        foodbank_id = order_data.get('foodbank_id')
+        foodbank_phone_number = data.get('foodbank_phone_number')
+        
         order = Order.query.filter_by(order_id=order_id).first()
 
         if not order:
@@ -157,13 +167,14 @@ def update_order_details():
 
         order.status = new_status
 
-        if new_status == 'ordered' and foodbank_id:
+        if new_status == 'ordered':
             order.foodbank_id = foodbank_id
+            order.foodbank_phone_number = foodbank_phone_number
 
         db.session.commit()
 
         return jsonify({
-            "message": "Order status updated successfully.",
+            "message": "Order status and foodbank details updated successfully.",
             "order": order.json()
         }), 200
         
