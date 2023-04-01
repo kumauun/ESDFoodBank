@@ -45,18 +45,13 @@ def publish_message_to_foodbank(region, phone_number):
     connection.close()
 
 @app.route("/post_food", methods=['POST'])
-def post_food(dish_name, restaurant_id):
+def post_food():
     
     # 1. retrieve phone number of restaurant that is posting the surplus food
-    
+    restaurant_id=request.json['restaurant_id']
+    dish_name=request.json['dish_name']
     restaurant = get_restaurant_by_id(restaurant_id)
-    if not restaurant:
-        return jsonify(
-            {
-                "code": 404,
-                "message": "Restaurant not found."
-            }
-        ), 404
+    print(f"Restaurant: {restaurant}")
     restaurant_name=restaurant['restaurant_name']
     restaurant_address=restaurant['restaurant_address']
     restaurant_phone_number = restaurant['phone_number']
@@ -67,10 +62,12 @@ def post_food(dish_name, restaurant_id):
     
     # 2. create new order di tabel order, order status is pending, order restaurant phone number from reponse #1
     new_order = {
+        "restaurant_id" : restaurant_id,
         "restaurant_phone_number": restaurant_phone_number,
         "restaurant_name": restaurant_name,
         "restaurant_address": restaurant_address,
         "region": region,
+        "dish_name": dish_name,
         "status": "pending"
     }
     try:

@@ -8,9 +8,13 @@ new_order_data = {
     "region": "Central",
     "foodbank_id": 3,
     "foodbank_phone_number": "123456789",
+    "foodbank_address": "123 Foodbank St",
+    "foodbank_name": "Foodbank 3",
     "restaurant_id": 1,
     "restaurant_phone_number": "987654321",
-    "dish_name": "Pizza",
+    "restaurant_address": "123 Restaurant St",
+    "restaurant_name": "Restaurant 1",
+    "dish_name": "pizzamozzarella",
 }
 
 
@@ -26,6 +30,7 @@ print("New Order Response:", json.dumps(response.json(), indent=2))
 # print("Get Self Postings Response:", json.dumps(response.json(), indent=2))
 
 # Test updating order status to 'ordered'
+'''
 update_order_data = {
     "order_id": 1,
     "status": "ordered"
@@ -48,3 +53,4 @@ update_order_data = {
 }
 response = requests.put(f"{base_url}/update_order_status", json=update_order_data)
 print("Update Order to 'picked up' Response:", json.dumps(response.json(), indent=2))
+'''

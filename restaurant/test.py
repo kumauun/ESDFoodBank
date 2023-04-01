@@ -8,7 +8,7 @@ restaurant_id = 7
 
 # Make an HTTP GET request to the /get_restaurant/<restaurant_id> endpoint
 response = requests.get(f"{flask_url}/get_restaurant/{restaurant_id}")
-
+print(response.status_code)
 # Check if the request was successful
 if response.status_code == 200:
     # Extract the restaurant information from the response
