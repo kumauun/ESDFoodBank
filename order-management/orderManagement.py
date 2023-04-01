@@ -264,7 +264,7 @@ def update_order_status():
 @app.route("/get_previous_orders/<int:foodbank_id>")
 def get_previous_orders(foodbank_id):
     
-    orderlist = Order.query.filter_by(foodbank_id=foodbank_id, status='done').all()
+    orderlist = Order.query.filter_by(foodbank_id=foodbank_id, status='completed').all()
 
     if orderlist:
         return jsonify(

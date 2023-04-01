@@ -226,6 +226,10 @@
 
   
   <script>
+
+
+    
+
     // Helper function to display error message
     function showError(message) {
         // Hide the table and button in the event of error
@@ -238,11 +242,27 @@
     }
 
     //Get Foodbank_id
+    const foodbank_id = localStorage.getItem('userId');
+
+        // Check if foodbank_id exists
+        if (foodbank_id) {
+            console.log("Foodbank ID:", foodbank_id);
+
+            // Use foodbank_id for your purpose
+        } 
+        else {
+            console.log("Foodbank ID not found");
+        }
+
+    
+
+
+
 
      //Display Past Orders
     $(async() => {           
         // Change serviceURL to your own 
-        var serviceURL = "http://127.0.0.1:5005/get_previous_orders/3" //+ foodbank_id;
+        var serviceURL = "http://127.0.0.1:5005/get_previous_orders/" + this.foodbank_id;
 
         try {
             const response =
@@ -284,74 +304,93 @@
        
     //Display Current Delivery
 
-    //Display Available orders [not working not complete]
-    
-    $(async() => {           
-      // Change serviceURL to your own [please change]
-      var serviceURL = "http://127.0.0.1:5005/get_order/Central" //+ foodbank_region;
 
-      try {
-          const response =
-           await fetch(
-             serviceURL, { method: 'GET' }
-          );
-          const result = await response.json();
-           if (response.status === 200) {
-              // success case
-              var order = result.data.orders; //the array is in books within data of 
-                                             // the returned result
-              // for loop to setup all table rows with obtained book data
-              
-              var eachCardrow = "";
-              for (const orders of order) {
-                counter = 0
-                if (counter % 3 == 0){
-                  eachCardrow += "<div class='row row-cols-1 row-cols-md-3 g-4 mx-auto'>";
-                }
-                
-                eachCard = `<div class='col'> 
-                              <div class = 'card h-100'>
-                                <div class = 'card-body'>
-                                  <h3 class= 'card-title'>`+ order.restaurant_name +`</h3>
-                                  <p class= 'card-text'>`+ order.restaurant_address + `</p>
-                                  <p class= 'card-text'>`+ order.restaurant_phone_number + `</p>
-                                  <p class= 'card-text'>`+ order.dish_name + `</p>
-                                  <div class= 'mx-auto d-flex col-6'>
-                                    <button type="button" class="btn btn-dark mx-auto"> Order </button>
-                                  </div>
 
-                                </div>  
+    // Get FoodBank Region
+    const foodbanksApiBaseUrl = "http://127.0.0.1:5002";
+    const foodbanksApiUrl = `${foodbanksApiBaseUrl}/get_foodbank/${foodbank_id}`;
 
-                                <div class = "card-footer">
-                                    <small class = 'text-muted'>`+order.created_at +`
-                                </div>
-                              </div>  
-                            </div>`
-                
-                          counter += 1
-                eachCardrow += eachCard
+    // Fetch foodbank data
+    fetch(foodbanksApiUrl)
+      .then(response => response.json())
+      .then(data => {
+        const foodbankRegion = data.region;
+        console.log("Foodbank Region:", foodbankRegion);
 
-                if (counter % 3 == 0){
-                  eachCardrow += "</div>"
-                }
-                 
-              }
-                  // add all the rows to the table
-                  $('#cardContainer').append(eachCardrow);
-              } else if (response.status == 404) {
-                  // No books
-                  showError(result.message);
-              } else {
-                  // unexpected outcome, throw the error
+        // Use foodbankRegion to create get_order_URL
+        const orderManagement_URL = "http://127.0.0.1:5005";
+        const get_order_URL = `${orderManagement_URL}/get_order/${foodbankRegion}?status=pending`;
+        console.log("Get Order URL:", get_order_URL);
+
+        // Display Available orders
+        (async() => {
+          try {
+            const response = await fetch(get_order_URL, { method: 'GET' });
+            const result = await response.json();
+                  if (response.status === 200) {            // success case
+                    var order = result.data.orders;
+                    // for loop to setup all table rows with obtained order data
+                    var eachCardrow = "";
+                    var counter = 0;
+                    for (const orders of order) {
+                        if (counter % 3 == 0) {
+                            eachCardrow += "<div class='row row-cols-1 row-cols-md-3 g-4 mx-auto'>";
+                        }
+
+                        eachCard = `<div class='col'>
+                                      <div class = 'card h-100'>
+                                        <div class = 'card-body'>
+                                          <h3 class= 'card-title'>` + orders.restaurant_name + `</h3>
+                                          <p class= 'card-text'>` + orders.restaurant_address + `</p>
+                                          <p class= 'card-text'>` + orders.restaurant_phone_number + `</p>
+                                          <p class= 'card-text'>` + orders.dish_name + `</p>
+                                          <div class= 'mx-auto d-flex col-6'>
+                                            <button type="button" class="btn btn-dark mx-auto"> Order </button>
+                                          </div>
+                                        </div>
+                                        <div class = "card-footer">
+                                            <small class = 'text-muted'> Created on:` + orders.created_at + `
+                                        </div>
+                                      </div>
+                                    </div>`
+
+                        counter += 1;
+                        eachCardrow += eachCard;
+
+                        if (counter % 3 == 0) {
+                            eachCardrow += "</div>";
+                        }
+                    }
+                    // add all the rows to the table
+                    $('#cardContainer').append(eachCardrow);
+                } 
+                else if (response.status == 404) {
+                    // No orders
+                    showError(result.message);
+                } 
+                else {
+                    // unexpected outcome,
+                    // throw the error
                   throw response.status;
-              }
-          } catch (error) {
-              // Errors when calling the service; such as network error, 
+                }
+              } 
+              
+              catch (error) {
+              // Errors when calling the service; such as network error,
               // service offline, etc
-              showError
-                ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
-          } // error
-     });
+                showError(
+                  'There is a problem retrieving available orders data, please try again later.<br />' + error
+                );
+              }
+            });
+
+        })
+        .catch(error => {
+            console.error("Error fetching foodbank region:", error);
+        });
+
+
+    
 
 
       </script>
