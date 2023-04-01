@@ -57,11 +57,17 @@ def post_food():
                 "message": "Restaurant not found."
             }
         ), 404
+    restaurant_name=restaurant['restaurant_name']
+    restaurant_address=restaurant['restaurant_address']
     phone_number = restaurant['phone_number']
+    
+    
     
     # 2. create new order di tabel order, order status is pending, order restaurant phone number from reponse #1
     new_order = {
         "restaurant_phone_number": phone_number,
+        "restaurant_name": restaurant_name,
+        "restaurant_address": restaurant_address,
         "status": "pending"
     }
     try:
