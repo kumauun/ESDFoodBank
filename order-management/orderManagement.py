@@ -206,7 +206,36 @@ def place_order(order_id):
         
     except Exception as e:
         return jsonify({"message": str(e)}), 500
-    
+
+
+@app.route("/accept_order/<int:order_id>", methods=['PUT'])
+def accept_order(order_id):
+    data = request.get_json()
+    driver_id = data.get('driver_id')
+    driver_phone_number = data.get('driver_phone_number')
+    driver_name = data.get('driver_name')
+    try:
+        order = Order.query.filter_by(order_id=order_id).first()
+
+        if not order:
+            return jsonify({"message": "Order not found."}), 404
+
+        order.status = 'accepted'
+        order.driver_id = driver_id
+        order.driver_phone_number = driver_phone_number
+        order.driver_name = driver_name
+        
+        db.session.commit()
+
+        return jsonify({
+            "message": "Order accepted successfully.",
+            "order": order.json()
+        }), 200
+        
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
+
 @app.route("/update_order_ordered", methods=['PUT'])
 def update_order_details():
     try:

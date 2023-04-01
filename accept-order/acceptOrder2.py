@@ -6,6 +6,9 @@ from os import environ
 
 import requests
 
+file_directory = '../'
+sys.path.append(file_directory)
+
 import amqp_setup
 import pika
 import json
@@ -19,40 +22,39 @@ foodbank_URL= "http://localhost:5002/"
 driver_URL = "http://localhost:5003/"
 order_URL = "http://localhost:5005/"
 
-def get_foodbank_by_id(foodbank_id):
-    result = requests.get(f"{foodbank_URL}/get_foodbank/{foodbank_id}")
+def get_driver_by_id(driver_id):
+    result = requests.get(f"{driver_URL}/get_driver/{driver_id}")
     if result.status_code == 200:
         return result.json()['data']
     else:
         return None
 
-@app.route("/place_order", methods=['PUT'])
-def place_order():
-    # 1. retrieve foodbank details from the foodbank table
+@app.route("/accept_order", methods=['PUT'])
+def accept_order():
+    # 1. retrieve driver details from the driver table
     order_id= request.json['order_id']
-    foodbank_id = request.json['foodbank_id']
-    foodbank= get_foodbank_by_id(foodbank_id)
-    if foodbank is None:
+    driver_id = request.json['driver_id']
+    driver= get_driver_by_id(driver_id)
+    if driver is None:
         return jsonify(
             {
                 "code": 404,
-                "message": "Foodbank not found."
+                "message": "driver not found."
             }
         ), 404
-    region = foodbank['region']
-    foodbank_name = foodbank['foodbank_name']
-    foodbank_phone_number = foodbank['phone_number']
-    foodbank_address = foodbank['foodbank_address']
-    place_order = {
-        "foodbank_id": foodbank_id,
-        "foodbank_phone_number": foodbank_phone_number,
-        "foodbank_name": foodbank_name,
-        "foodbank_address": foodbank_address,
-        "status": "ordered"
+    region = driver['region']
+    driver_name = driver['driver_name']
+    driver_phone_number = driver['phone_number']
+    
+    accept_order = {
+        "driver_id": driver_id,
+        "driver_phone_number": driver_phone_number,
+        "driver_name": driver_name,
+        "status": "accepted"
     }
     try:
         result = requests.put(
-            f"{order_URL}/place_order/{order_id}", json=place_order)
+            f"{order_URL}/accept_order/{order_id}", json=accept_order)
         response = result.json()
         print(response)
 
@@ -62,16 +64,15 @@ def place_order():
         ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
         print(ex_str)
         print("Order management microservice is unavailable: " + str(e))
-        return jsonify({"code": 500, "message": "Failed to place order: " + ex_str}), 500
+        return jsonify({"code": 500, "message": "Failed to accept order: " + ex_str}), 500
     return jsonify(
         {
             "code": 200,
-            "data": "success place order"
+            "data": "success accept order"
         }
     ), 200
 
 
-
 if __name__ == '__main__':
-    print("This is flask for " + os.path.basename(__file__) + ": foodbank")
-    app.run(host='0.0.0.0', port=5101, debug=True)
+    print("This is flask for " + os.path.basename(__file__) + ": driver")
+    app.run(host='0.0.0.0', port=5102, debug=True)
