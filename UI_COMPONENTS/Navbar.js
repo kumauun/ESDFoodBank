@@ -45,12 +45,21 @@ app.component('Navbar', {
             }
 
             const data = await response.json();
+
             this.message = data.message;
             this.userId = '';
             this.userType = '';
+            const userType = localStorage.getItem('userType');
+            if(userType == 'restaurant'){
+              href_page = '../foodbankUI/signUp.html'
+            } else if (userType == 'foodbank'){
+              href_page = './signUp.html'
+            } else if (userType == 'driver'){
+              href_page = '../foodbankUI/signUp.html'
+            }
             localStorage.removeItem('userId');
             localStorage.removeItem('userType');
-            window.location.href = './signUp.html';
+            window.location.href = href_page;
         } catch (error) {
             this.message = error.message;
         }
