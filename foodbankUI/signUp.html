@@ -234,7 +234,14 @@
                         this.userType = data.user_type;
                         localStorage.setItem('userId', data.user_id);
                         localStorage.setItem('userType', data.user_type);
-                        window.location.href = './index.html';
+                        if (this.userType == 'foodbank'){
+                            window.location.href = './index.html';
+                        } else if (this.userType == 'restaurant'){
+                            window.location.href = '../restaurantUI/index.html'
+                        } else if (this.userType == 'driver'){
+                            window.location.href = '../driverUI/index.html'
+                        }
+                        
                         } catch (error) {
                             this.message = error.message;
                         }
@@ -264,7 +271,13 @@
                         this.userType = data.user_type;
                         localStorage.setItem('userId', data.user_id);
                         localStorage.setItem('userType', data.user_type);
-                        window.location.href = './index.html';
+                        if (this.userType == 'foodbank'){
+                            window.location.href = './index.html';
+                        } else if (this.userType == 'restaurant'){
+                            window.location.href = '../restaurantUI/index.html'
+                        } else if (this.userType == 'driver'){
+                            window.location.href = '../driverUI/index.html'
+                        }
 
                     } catch (error) {
                         this.message = error.message;
