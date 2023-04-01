@@ -170,9 +170,6 @@ def update_order_details():
     except Exception as e:
         return jsonify({"message": str(e)}), 500 
 
-    
-
-
 @app.route("/update_order_accepted",methods=['PUT'])
 def update_order_accepted():
     try:
