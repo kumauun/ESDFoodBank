@@ -57,6 +57,7 @@ def get_restaurant_by_id(restaurant_id):
 
 @app.route("/new_restaurant", methods=['POST'])
 def create_restaurant():
+    print("")
     data = request.get_json()
 
     print('ini datanya', data)

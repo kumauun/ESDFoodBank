@@ -18,7 +18,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'users2'
+    __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
     user_email = db.Column(db.String(255), unique=True, nullable=False)
@@ -105,6 +105,7 @@ def signup():
         }
 
          # Send a POST request to the other microservice
+        print("About to send a post req to resto table")
         url = "http://localhost:5001/new_restaurant"
         response = requests.post(url, json=payload)
 
