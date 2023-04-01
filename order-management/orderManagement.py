@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-CORS(app)
+CORS(app, resources={r'*': {'origins': '*'}})
 
 class Order(db.Model):
     __tablename__ = 'orders'
