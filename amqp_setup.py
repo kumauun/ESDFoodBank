@@ -25,8 +25,7 @@ queue_names = {
     'foodbank': [
         'foodbank_new_posting',
         'foodbank_driver_pickup',
-        'foodbank_driver_arrival',
-        'foodbank_new_surplus_food'
+        'foodbank_driver_arrival'
     ],
     'driver': [
         'driver_foodbank_order_region'
@@ -40,7 +39,6 @@ routing_keys = {
     'foodbank_new_posting': 'foodbank.new_posting',
     'foodbank_driver_pickup': 'foodbank.driver_pickup',
     'foodbank_driver_arrival': 'foodbank.driver_arrival',
-    'foodbank_new_surplus_food': 'foodbank.new_surplus_food',
     'driver_foodbank_order_region': 'driver.foodbank_order_region'
 }
 
