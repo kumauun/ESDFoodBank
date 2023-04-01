@@ -18,7 +18,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'users2'
+    __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True)
     user_email = db.Column(db.String(255), unique=True, nullable=False)
@@ -57,7 +57,8 @@ def login():
         return jsonify({
             'message': 'Logged in successfully', 
             'user_id': user.user_id, 
-            'user_type' : user.user_type
+            'user_type' : user.user_type,
+            'username': user.username
             })
     else:
         abort(401)
@@ -105,6 +106,7 @@ def signup():
         }
 
          # Send a POST request to the other microservice
+        print("About to send a post req to resto table")
         url = "http://localhost:5001/new_restaurant"
         response = requests.post(url, json=payload)
 
@@ -149,7 +151,8 @@ def signup():
         'code': 201,
         'message': 'User created successfully', 
         'user_id': new_user.user_id,
-        'user_type' : new_user.user_type }), 201
+        'user_type' : new_user.user_type,
+        'username': new_user.username  }), 201
 
 @app.route('/logout')
 @login_required

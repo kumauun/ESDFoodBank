@@ -89,8 +89,6 @@ def create_foodbank():
     region = data.get('region')
 
     new_foodbank = Foodbank(foodbank_id = foodbank_id, foodbank_name=foodbank_name, phone_number=phone_number,foodbank_address = foodbank_address, region=region)
-
-    print(foodbank_id)
     try:
         db.session.add(new_foodbank)
         db.session.commit()

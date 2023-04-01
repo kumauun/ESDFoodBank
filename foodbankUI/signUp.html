@@ -98,9 +98,6 @@
                                 
                             <div class = "">
                                 <span v-if="notDriver" class = "mt-3">
-                
-                                    <label for="postal_code" class="form-check-label mt-3"> Postal Code: </label>
-                                    <input type="number" v-model="postal_code" id = "postal_code" class = "form-control" :required="notDriver">
                                         
                                     <label for="address" class="form-check-label mt-3">  Address: </label>
                                     <input type="text" v-model="address" id="address" class = "form-control" :required="notDriver">
@@ -186,7 +183,6 @@
                     user_type: '',
                     phone_number: '',
                     region: '',
-                    postal_code: '',
                     address: '',
 
                     //Sign in stuff
@@ -196,6 +192,7 @@
                     //Verification 
                     userId: '',
                     userType: '',
+                    userNameSession: '',
                     message: '',
 
                     //show register and login
@@ -223,7 +220,6 @@
                                 user_type: this.user_type,
                                 phone_number: this.phone_number,
                                 region: this.region,
-                                postal_code: this.postal_code,
                                 address: this.address,
                                 password: this.password,
                             })
@@ -237,9 +233,18 @@
                         this.message = data.message;
                         this.userId = data.user_id;
                         this.userType = data.user_type;
+                        this.userNameSession = data.username;
                         localStorage.setItem('userId', data.user_id);
                         localStorage.setItem('userType', data.user_type);
-                        window.location.href = './index.html';
+                        localStorage.setItem('userNameSession', data.username);
+                        if (this.userType == 'foodbank'){
+                            window.location.href = './index.html';
+                        } else if (this.userType == 'restaurant'){
+                            window.location.href = '../restaurantUI/index.html'
+                        } else if (this.userType == 'driver'){
+                            window.location.href = '../driverUI/index.html'
+                        }
+                        
                         } catch (error) {
                             this.message = error.message;
                         }
@@ -267,9 +272,17 @@
                         this.message = data.message;
                         this.userId = data.user_id;
                         this.userType = data.user_type;
+                        this.userNameSession = data.username
                         localStorage.setItem('userId', data.user_id);
                         localStorage.setItem('userType', data.user_type);
-                        window.location.href = './index.html';
+                        localStorage.setItem('userNameSession', data.username);
+                        if (this.userType == 'foodbank'){
+                            window.location.href = './index.html';
+                        } else if (this.userType == 'restaurant'){
+                            window.location.href = '../restaurantUI/index.html'
+                        } else if (this.userType == 'driver'){
+                            window.location.href = '../driverUI/index.html'
+                        }
 
                     } catch (error) {
                         this.message = error.message;
@@ -296,6 +309,7 @@
                         this.userType = '';
                         localStorage.removeItem('userId');
                         localStorage.removeItem('userType');
+                        localStorage.removeItem('userNameSession');
                         window.location.href = './signUp.html';
                     } catch (error) {
                         this.message = error.message;

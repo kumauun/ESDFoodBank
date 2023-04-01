@@ -20,16 +20,21 @@ class Order(db.Model):
     __tablename__ = 'orders'
 
     order_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'), nullable=False)
+    region = db.Column(db.Enum('Central', 'North', 'West', 'East', 'North-East'))
     foodbank_id = db.Column(db.Integer)
     foodbank_phone_number = db.Column(db.String(15))
     foodbank_address= db.Column(db.String(100))
     foodbank_name= db.Column(db.String(100))
+
     restaurant_id = db.Column(db.Integer)
-    restaurant_name = db.Column(db.String(200))
     restaurant_phone_number = db.Column(db.String(15))
     restaurant_address = db.Column(db.String(100))
     restaurant_name = db.Column(db.String(100))
+
+    driver_id = db.Column(db.Integer)
+    driver_phone_number = db.Column(db.String(15))
+    driver_name = db.Column(db.String(100))
+
     dish_name = db.Column(db.String(100))
     status = db.Column(db.Enum('pending', 'ordered', 'accepted', 'picked up', 'delivered', 'cancelled', 'done'), nullable=False, default='pending')
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -47,10 +52,12 @@ class Order(db.Model):
         'restaurant_name': self.restaurant_name,
         'restaurant_phone_number': self.restaurant_phone_number,
         'restaurant_address': self.restaurant_address,
-        'restaurant_name': self.restaurant_name,
         'dish_name': self.dish_name,
         'status': self.status,
-        'created_at': self.created_at
+        'created_at': self.created_at,
+        'driver_id' : db.Column(db.Integer),
+        'driver_phone_number' : db.Column(db.String(15)),
+        'driver_name' : db.Column(db.String(100))
         } 
 
 @app.route("/get_order/<order_id>", methods=['GET'])
@@ -74,7 +81,10 @@ def create_order():
     data = request.get_json()
 
     region = data.get('region')
+
+    # start null
     foodbank_id = data.get('foodbank_id')
+    # start null
     foodbank_phone_number = data.get('foodbank_phone_number')
     foodbank_address= data.get('foodbank_address')
     foodbank_name= data.get('foodbank_name')
@@ -83,6 +93,9 @@ def create_order():
     restaurant_address= data.get('restaurant_address')
     restaurant_name= data.get('restaurant_name')
     dish_name = data.get('dish_name')
+    driver_id = data.get('driver_id')
+    driver_phone_number = data.get('driver_phone_number')
+    driver_name = data.get('driver_name') 
     
     new_order = Order(
         region=region,
@@ -94,6 +107,9 @@ def create_order():
         restaurant_phone_number=restaurant_phone_number,
         restaurant_address=restaurant_address,
         restaurant_name=restaurant_name,
+        driver_id=driver_id,
+        driver_phone_number=driver_phone_number,
+        driver_name=driver_name,
         dish_name=dish_name,
         status='pending'
     )
@@ -281,12 +297,54 @@ def get_previous_orders(foodbank_id):
             "message": "There are no postings."
         }
     ), 404
+
+@app.route("/get_previous_orders/<int:driver_id>")
+def get_previous_orders(driver_id):
+    
+    orderlist = Order.query.filter_by(driver_id=driver_id, status='done').all()
+
+    if orderlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no deliveries."
+        }
+    ), 404
+
+@app.route("/get_previous_orders/<int:restaurant_id>")
+def get_previous_orders(restaurant_id):
+    
+    orderlist = Order.query.filter_by(restaurant_id=restaurant_id, status='done').all()
+
+    if orderlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no posts."
+        }
+    ), 404
     
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    print("This is flask for " + os.path.basename(__file__) + ": foodbank")
+    print("This is flask for " + os.path.basename(__file__) + ": order management")
     app.run(host='0.0.0.0', port=5005, debug=True)
 
 
