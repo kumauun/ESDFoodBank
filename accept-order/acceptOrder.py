@@ -24,6 +24,7 @@ CORS(app)
 @app.route("/accept_order", methods=['PUT'])
 def accept_order():
     print("Hallo")
+    print(request)
     if request.is_json:
         try:
             # ada driver id, driver phone number, status jadi accepted
