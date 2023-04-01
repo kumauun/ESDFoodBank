@@ -70,25 +70,6 @@ def place_order():
         }
     ), 200
 
-    # 2. Retrieve order listing from the order table using the region filter and status pending
-    get_order_URL = order_URL + f"/get_order/{foodbank_region}?status=pending"
-    listings = requests.get(get_order_URL)
-    
-    if listings:
-        return jsonify(
-            {
-                "code": 200,
-                "data": [list.json() for list in listings]
-            }
-        )
-    else:
-        return jsonify(
-            {
-                "code" : 404,
-                "message": "Orders not found"
-            }
-        ), 404
-
 
 
 if __name__ == '__main__':
