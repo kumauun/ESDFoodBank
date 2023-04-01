@@ -153,29 +153,8 @@
                     
                 </tr>
             </thead>
-          <tbody id="orderTable">
-            <tr>
-              <th>12345</th>
-              <td>01/02/2023</td>
-              <td>JB eats</td>
-              <td>Bento boxes</td>
-              <td>Done</td>
-            </tr>
-            <tr>
-              <th>54321</th>
-              <td>05/02/2023</td>
-              <td>Hvala</td>
-              <td>Chicken and veggies</td>
-              <td>Cancelled</td>
-            </tr>
-            <tr>
-              <th>55555</th>
-              <td>06/03/2023</td>
-              <td>MBS Hotel</td>
-              <td>lunchboxes</td>
-              <td>Done</td>
-            </tr>
-          </tbody>
+          <tbody id="orderTable"></tbody>
+         
       </table>
         <!-- <a id="addBookBtn" class="btn btn-primary" 
       href="add-book.html">Add a book</a> -->
@@ -301,6 +280,62 @@
       }
     }});
   </script>
+
+  <script>
+    // Helper function to display error message
+    function showError(message) {
+        // Hide the table and button in the event of error
+        $('#orderTable').hide();
+        
+
+        // Display an error under the main container
+        $('#main-container')
+            .append("<label>"+message+"</label>");
+    }
+
+    // anonymous async function 
+    // - using await requires the function that calls it to be async
+    $(async() => {           
+        // Change serviceURL to your own
+        var serviceURL = "http://127.0.0.1:5005/get_previous_orders/";
+
+        try {
+            const response =
+             await fetch(
+               serviceURL, { method: 'GET' }
+            );
+            const result = await response.json();
+             if (response.status === 200) {
+                // success case
+                var books = result.data.books; //the array is in books within data of 
+                                               // the returned result
+                // for loop to setup all table rows with obtained book data
+                var rows = "";
+                for (const book of books) {
+                   eachRow ="<td>" + book.title + "</td>" +
+                            "<td>" + book.isbn13 + "</td>" +
+                            "<td>" + book.price + "</td>" +
+                            "<td>" + book.availability + "</td>";
+                   rows += "<tr>" + eachRow + "</tr>";
+                }
+                    // add all the rows to the table
+                    $('#booksTable').append(rows);
+                } else if (response.status == 404) {
+                    // No books
+                    showError(result.message);
+                } else {
+                    // unexpected outcome, throw the error
+                    throw response.status;
+                }
+            } catch (error) {
+                // Errors when calling the service; such as network error, 
+                // service offline, etc
+                showError
+    ('There is a problem retrieving books data, please try again later.<br />' + error);
+            } // error
+    });
+  </script>
+
 
   <script src="../UI_COMPONENTS/Navbar.js"></script>
 
