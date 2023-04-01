@@ -287,7 +287,7 @@ def get_previous_orders(foodbank_id):
     ), 404
 
 @app.route("/get_previous_postings/<int:restaurant_id>")
-def get_previous_orders(restaurant_id):
+def get_previous_postings(restaurant_id):
     
     orderlist = Order.query.filter_by(restaurant_id=restaurant_id, status='done').all()
     print(orderlist)
