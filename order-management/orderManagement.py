@@ -55,9 +55,9 @@ class Order(db.Model):
         'dish_name': self.dish_name,
         'status': self.status,
         'created_at': self.created_at,
-        'driver_id' : db.Column(db.Integer),
-        'driver_phone_number' : db.Column(db.String(15)),
-        'driver_name' : db.Column(db.String(100))
+        'driver_id' : self.driver_id,
+        'driver_phone_number' : self.driver_phone_number,
+        'driver_name' : self.driver_name
         } 
 
 @app.route("/get_order/<order_id>", methods=['GET'])
@@ -134,15 +134,7 @@ def create_order():
 
 @app.route("/get_order/<region>", methods=['GET'])
 def get_order_by_region(region):
-    data = request.get_json()
-    user_type = data.get('user_type')
-
-    #filter is based on who the user_type is
-    if user_type == 'foodbank':
-        status = 'pending'
-    elif user_type == 'driver':
-        status = 'ordered'
-
+    status = request.args.get('status')
     orderlist = Order.query.filter_by(region=region).filter_by(status=status).all()
 
     if orderlist:
@@ -277,8 +269,8 @@ def update_order_status():
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-@app.route("/get_previous_orders/<int:foodbank_id>")
-def get_previous_orders(foodbank_id):
+@app.route("/get_previous_orders_f/<int:foodbank_id>")
+def get_previous_orders_f(foodbank_id):
     
     orderlist = Order.query.filter_by(foodbank_id=foodbank_id, status='completed').all()
 
@@ -298,8 +290,8 @@ def get_previous_orders(foodbank_id):
         }
     ), 404
 
-@app.route("/get_previous_orders/<int:driver_id>")
-def get_previous_orders(driver_id):
+@app.route("/get_previous_orders_d/<int:driver_id>")
+def get_previous_orders_d(driver_id):
     
     orderlist = Order.query.filter_by(driver_id=driver_id, status='done').all()
 
@@ -319,8 +311,8 @@ def get_previous_orders(driver_id):
         }
     ), 404
 
-@app.route("/get_previous_orders/<int:restaurant_id>")
-def get_previous_orders(restaurant_id):
+@app.route("/get_previous_orders_r/<int:restaurant_id>")
+def get_previous_orders_r(restaurant_id):
     
     orderlist = Order.query.filter_by(restaurant_id=restaurant_id, status='done').all()
 

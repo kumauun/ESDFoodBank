@@ -34,7 +34,7 @@
       
       <div id="currentOrder">
         <div class="card d-flex mx-auto mb-3">
-          <div class="card-header">
+          <!-- <div class="card-header">
             Order #12233
           </div>
           <div class="card-body">
@@ -66,7 +66,7 @@
               <div class="col" style="text-align: right;"></div> 
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <!-- sample if pending -->
@@ -255,60 +255,7 @@
 
 <!-- <script src="app.js"></script> -->
 
-
-
-
-
 </body>
-<!-- <script>
-  const app = Vue.createApp({
-      data() {
-        return {
-          userId: null,
-          userType: null,
-        };
-      },
-
-      created() {
-        const saveduserId = localStorage.getItem('userId');
-        const saveduserType = localStorage.getItem('userType');
-        console.log(saveduserId, saveduserType)
-        if (saveduserId) {
-            this.userId = parseInt(saveduserId);
-        }
-        this.userType = saveduserType
-        console.log(this.userId, this.userType)
-      }
-    });
-  </script>
-
-  <script src="Navbar.js"></script>
-
-  <script>app.mount('#app');</script>
-
-<script>
-  const app2 = Vue.createApp({
-  data() {
-    return {
-      showCurrent: false,
-      showNew: false,
-      showHistory: false,
-    };
-  },
-  methods: {
-    toggleCurrent() {
-      this.showCurrent = !this.showCurrent;
-    },
-    toggleNew() {
-      this.showNew = !this.showNew;
-    },
-    toggleHistory() {
-      this.showHistory = !this.showHistory;
-    }
-  }
-});
-app2.mount('#toggle');
-</script> -->
 
 <script>
   const app = Vue.createApp({
@@ -316,6 +263,7 @@ app2.mount('#toggle');
         return {
           userId: null,
           userType: null,
+          userNameSession: null,
           showCurrent: true,
           showNew: false,
           showHistory: false,
@@ -356,16 +304,240 @@ app2.mount('#toggle');
       created() {
         const saveduserId = localStorage.getItem('userId');
         const saveduserType = localStorage.getItem('userType');
+        const saveduserNameSession = localStorage.getItem('userNameSession')
         console.log(saveduserId, saveduserType)
         if (saveduserId) {
             this.userId = parseInt(saveduserId);
         }
         this.userType = saveduserType
+        this.userNameSession = saveduserNameSession
         console.log(this.userId, this.userType)
       }
     }});
   </script>
+
+<script>
+  // Helper function to display error message
+  function showError(message) {
+      // Hide the table and button in the event of error
+      $('#orderTable').hide();
+      $('#cardContainer').hide()
+      $('#currentDelivery').hide()
+
+      // Display an error under the main container
+      $('#main-container') // blm add #main-container di atas 
+          .append("<label>"+message+"</label>");
+  }
+
+  //Get Foodbank_id
+
+   //Display Past Orders
+  $(async() => {           
+      // Change serviceURL to your own 
+      var driver_ID = saveduserId
+      var serviceURL = "http://127.0.0.1:5005/get_previous_orders/" + driver_ID ;
+
+      try {
+          const response =
+           await fetch(
+             serviceURL, { method: 'GET' }
+          );
+          const result = await response.json();
+           if (response.status === 200) {
+              // success case
+              var orders = result.data.orders; //the array is in books within data of 
+                                             // the returned result
+              // for loop to setup all table rows with obtained book data
+              var rows = "";
+              for (const order of orders) {
+                 eachRow ="<th>" + order.order_id + "</th>" +
+                          "<td>" + order.created_at + "</td>" +
+                          "<td>" + order.restaurant_name + "</td>" +
+                          "<td>" + order.foodbank_name + "</td>"+
+                          "<td>" + order.status + "</td>";
+
+                 rows += "<tr>" + eachRow + "</tr>";
+
+              }
+                  // add all the rows to the table
+                  $('#orderTable').append(rows);
+              } else if (response.status == 404) {
+                  // No books
+                  showError(result.message);
+              } else {
+                  // unexpected outcome, throw the error
+                  throw response.status;
+              }
+          } catch (error) {
+              // Errors when calling the service; such as network error, 
+              // service offline, etc
+              showError
+                ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
+          } // error
+     });
+     
+  //Display Available Orders
   
+  $(async() => {           
+    // Change serviceURL to your own [please change]
+    var serviceURL = "http://127.0.0.1:5005/get_order/" + region; // have not edited 
+
+    try {
+        const response =
+         await fetch(
+           serviceURL, { method: 'GET' }
+        );
+        const result = await response.json();
+         if (response.status === 200) {
+            // success case
+            var order = result.data.orders; //the array is in books within data of 
+                                           // the returned result
+            // for loop to setup all table rows with obtained book data
+            
+            var eachCardrow = "";
+
+
+            for (const orders of order) {
+              counter = 0
+              if (counter % 3 == 0){
+                eachCardrow += "<div class='row row-cols-1 row-cols-md-3 g-4 mx-auto'>";
+              }
+              
+              eachCard = `<div class="col">
+                            <div class="card h-100">
+                              <div class="card-header">Order`+ order.order_id + `</div>
+
+                              <div class="card-body">
+                                <div class="row">
+                                  <div class="col">
+                                    <h6 class="card-title">PICK UP</h6>
+                                    <h3 class="card-text">`+ order.restaurant_name + `</h3>
+                                    <p class="card-text">` + order.restaurant_address + `</p>
+                                    <p class="card-text">` + order.restaurant_phone_number + `</p>
+                                    
+                                  </div>
+                                  <div class="col">
+                                    <h6 class="card-title">DROP OFF</h6>
+                                    <h3 class="card-text">` + order.foodbank_name + `</h3>
+                                    <p class="card-text"> `+ order.foodbank_address + `</p>
+                                    <p class="card-text">` + order.foodbank_phone_number + `</p>
+                                  </div>
+                                </div>
+                                
+                                <div class="row mt-3">
+                                  <div class="mx-auto d-flex col-6">
+                                    <button type="button" class="btn btn-success mx-auto"> Accept </button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="card-footer">
+                                <small class="text-muted"> Created on ` + order.created_at + `</small>
+                              </div>
+                            </div>
+                          </div>`
+              
+                        counter += 1
+              eachCardrow += eachCard
+
+              if (counter % 3 == 0){
+                eachCardrow += "</div>"
+              }
+               
+            }
+                // add all the rows to the table
+                $('#cardContainer').append(eachCardrow);
+            } else if (response.status == 404) {
+                // No books
+                showError(result.message);
+            } else {
+                // unexpected outcome, throw the error
+                throw response.status;
+            }
+        } catch (error) {
+            // Errors when calling the service; such as network error, 
+            // service offline, etc
+            showError
+              ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
+        } // error
+   });
+
+     //Display Current Delivery [not working, incomplete]
+
+     $(async() => {           
+    // Change serviceURL to your own [please change]
+    var region = ""
+    var serviceURL = "http://127.0.0.1:5005/get_order/" ; // have not changed 
+
+    try {
+        const response =
+         await fetch(
+           serviceURL, { method: 'GET' }
+        );
+        const result = await response.json();
+         if (response.status === 200) {
+            // success case
+            var order = result.data.orders; //blm edit
+                                           // the returned result
+            // for loop to setup all table rows with obtained book data
+    
+
+            for (const orders of order) {
+              
+              eachCard = `<div class="card-header">
+                              Order` + order.order_id + `
+                            </div>
+                            <div class="card-body">
+                              <div class="row">
+                                  <div class="col"><p class="card-text">` + order.dish_name +`</p></div>
+                                  <div class="col" style="text-align: right; color: orange;"><h5>`+ order.status +`</h5></div> 
+                              </div>
+
+                              <br>
+
+                              <div class="row">
+                                <div class="col"><h5 class="card-title">` + order.foodbank_name + `</h5></div>
+                                <div class="col" style="text-align: left;"><h5>` + order.driver_name + `</h5></div> 
+                                <div class="col" style="text-align: right;">Order Created on` + order.created_at + `</div> 
+                              </div>
+                              <div class="row">
+                                <div class="col"><p class="card-text">`+ order.foodbank_address+ `</div>
+                                <div class="col" style="text-align: left;">SHC7878J </div> 
+                                <div class="col" style="text-align: right;"></div> 
+                              </div>
+                              <div class="row">
+                                <div class="col"><p class="card-text">298188</div>
+                                <div class="col" style="text-align: left;"> </div> 
+                                <div class="col" style="text-align: right;"></div> 
+                              </div>
+                              <div class="row">
+                                <div class="col"><p class="card-text">+6588887777</p></div>
+                                <div class="col" style="text-align: left;">+6570351268</div> 
+                                <div class="col" style="text-align: right;"></div> 
+                              </div>
+                            </div>
+                          </div>`
+
+            }// add card to the container 
+            $('#currentDelivery').append(eachCard);
+               
+            } else if (response.status == 404) {
+                // No books
+                showError(result.message);
+            } else {
+                // unexpected outcome, throw the error
+                throw response.status;
+            }
+        } catch (error) {
+            // Errors when calling the service; such as network error, 
+            // service offline, etc
+            showError
+              ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
+        } // error
+   });
+
+</script>
+
 <script src="../UI_COMPONENTS/Navbar.js"></script>
 
 <script>app.mount('#app');</script>
