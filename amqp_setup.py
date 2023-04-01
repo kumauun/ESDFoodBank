@@ -19,13 +19,14 @@ channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, dura
 queue_names = {
     'restaurant': [
         'restaurant_foodbank_order',
+        'restaurant_driver_accept',
         'restaurant_driver_pickup',
-        'restaurant_new_surplus_food'
     ],
     'foodbank': [
         'foodbank_new_posting',
         'foodbank_driver_pickup',
-        'foodbank_driver_arrival'
+        'foodbank_driver_arrival',
+        'foodbank_new_surplus_food'
     ],
     'driver': [
         'driver_foodbank_order_region'
@@ -34,11 +35,12 @@ queue_names = {
 
 routing_keys = {
     'restaurant_foodbank_order': 'restaurant.foodbank_order',
+    'restaurant_driver_accept': 'restaurnt.driver_accept',
     'restaurant_driver_pickup': 'restaurant.driver_pickup',
-    'restaurant_new_surplus_food': 'restaurant.new_surplus_food',
     'foodbank_new_posting': 'foodbank.new_posting',
     'foodbank_driver_pickup': 'foodbank.driver_pickup',
     'foodbank_driver_arrival': 'foodbank.driver_arrival',
+    'foodbank_new_surplus_food': 'foodbank.new_surplus_food',
     'driver_foodbank_order_region': 'driver.foodbank_order_region'
 }
 

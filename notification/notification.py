@@ -22,8 +22,9 @@ channel.queue_declare(queue='foodbank_driver_arrival')
 channel.queue_declare(queue='foodbank_driver_pickup')
 channel.queue_declare(queue='foodbank_new_posting')
 channel.queue_declare(queue='restaurant_driver_pickup')
+channel.queue_declare(queue='restaurant_driver_accept')
 channel.queue_declare(queue='restaurant_foodbank_order')
-channel.queue_declare(queue='restaurant_new_surplus_food')
+channel.queue_declare(queue='foodbank_new_surplus_food')
 
 def send_sms(ch, method, properties, body):
     data = json.loads(body)
@@ -51,8 +52,9 @@ channel.basic_consume(queue='foodbank_driver_arrival', on_message_callback=send_
 channel.basic_consume(queue='foodbank_driver_pickup', on_message_callback=send_sms, auto_ack=True)
 channel.basic_consume(queue='foodbank_new_posting', on_message_callback=send_sms, auto_ack=True)
 channel.basic_consume(queue='restaurant_driver_pickup', on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='restaurant_driver_accept', on_message_callback=send_sms, auto_ack=True)
 channel.basic_consume(queue='restaurant_foodbank_order', on_message_callback=send_sms, auto_ack=True)
-channel.basic_consume(queue='restaurant_new_surplus_food', on_message_callback=send_sms, auto_ack=True)
+channel.basic_consume(queue='foodbank_new_surplus_food', on_message_callback=send_sms, auto_ack=True)
 
 if __name__ == '__main__':
     try:
