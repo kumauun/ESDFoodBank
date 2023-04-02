@@ -104,27 +104,27 @@
                 <div class="row">
                   <div class="col">
                     <h6 class="card-title">PICK UP</h6>
-                    <h3 class="card-text">BakerBoy</h3>
-                    <p class="card-text">50 Cecil Street</p>
-                    <p class="card-text">+6587654321</p>
+                    <h3 class="card-text">{{postings.restaurant_name}}</h3>
+                    <p class="card-text">{{postings.restaurant_address}}</p>
+                    <p class="card-text">{{postings.restaurant_phone_number}}</p>
                   </div>
                   <div class="col">
                     <h6 class="card-title">DROP OFF</h6>
-                    <h3 class="card-text">Helpyelp</h3>
-                    <p class="card-text">50 Cecil Street</p>
-                    <p class="card-text">+6587654321</p>
+                    <h3 class="card-text">{{postings.foodbank_name}}</h3>
+                    <p class="card-text">{{postings.foodbank_address}}</p>
+                    <p class="card-text">{{postings.foodbank_phone_number}}</p>
                   </div>
                 </div>
                 
                 <div class="row mt-3">
                   <div class="mx-auto d-flex col-6">
-                    <button type="button" class="btn btn-success mx-auto">Accept</button>
+                    <button type="button" class="btn btn-success mx-auto" @click="acceptOrder">Accept</button>
                   </div>
                 </div>
               </div>
   
               <div class="card-footer">
-                <small class="text-muted">Created on 26/03/2023 18:10</small>
+                <small class="text-muted">Created on {{postings.created_at}}</small>
               </div>
             </div>
           </div>
@@ -292,7 +292,7 @@
     </div>
 
   </div>
-</div>
+
 
   <!-- Footer -->
 <div class="container">
@@ -374,7 +374,7 @@
           //postings
           postings: null,
           posting_region: "North",
-          posting_message:null
+          posting_message: null,
 
           status: "Accepted",
         };
@@ -410,6 +410,12 @@
       changeRegion(event){
         this.posting_region = event.target.value
         console.log(this.posting_region)
+      },
+
+      //accept orders
+      acceptOrder(event){
+        
+
       },
 
         async loadListings() {
