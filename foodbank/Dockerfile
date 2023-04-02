@@ -14,7 +14,7 @@ RUN python -m pip install --no-cache-dir -r requirements.txt
 COPY ./foodbank.py .
 
 # Expose the port the application will run on
-EXPOSE 5003
+EXPOSE 5002
 
 # Set the command to start the application
 CMD [ "python", "./foodbank.py" ]

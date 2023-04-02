@@ -3,21 +3,21 @@ version: '3.8'
 services:
   # front-end 
   driver-frontend:
-    build: ./driver-frontend
+    build: ./driverUI
     ports:
       - "8081:5000"
     environment:
       - VUE_APP_DRIVER_API_URL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/driver
 
   restaurant-frontend:
-    build: ./restaurant-frontend
+    build: ./restaurantUI
     ports:
       - "8082:5000"
     environment:
       - VUE_APP_RESTAURANT_API_URL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/restaurant
 
   foodbank-frontend:
-    build: ./foodbank-frontend
+    build: ./foodbankUI
     ports:
       - "8083:5000"
     environment:
