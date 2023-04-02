@@ -29,16 +29,46 @@ def get_restaurant_by_id(restaurant_id):
         return None
 
 
-def publish_message_to_foodbank(region, restaurant_phone_number, foodbank_phone_number):
-    message = {
-        "restaurant_phone_number": restaurant_phone_number, "foodbank_phone_number": foodbank_phone_number,
-        "region": region
-    }
+#    def publish_message_to_foodbank(region, restaurant_phone_number, foodbank_phone_number):
+ #       message = {
+ #           "restaurant_phone_number": restaurant_phone_number, "foodbank_phone_number": foodbank_phone_number,
+ #           "region": region
+ #       }
+ #       try:
+  #          # publish message to RabbitMQ exchange
+   #         
+   #         
+   #         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="foodbank.new_posting",
+   #                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
+   #         print("Sent message to RabbitMQ Exchange")
+   #     except Exception as e:
+   #         print("An error occurred while publishing the message: " + str(e))
+   #         return jsonify(
+   #             {
+   #                 "code": 500,
+   #                 "message": "Failed to notify foodbank: " + str(e)
+   #             }
+   #         ), 500
+
+def publish_message_to_foodbank(region, restaurant_name, restaurant_phone_number, foodbank_phone_number):
+    message = "New posting from restaurant " + restaurant_name+'(contact number: '+restaurant_phone_number+')' + " in region " + region
     try:
         # publish message to RabbitMQ exchange
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="foodbank.new_posting",
-                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
-        print("Sent message to RabbitMQ Exchange")
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+
+        # declare the exchange
+        channel.exchange_declare(exchange='notify_foodbank', exchange_type='direct')
+        channel.queue_declare(queue='new_food', durable=True)
+        channel.queue_bind(queue='new_food', exchange='notify_foodbank', routing_key='new_posting')
+        # publish message to RabbitMQ exchange
+        channel.basic_publish(
+            exchange='notify_foodbank',
+            routing_key='new_posting',
+            body=message
+        )
+        # close the connection
+        connection.close()
     except Exception as e:
         print("An error occurred while publishing the message: " + str(e))
         return jsonify(
@@ -47,7 +77,6 @@ def publish_message_to_foodbank(region, restaurant_phone_number, foodbank_phone_
                 "message": "Failed to notify foodbank: " + str(e)
             }
         ), 500
-
 
 @app.route("/post_food", methods=['POST'])
 def post_food():
@@ -134,7 +163,8 @@ def post_food():
     # 4. notify foodbank with the phone number retrieved from the request above
     for foodbank_phone_number in foodbank_phone_numbers:
         publish_message_to_foodbank(
-            region, restaurant_phone_number, foodbank_phone_number)
+            region, restaurant_name, restaurant_phone_number, foodbank_phone_number)
+        print("Sent message to:"+foodbank_phone_number)
 
     return jsonify(
         {
