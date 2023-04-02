@@ -11,10 +11,10 @@ COPY requirements.txt .
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
 # Copy the source code for the restaurant microservice into the working directory
-COPY . .
+COPY . . 
 
 # Expose the port the application will run on
-EXPOSE 5006
+EXPOSE 5007
 
 # Set the command to start the application
-CMD [ "python", "./restaurant.py" ]
+CMD [ "python", "./postSurplusFood.py" ]
