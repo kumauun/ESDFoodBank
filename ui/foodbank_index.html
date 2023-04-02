@@ -33,7 +33,7 @@
 
       <h3>Current Order</h3>
 
-      <h4 v-if="current_message">{{current_message}}</h4>
+      <h5 v-if="current_message" class="text-center">{{current_message}}</h5>
       <div id="currentDelivery" v-if="CurrentOrders">
         <div class="card d-flex mx-auto mb-3" v-for="order of CurrentOrders">
           <div class="card-header">
@@ -72,39 +72,12 @@
       </div>
       </div>
 
-
-      <div class="card">
-        <div class="card-header">
-          Order #12233
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col"><h5 class="card-title">Makanmakan</h5></div>
-            <div class="col text-left"><h5>Justin Bieber</h5></div>
-            <div class="col text-right text-orange"><h5>Picked Up</h5></div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">100 Kasai Road</p></div>
-            <div class="col text-left">SHC7878J</div>
-            <div class="col text-right">Order Created today at 18:10</div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">298188</p></div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">+6581234567</p></div>
-            <div class="col text-left">+6570351268</div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
-          </div>
-        </div>
-      </div>
     </div>
     
     <div v-show="showListing" class="mt-3">
       <!-- {{AvailableOrders}} -->
       <h3>Available Orders</h3>
+      <h5 v-if="available_message" class="text-center">{{available_message}}</h5>
       <div class="card" v-for="availableOrder of AvailableOrders" v-if="AvailableOrders">
         <div class="card-header">
           Order #{{availableOrder.order_id}}
@@ -134,10 +107,10 @@
     </div>
 
     <div v-show="showHistory" class="mt-3" >
-      <h5 v-if="previous_message" class="text-center">{{previous_message}}</h5>
       <!-- Display past orders details -->
       <div v-show="showHistory">
         <h3 class="mt-3">Past Orders</h3>
+        <h5 v-if="previous_message" class="text-center">{{previous_message}}</h5>
         <table class="table table-striped border-1" v-if="previous_orders">
           <thead class="table-dark">
             <tr>
@@ -169,8 +142,8 @@
 
 <script>
 
-  ORDER_API_URL = 'http://127.0.0.1:5005'
-  PLACE_ORDER_API_URL = 'http://127.0.0.1:5101'
+  ORDER_API_URL = 'http://127.0.0.1:5004'
+  PLACE_ORDER_API_URL = 'http://127.0.0.1:5008'
   
   const app = Vue.createApp({
       data() {
@@ -183,7 +156,10 @@
           showHistory: false,
           orders: null,
           CurrentOrders: null,
+
+          //available orders
           AvailableOrders: null,
+          available_message: null,
 
           //placeorder
           chosen_order_id: null,
@@ -258,19 +234,21 @@
         },
 
         async fetchCurrentOrders(){
-          const serviceURL = `http://127.0.0.1:5005/get_non_pending_or_done_orders/${this.userId}`;
+          const serviceURL = `${ORDER_API_URL}/get_non_pending_or_done_orders/${this.userId}`;
 
           try {
             const response = await fetch(serviceURL, { method: 'GET' });
+            const result = await response.json();
 
-            if (response.status === 200) {
-              const result = await response.json();
-              console.log('status 200');
+            console.log(result)
+
+            if (result.code === 200) {
               this.CurrentOrders = result.orders;
+              this.current_message = null;
               console.log(this.CurrentOrders);
-            } else if (response.status === 404) {
-              console.log('error 404');
-              console.log(this.error);
+            } else if (result.code === 404) {
+              this.CurrentOrders = null;
+              this.current_message = result.message;
             } else {
               throw response.status;
             }
@@ -289,12 +267,12 @@
             const result = await response.json()
             console.log(result)
             if (result.code === 200) {
-              console.log('status 200');
-              this.AvailableOrders = result.data;
-              console.log(this.AvailableOrders);
+                this.AvailableOrders = result.data;
+                this.available_message = null
               } else if (result.code === 404) {
                 console.log('error 404');
-                this.error = 'Orders not found';
+                this.available_message = 'Orders not found';
+                this.AvailableOrders = null ;
               } else {
                 throw response.status;
               }
