@@ -29,7 +29,7 @@ def get_foodbank_by_id(foodbank_id):
     
     
 def publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, order_id):
-    message = "Your post of id"+ order_id+" has been ordered by " + foodbank_name+'(contact number: '+foodbank_phone_number+')' 
+    message = f"Your post of id {order_id} has been ordered by {foodbank_name} (contact number: '+{foodbank_phone_number}+')" 
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -188,11 +188,13 @@ def load_orders(foodbank_id):
     # 2. Retrieve order listing from the order table using the region filter and status pending
     get_order_URL = order_URL + f"/get_order_by_region/{foodbank_region}?status=pending"
     listings = requests.get(get_order_URL)
-    listings_data = listings.json()
-    orders_list = listings_data['data']['orders']
-    print(orders_list)
+    print(listings)
+    
     print('pretetet')
     if listings:
+        listings_data = listings.json()
+        orders_list = listings_data['data']['orders']
+        print(orders_list)
         return jsonify(
             {
                 "code": 200,
