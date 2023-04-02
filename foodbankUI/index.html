@@ -4,171 +4,151 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foodbank</title>
+    <title>Driver</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous"/>
 </head>
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-
-
 
 <body>
 
-
-<!-- navbar starts  -->
+<!-- Vue app starts  -->
 <div id="app">
+
   <Navbar></Navbar>
-<!-- navbar ends  -->
 
-<h1 class = "m-5 "> Welcome to Savood! </h1>
+  <h1 class = "m-5 ">Welcome to Savood!</h1>
 
-<div class="container mt-5">
-  <!-- {{orders}} -->
-  <div>
-    <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Order</button>
-    <button @click="toggleListing" class="btn btn-success mx-1">Available Orders</button>
-    <button @click="toggleHistory" class="btn btn-warning mx-1">Past Orders</button>
+  <div class="container mt-5">
+    <div>
+      <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Order</button>
+      <button @click="toggleListing" class="btn btn-success mx-1">Available Orders</button>
+      <button @click="toggleHistory" class="btn btn-warning mx-1">Past Orders</button>
+    </div>
 
-    <!-- Current Delivery -->
-    <div id="toggle" class="mt-3 mx-auto" v-show="showCurrent">
+    <!-- current orders-->
+    <div id="toggle" v-show="showCurrent" class="mt-3 mx-auto">
+      {{CurrentOrders}}
+
       <h3>Current Order</h3>
-      <div id="currentOrder">
-        <div class="card d-flex mx-auto">
+
+      <h4 v-if="current_message">{{current_message}}</h4>
+      <div id="currentDelivery" v-if="currentOrder">
+        <div class="card d-flex mx-auto mb-3" v-for="order of currentOrder">
           <div class="card-header">
-            Order #12233
+            {{order.order_id}}
           </div>
           <div class="card-body">
             <div class="row">
-              <div class="col"><h5 class="card-title">Makanmakan</h5></div>
-              <div class="col" style="text-align: left;"><h5>Justin Bieber</h5></div> 
-              <div class="col" style="text-align: right; color: orange;"><h5>Picked Up</h5></div> 
-            </div>
+              <div class="col"><h5 class="card-title">PICK UP</h5></div>
+              <div class="col"><h5 class="card-title">DROP OFF</h5></div>
+              <div class="col" style="text-align: right; color: blue;">
+                <h5>{{ order.status }}</h5>
+              </div>
+
+    
             <div class="row">
-              <div class="col"><p class="card-text">100 Kasai Road</div>
-              <div class="col" style="text-align: left;">SHC7878J </div> 
-              <div class="col" style="text-align: right;">Order Created today at 18:10</div> 
+              <div class="col" style="text-align: left;"><h3>{{order.restaurant_name}}</h3></div> 
+              <div class="col" style="text-align: left;"><h3>{{order.foodbank_name}}</h3></div> 
+              <div class="col" style="text-align: right;">Created at {{order.created_at}}</div> 
             </div>
+            
             <div class="row">
-              <div class="col"><p class="card-text">298188</div>
-              <div class="col" style="text-align: left;"> </div> 
+              <div class="col"><p class="card-text">{{order.restaurant_address}}</div>
+              <div class="col" style="text-align: left;">{{order.foodbank_address}} </div> 
               <div class="col" style="text-align: right;"></div> 
             </div>
             <div class="row">
-              <div class="col"><p class="card-text">+6581234567</p></div>
-              <div class="col" style="text-align: left;">+6570351268</div> 
-              <div class="col" style="text-align: right;"></div> 
-            </div>
-            <div class="row">
-              <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
+              <div class="col"><p class="card-text">{{order.restaurant_phone_number}}</p></div>
+              <div class="col" style="text-align: left;">{{order.foodbank_phone_number}}</div> 
+              <div class="col" id="changeStatus" style="text-align: right;">
+                <!-- if current status is accepted, buttons not yet synced to database-->
+                <button v-if="status === 'Accepted'" @click="pickedUp()" class="btn btn-primary mx-1">Picked Up</button>
+                <!-- if current status is picked up -->
+                <button v-if="status === 'Picked Up'" @click="delivered()" class="btn btn-primary mx-1">Delivered</button>
+                <!-- <button v-show="showPickedup" @click="delivered()" class="btn btn-primary mx-1">Delivered</button> -->
+              </div> 
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- View Listing -->
-    <div id="toggle" class="mt-3" v-show="showListing">
-      <h3>Available Orders</h3>
-      <div id = "cardContainer">
-        
       </div>
-      
-      
+
+
+      <div class="card">
+        <div class="card-header">
+          Order #12233
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col"><h5 class="card-title">Makanmakan</h5></div>
+            <div class="col text-left"><h5>Justin Bieber</h5></div>
+            <div class="col text-right text-orange"><h5>Picked Up</h5></div>
+          </div>
+          <div class="row">
+            <div class="col"><p class="card-text">100 Kasai Road</p></div>
+            <div class="col text-left">SHC7878J</div>
+            <div class="col text-right">Order Created today at 18:10</div>
+          </div>
+          <div class="row">
+            <div class="col"><p class="card-text">298188</p></div>
+          </div>
+          <div class="row">
+            <div class="col"><p class="card-text">+6581234567</p></div>
+            <div class="col text-left">+6570351268</div>
+          </div>
+          <div class="row">
+            <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <!-- History -->
-    <div id="toggle" class="mt-3" v-show="showHistory" v-if="orders">
-      <div id="main-container" class="container">
-        <h3>Past Orders</h3>
-        <table class='table table-striped border-1'>
-            <thead class='table-dark'>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Date</th>
-                    <th>Restaurant Name</th>
-                    <th>Dish Name</th>
-                    <th>Status</th>
-                    
-                </tr>
-                
-            </thead>
-          <tbody id="orderTable">
+    <div v-show="showListing" class="mt-3" v-if="AvailableOrders">
+      {{AvailableOrders}}
+      <h3>Available Orders</h3>
+      <!-- Display available orders details -->
+    </div>
+
+    <div v-show="showHistory" class="mt-3" v-if="orders">
+      {{orders}}
+      <!-- Display past orders details -->
+      <div v-show="showHistory" v-if="orders">
+        <h3 class="mt-3">Past Orders</h3>
+        <table class="table table-striped border-1">
+          <thead class="table-dark">
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Restaurant Name</th>
+              <th>Dish Name</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
             <tr v-for="order of orders">
-              <td>{{order.order_id}}</td>
-              <td>{{order.created_at}}</td>
-              <td>{{order.restaurant_name}}</td>
-              <td>{{order.dish_name}}</td>
-              <td>{{order.status}}</td>
+              <td>{{ order.order_id }}</td>
+              <td>{{ order.created_at }}</td>
+              <td>{{ order.restaurant_name }}</td>
+              <td>{{ order.dish_name }}</td>
+              <td>{{ order.status }}</td>
             </tr>
           </tbody>
-         
-      </table>
-        <!-- <a id="addBookBtn" class="btn btn-primary" 
-      href="add-book.html">Add a book</a> -->
+        </table>
       </div>
     </div>
-
   </div>
+
+  <Footer></Footer>
+
 </div>
-
-  <!-- Footer -->
-<div class="container">
-  <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top">
-    <div class="col mb-3">
-      <a href="/" class="d-flex align-items-center mb-3 link-dark text-decoration-none">
-        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-      </a>
-      <p class="text-muted">© 2022</p>
-    </div>
-
-    <div class="col mb-3">
-
-    </div>
-
-    <div class="col mb-3">
-      <h5>Section</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Home</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Features</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Pricing</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">FAQs</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">About</a></li>
-      </ul>
-    </div>
-
-    <div class="col mb-3">
-      <h5>Section</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Home</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Features</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Pricing</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">FAQs</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">About</a></li>
-      </ul>
-    </div>
-
-    <div class="col mb-3">
-      <h5>Section</h5>
-      <ul class="nav flex-column">
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Home</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Features</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">Pricing</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">FAQs</a></li>
-        <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">About</a></li>
-      </ul>
-    </div>
-  </footer>
-</div>
-</div>
-
-
-</body>
+<!-- Vie app ends-->
 
 <script>
+
   ORDER_API_URL = 'http://127.0.0.1:5005'
+  
   const app = Vue.createApp({
       data() {
         return {
@@ -178,6 +158,16 @@
           showListing: false,
           showHistory: false,
           orders: null,
+          CurrentOrders: null,
+          AvailableOrders: null,
+
+          // current
+          currentOrder: null,
+          current_message: null,
+
+          //history
+          previous_orders: null,
+          previous_message: null,
 
         };
       },
@@ -186,11 +176,13 @@
           this.showCurrent = true;
           this.showListing = false;
           this.showHistory = false;
+          this.fetchCurrentOrders();
         },
         toggleListing() {
           this.showCurrent = false;
           this.showListing = true;
           this.showHistory = false;
+          this.fetchAvailableOrders()
         },
         toggleHistory() {
           this.showCurrent = false;
@@ -199,43 +191,12 @@
           this.fetchPreviousOrders();
         },
 
-        // async loadListings() {
-        //   try {
-        //     const response = await fetch("${ORDER_API_URL}/get_order/<region>", {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify({
-        //             user_email: this.user_email,
-        //             username: this.username,
-        //             user_type: this.user_type,
-        //             phone_number: this.phone_number,
-        //             region: this.region,
-        //             postal_code: this.postal_code,
-        //             address: this.address,
-        //             password: this.password,
-        //         })
-        //     });
-        // }
-        
-        //},
-
         async fetchPreviousOrders() {
           const serviceURL = `http://127.0.0.1:5005/get_previous_orders/${this.userId}`;
 
         try {
           const response = await fetch(serviceURL, { method: 'GET' });
-          // console.log('halo')
-
-          // console.log(response)
-
-          // if (response.status === 200) {
-          //   console.log('200')
-          //   // this.orders = hellow;
-          //   console.log(response)
-          // }
-
+   
           if (response.status === 200) {
             const result = await response.json();
             console.log('status 200')
@@ -253,6 +214,51 @@
           }
         },
 
+        async fetchCurrentOrders(){
+          const serviceURL = `http://127.0.0.1:5005/get_non_pending_or_done_orders/${this.userId}`;
+
+          try {
+            const response = await fetch(serviceURL, { method: 'GET' });
+
+            if (response.status === 200) {
+              const result = await response.json();
+              console.log('status 200');
+              this.CurrentOrders = result.orders;
+              console.log(this.CurrentOrders);
+            } else if (response.status === 404) {
+              console.log('error 404');
+              console.log(this.error);
+            } else {
+              throw response.status;
+            }
+          } catch (error) {
+              console.log('error');
+              this.error = `There is a problem retrieving non-pending and non-done orders data, please try again later.<br />${error}`;
+          }
+        },
+
+        async fetchAvailableOrders(){
+          const serviceURL = `http://127.0.0.1:5006/load_orders/${this.userId}`;
+
+          try {
+            const response = await fetch(serviceURL, { method: 'GET' });
+
+            if (response.status === 200) {
+              const result = await response.json();
+              console.log('status 200');
+              this.AvailableOrders = result.data;
+              console.log(this.AvailableOrders);
+              } else if (response.status === 404) {
+                console.log('error 404');
+                this.error = 'Orders not found';
+              } else {
+                throw response.status;
+              }
+          } catch (error) {
+              console.log('error');
+              this.error = `There is a problem retrieving order data, please try again later.<br />${error}`;
+          }
+        },
       },
 
       created() {
@@ -267,161 +273,18 @@
       }
 
     });
-  </script>
 
-  
-  <script>
+</script>
 
 
-    
+<!-- Import the Navbar and Footer components -->
+<script src="../UI_COMPONENTS/Navbar.js"></script>
+<!-- <script src="../UI_COMPONENTS/Footer.js"></script> -->
 
-    
-    //Display Past Orders
-    
-    // $(async() => {           
-    //     // Change serviceURL to your own 
-    //     var serviceURL = "http://127.0.0.1:5005/get_previous_orders/" + this.userId;
-
-    //     try {
-    //         const response = await fetch(
-    //            serviceURL, { method: 'GET' }
-    //         );
-    //         const result = await response.json();
-    //          if (response.status === 200) {
-    //             // success case
-    //             var order = result.data.orders; //the array is in books within data of 
-    //                                            // the returned result
-    //             // for loop to setup all table rows with obtained book data
-    //             var rows = "";
-    //             for (const orders of order) {
-    //                eachRow ="<td>" + orders.order_id + "</td>" +
-    //                         "<td>" + orders.created_at + "</td>" +
-    //                         "<td>" + orders.restaurant_name + "</td>" +
-    //                         "<td>" + orders.dish_name + "</td>"+
-    //                         "<td>" + orders.status + "</td>";
-
-    //                rows += "<tr>" + eachRow + "</tr>";
-    //             }
-    //                 // add all the rows to the table
-    //                 $('#orderTable').append(rows);
-    //             } else if (response.status == 404) {
-    //                 // No books
-    //                 showError(result.message);
-    //             } else {
-    //                 // unexpected outcome, throw the error
-    //                 throw response.status;
-    //             }
-    //         } catch (error) {
-    //             // Errors when calling the service; such as network error, 
-    //             // service offline, etc
-    //             showError
-    //               ('There is a problem retrieving previous orders data, please try again later.<br />' + error);
-    //         } // error
-    //    });
-       
-    // Get FoodBank Region
-    const foodbanksApiBaseUrl = "http://127.0.0.1:5002";
-    const foodbanksApiUrl = `${foodbanksApiBaseUrl}/get_foodbank/${this.userId}`;
-    console.log(foodbanksApiUrl)
-
-    //Display Current Delivery
-    
-    
-
-    // Fetch foodbank data & display available postings
-    fetch(foodbanksApiUrl)
-      .then(response => response.json())
-      .then(data => {
-        const foodbankRegion = data.region;
-        console.log("Foodbank Region:", foodbankRegion);
-
-        // Use foodbankRegion to create get_order_URL
-        const orderManagement_URL = "http://127.0.0.1:5005";
-        const get_order_URL = `${orderManagement_URL}/get_order/${foodbankRegion}?status=pending`;
-        console.log("Get Order URL:", get_order_URL);
-
-        // Display Available orders
-        (async() => {
-          try {
-            const response = await fetch(get_order_URL, { method: 'GET' });
-            const result = await response.json();
-                  if (response.status === 200) {            // success case
-                    var order = result.data.orders;
-                    // for loop to setup all table rows with obtained order data
-                    var eachCardrow = "";
-                    var counter = 0;
-                    for (const orders of order) {
-                        if (counter % 3 == 0) {
-                            eachCardrow += "<div class='row row-cols-1 row-cols-md-3 g-4 mx-auto'>";
-                        }
-
-                        eachCard = `<div class='col'>
-                                      <div class = 'card h-100'>
-                                        <div class = 'card-body'>
-                                          <h3 class= 'card-title'>` + orders.restaurant_name + `</h3>
-                                          <p class= 'card-text'>` + orders.restaurant_address + `</p>
-                                          <p class= 'card-text'>` + orders.restaurant_phone_number + `</p>
-                                          <p class= 'card-text'>` + orders.dish_name + `</p>
-                                          <div class= 'mx-auto d-flex col-6'>
-                                            <button type="button" class="btn btn-dark mx-auto"> Order </button>
-                                          </div>
-                                        </div>
-                                        <div class = "card-footer">
-                                            <small class = 'text-muted'> Created on:` + orders.created_at + `
-                                        </div>
-                                      </div>
-                                    </div>`
-
-                        counter += 1;
-                        eachCardrow += eachCard;
-
-                        if (counter % 3 == 0) {
-                            eachCardrow += "</div>";
-                        }
-                    }
-                    // add all the rows to the table
-                    $('#cardContainer').append(eachCardrow);
-                } 
-                else if (response.status == 404) {
-                    // No orders
-                    showError(result.message);
-                } 
-                else {
-                    // unexpected outcome,
-                    // throw the error
-                  throw response.status;
-                }
-              } 
-              
-              catch (error) {
-              // Errors when calling the service; such as network error,
-              // service offline, etc
-                showError(
-                  'There is a problem retrieving available orders data, please try again later.<br />' + error
-                );
-              }
-            });
-
-        })
-        .catch(error => {
-            console.error("Error fetching foodbank region:", error);
-        });
-
-      </script>
-
-
-  
-
-
-  <script src="../UI_COMPONENTS/Navbar.js"></script>
-
-  <script>app.mount('#app');</script>
-
-
-
-  
+<script>app.mount('#app');</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
+</body>
 </html>
 
