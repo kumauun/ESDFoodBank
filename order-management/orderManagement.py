@@ -127,18 +127,19 @@ def create_order():
         }
     ), 201
 
-@app.route("/get_order/<region>", methods=['GET'])
+@app.route("/get_order_by_region/<region>", methods=['GET'])
 def get_order_by_region(region):
-    data = request.get_json()
-    user_type = data.get('user_type')
+    print('Hello')
+    status = request.args.get('status')
 
     #filter is based on who the user_type is
-    if user_type == 'foodbank':
-        status = 'pending'
-    elif user_type == 'driver':
-        status = 'ordered'
-
+    # if user_type == 'foodbank':
+    #     status = 'pending'
+    # elif user_type == 'driver':
+    #     status = 'ordered'
+    print(status)
     orderlist = Order.query.filter_by(region=region).filter_by(status=status).all()
+    
 
     if orderlist:
         return jsonify(

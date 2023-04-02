@@ -18,7 +18,7 @@
 
   <Navbar></Navbar>
 
-  <h1 class = "m-5 ">Welcome to Savood!</h1>
+  <h1 class = "m-5 ">Welcome to Savood {{userNameSession}}!</h1>
 
   <div class="container mt-5">
     <div>
@@ -29,15 +29,15 @@
 
     <!-- current orders-->
     <div id="toggle" v-show="showCurrent" class="mt-3 mx-auto">
-      {{CurrentOrders}}
+      <!-- {{CurrentOrders}} -->
 
       <h3>Current Order</h3>
 
       <h4 v-if="current_message">{{current_message}}</h4>
-      <div id="currentDelivery" v-if="currentOrder">
-        <div class="card d-flex mx-auto mb-3" v-for="order of currentOrder">
+      <div id="currentDelivery" v-if="CurrentOrders">
+        <div class="card d-flex mx-auto mb-3" v-for="order of CurrentOrders">
           <div class="card-header">
-            {{order.order_id}}
+            Order#{{order.order_id}}
           </div>
           <div class="card-body">
             <div class="row">
@@ -106,8 +106,33 @@
     </div>
     
     <div v-show="showListing" class="mt-3" v-if="AvailableOrders">
-      {{AvailableOrders}}
+      <!-- {{AvailableOrders}} -->
       <h3>Available Orders</h3>
+      <div class="card" v-for="availableOrder of AvailableOrders" v-if="AvailableOrders">
+        <div class="card-header">
+          Order #{{availableOrder.order_id}}
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col"><h5 class="card-title">{{availableOrder.restaurant_name}}</h5></div>
+          </div>
+          <div class="row">
+            <div class="col"><p class="card-text">{{availableOrder.restaurant_address}}</p></div>
+            <div class="col text-right">{{availableOrder.created_at}}</div>
+          </div>
+          <div class="row">
+            <div class="col"><p class="card-text">{{availableOrder.restaurant_phone_number}}</p></div>
+          </div>
+          <div class="row">
+            <div class="col"><p class="card-text">{{availableOrder.dish_name}}</p></div>
+          </div>
+          <div class="row">
+            <div class="col text-right">
+              <button type="button" class="btn btn-primary" @click="setChosenOrder(availableOrder.order_id)">Place Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Display available orders details -->
     </div>
 
@@ -148,18 +173,23 @@
 <script>
 
   ORDER_API_URL = 'http://127.0.0.1:5005'
+  PLACE_ORDER_API_URL = 'http://127.0.0.1:5101'
   
   const app = Vue.createApp({
       data() {
         return {
           userId: null,
           userType: null,
+          userNameSession: null,
           showCurrent: true,
           showListing: false,
           showHistory: false,
           orders: null,
           CurrentOrders: null,
           AvailableOrders: null,
+
+          //placeorder
+          chosen_order_id: null,
 
           // current
           currentOrder: null,
@@ -190,9 +220,14 @@
           this.showHistory = true;
           this.fetchPreviousOrders();
         },
-
+        async setChosenOrder(orderId) {
+          this.chosen_order_id = orderId;
+          console.log(this.chosen_order_id);
+          await this.submitPlaceOrder();
+          this.toggleCurrent();
+        },
         async fetchPreviousOrders() {
-          const serviceURL = `http://127.0.0.1:5005/get_previous_orders/${this.userId}`;
+          const serviceURL = `${PLACE_ORDER_API_URL}/get_previous_orders/${this.userId}`;
 
         try {
           const response = await fetch(serviceURL, { method: 'GET' });
@@ -238,17 +273,18 @@
         },
 
         async fetchAvailableOrders(){
-          const serviceURL = `http://127.0.0.1:5006/load_orders/${this.userId}`;
+          const serviceURL = `${PLACE_ORDER_API_URL}/load_orders/${this.userId}`;
 
           try {
             const response = await fetch(serviceURL, { method: 'GET' });
-
-            if (response.status === 200) {
-              const result = await response.json();
+            console.log(response.status)
+            const result = await response.json()
+            console.log(result)
+            if (result.code === 200) {
               console.log('status 200');
               this.AvailableOrders = result.data;
               console.log(this.AvailableOrders);
-              } else if (response.status === 404) {
+              } else if (result.code === 404) {
                 console.log('error 404');
                 this.error = 'Orders not found';
               } else {
@@ -259,17 +295,43 @@
               this.error = `There is a problem retrieving order data, please try again later.<br />${error}`;
           }
         },
+
+        async submitPlaceOrder() {
+          const serviceURL = `${PLACE_ORDER_API_URL}/place_order`;
+          try {
+            const response = await fetch(serviceURL, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                order_id: this.chosen_order_id,
+                foodbank_id: this.userId,
+              }),
+            });
+
+            result = await response.json();
+            console.log(result);
+            return Promise.resolve();
+          } catch (error) {
+            this.message = error.message;
+            return Promise.reject(error);
+          }
+        }
       },
 
       created() {
         const saveduserId = localStorage.getItem('userId');
         const saveduserType = localStorage.getItem('userType');
-        console.log(saveduserId, saveduserType)
+        const saveduserNameSession = localStorage.getItem('userNameSession')
+        console.log(saveduserId, saveduserType, saveduserNameSession)
         if (saveduserId) {
             this.userId = parseInt(saveduserId);
         }
         this.userType = saveduserType
-        console.log(this.userId, this.userType)
+        this.userNameSession = saveduserNameSession
+        console.log(this.userId, this.userType, this.userNameSession)
+        this.toggleCurrent();
       }
 
     });

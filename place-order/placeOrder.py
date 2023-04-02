@@ -28,9 +28,13 @@ def get_foodbank_by_id(foodbank_id):
 
 @app.route("/place_order", methods=['PUT'])
 def place_order():
+    print('place_order invoked')
     # 1. retrieve foodbank details from the foodbank table
+    print(request.json)
     order_id= request.json['order_id']
     foodbank_id = request.json['foodbank_id']
+    print('bukan foodbank_id ini yang salah')
+    print(f'received order_id: {order_id}, foodbank_id: {foodbank_id}')
     foodbank= get_foodbank_by_id(foodbank_id)
     if foodbank is None:
         return jsonify(
@@ -92,14 +96,17 @@ def load_orders(foodbank_id):
     foodbank_address = foodbank_response['foodbank_address']
 
     # 2. Retrieve order listing from the order table using the region filter and status pending
-    get_order_URL = order_URL + f"/get_order/{foodbank_region}?status=pending"
+    get_order_URL = order_URL + f"/get_order_by_region/{foodbank_region}?status=pending"
     listings = requests.get(get_order_URL)
-    
+    listings_data = listings.json()
+    orders_list = listings_data['data']['orders']
+    print(orders_list)
+    print('pretetet')
     if listings:
         return jsonify(
             {
                 "code": 200,
-                "data": [list.json() for list in listings]
+                "data": orders_list
             }
         )
     else:
