@@ -86,7 +86,7 @@
     <div class="mt-3" v-show="showHistory">
       <div id="main-container" class="container">
         <h3>Past Posts</h3>
-        <h1 v-if="message">{{message}}</h1>
+        <h1 v-if="message">{{previous_order_message}}</h1>
         <table v-if="previous_orders" class='table table-striped border-1'>
             <thead class='table-dark'>
                 <tr>
@@ -181,10 +181,6 @@
                     dish_name: this.dish_name,
                 })
             });
-
-            // if (!response.ok) {
-            //     throw new Error('Error during sign up');
-            // }
 
             const data = await response.json();
             console.log(data)
