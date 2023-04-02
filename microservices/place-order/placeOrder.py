@@ -25,6 +25,64 @@ def get_foodbank_by_id(foodbank_id):
         return result.json()['data']
     else:
         return None
+    
+    
+    
+def publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, order_id):
+    message = "Your post of id"+ order_id+" has been ordered by " + foodbank_name+'(contact number: '+foodbank_phone_number+')' 
+    try:
+        # publish message to RabbitMQ exchange
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+
+        # declare the exchange
+        channel.exchange_declare(exchange='restaurant_foodbankorder', exchange_type='direct')
+        channel.queue_declare(queue='foodbankorder', durable=True)
+        channel.queue_bind(queue='foodbankorder', exchange='restaurant_foodbankorder', routing_key='foodbankorder')
+        # publish message to RabbitMQ exchange
+        channel.basic_publish(
+            exchange='restaurant_foodbankorder',
+            routing_key='foodbankorder',
+            body=message
+        )
+        # close the connection
+        connection.close()
+    except Exception as e:
+        print("An error occurred while publishing the message: " + str(e))
+        return jsonify(
+            {
+                "code": 500,
+                "message": "Failed to notify restaurant: " + str(e)
+            }
+        ), 500
+        
+def publish_message_to_driver(region, foodbank_name, foodbank_phone_number, driver_phone_number):
+    message = "New order from foodbank"+foodbank_name+'(contact number: '+foodbank_phone_number+')' + " in region " + region
+    try:
+        # publish message to RabbitMQ exchange
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+
+        # declare the exchange
+        channel.exchange_declare(exchange='notify_driver', exchange_type='direct')
+        channel.queue_declare(queue='new_order', durable=True)
+        channel.queue_bind(queue='new_order', exchange='notify_driver', routing_key='new_order')
+        # publish message to RabbitMQ exchange
+        channel.basic_publish(
+            exchange='notify_driver',
+            routing_key='new_order',
+            body=message
+        )
+        # close the connection
+        connection.close()
+    except Exception as e:
+        print("An error occurred while publishing the message: " + str(e))
+        return jsonify(
+            {
+                "code": 500,
+                "message": "Failed to notify driver: " + str(e)
+            }
+        ), 500
 
 @app.route("/place_order", methods=['PUT'])
 def place_order():
@@ -69,7 +127,39 @@ def place_order():
         return jsonify({"code": 500, "message": "Failed to place order: " + ex_str}), 500
     
     #amqp notify
+    publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, order_id)
     
+    try:
+        # invoke foodbank microservice to get the phone number of foodbanks in the region
+        result = requests.get(driver_URL + f"/get_driver/{region}")
+        drivers = result.json()['data']
+        driver_phone_numbers = [driver['phone_number']
+                                  for driver in drivers]
+
+        if not driver_phone_numbers:
+            return jsonify(
+                {
+                    "code": 404,
+                    "message": "No drivers found in this region."
+                }
+            ), 404
+
+    except Exception as e:
+        print("driver microservice is unavailable: " + str(e))
+        return jsonify(
+            {
+                "code": 500,
+                "message": "Failed to retrieve driver phone number: " + str(e)
+            }
+        ), 500
+        
+    # 4. notify driver with the phone number retrieved from the request above
+    for driver_phone_number in driver_phone_numbers:
+        publish_message_to_driver(
+            region, foodbank_name, foodbank_phone_number, driver_phone_number)
+        print("Sent message to:"+driver_phone_number)
+
+
     return jsonify(
         {
             "code": 200,
