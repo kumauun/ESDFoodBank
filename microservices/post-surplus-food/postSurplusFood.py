@@ -12,7 +12,7 @@ from os import environ
 import requests
 file_directory = '../'
 sys.path.append(file_directory)
-import amqp_setup
+# import amqp_setup
 app = Flask(__name__)
 CORS(app)
 

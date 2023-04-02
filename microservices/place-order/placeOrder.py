@@ -6,7 +6,7 @@ from os import environ
 
 import requests
 
-import amqp_setup
+# import amqp_setup
 import pika
 import json
 
