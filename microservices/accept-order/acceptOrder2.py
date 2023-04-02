@@ -20,7 +20,7 @@ CORS(app)
 restaurant_URL="http://localhost:5001/"
 foodbank_URL= "http://localhost:5002/"
 driver_URL = "http://localhost:5003/"
-order_URL = "http://localhost:5005/"
+order_URL = "http://localhost:5004/"
 
 def get_driver_by_id(driver_id):
     result = requests.get(f"{driver_URL}/get_driver/{driver_id}")
