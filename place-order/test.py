@@ -2,12 +2,11 @@ import requests
 import json
 
 order_data = {
-        "order_id": 8,
+        "order_id": 25,
         "foodbank_id": 5,
-        "restaurant_id": 2,
-        "restaurant_name": "tikus",
+        
         "region": "West",
-        "dish_name": "cheese"
+        
     }
 
 response = requests.put("http://127.0.0.1:5101/place_order", json=order_data)

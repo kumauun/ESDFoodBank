@@ -4,7 +4,7 @@ import json
 # Set up test data
 data_passed= {
     'restaurant_id': 2,
-    'dish_name': 'cheese'
+    'dish_name': 'pizzamozzarella'
 }
 
 # Start the services first before running this test
