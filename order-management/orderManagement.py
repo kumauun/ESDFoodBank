@@ -409,7 +409,50 @@ def get_non_pending_or_done_orders(foodbank_id):
 
     except Exception as e:
         return jsonify({"message": str(e)}), 500
+    
+@app.route("/get_current_deliveries/<int:driver_id>", methods=['GET'])
 
+def get_current_deliveries(driver_id):
+    orderlist = Order.query.filter_by(driver_id=driver_id, status='accepted').all()
+    print(orderlist)
+
+    if orderlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no postings."
+        }
+    ), 404
+    
+
+@app.route("/get_driver_past_deliveries/<int:driver_id>", methods=['GET'])
+def get_driver_past_deliveries(driver_id):
+    orderlist = Order.query.filter_by(driver_id=driver_id, status='done').all()
+    print(orderlist)
+
+    if orderlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "orders": [order.json() for order in orderlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no postings."
+        }
+    ), 404
 
 if __name__ == '__main__':
     with app.app_context():
