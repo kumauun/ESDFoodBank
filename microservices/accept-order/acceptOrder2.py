@@ -28,7 +28,39 @@ def get_driver_by_id(driver_id):
         return result.json()['data']
     else:
         return None
+    
+    
+    
+def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, order_status):
+    message = "Your order of id"+ order_id+" has been"+order_status +"by " + driver_name+'(contact number: '+driver_phone_number+')' 
+    try:
+        # publish message to RabbitMQ exchange
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
 
+        # declare the exchange
+        channel.exchange_declare(exchange='driver_order', exchange_type='direct')
+        channel.queue_declare(queue='driver', durable=True)
+        channel.queue_bind(queue='driver', exchange='driver_order', routing_key='driver')
+        # publish message to RabbitMQ exchange
+        channel.basic_publish(
+            exchange='driver_order',
+            routing_key='driver',
+            body=message
+        )
+        # close the connection
+        connection.close()
+    except Exception as e:
+        print("An error occurred while publishing the message: " + str(e))
+        return jsonify(
+            {
+                "code": 500,
+                "message": "Failed to notify foodbank: " + str(e)
+            }
+        ), 500
+        
+        
+        
 @app.route("/accept_order", methods=['PUT'])
 def accept_order():
     # 1. retrieve driver details from the driver table
@@ -67,17 +99,23 @@ def accept_order():
         return jsonify({"code": 500, "message": "Failed to accept order: " + ex_str}), 500
     
     #amqp notify
+    
+    publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, "accepted")
+    
     return jsonify(
             {
                 "code": 200,
                 "data": "success accepted order"
             }
     ), 200
-    
+
 @app.route("/update_order", methods=['PUT'])
 def update_order():
     
         order_id= request.json['order_id']
+        region = request.json['region']
+        driver_name = request.json['driver_name']
+        driver_phone_number = request.json['driver_phone_number']
         status = request.json['status']
         updated_order = {
                 "order_id": order_id,
@@ -96,7 +134,7 @@ def update_order():
             print("Order management microservice is unavailable: " + str(e))
             return jsonify({"code": 500, "message": "Failed to update order status: " + ex_str}), 500
         
-    
+        publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, "delivered")
         return jsonify(
             {
                 "code": 200,

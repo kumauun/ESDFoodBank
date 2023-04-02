@@ -25,6 +25,9 @@ def get_foodbank_by_id(foodbank_id):
         return result.json()['data']
     else:
         return None
+    
+    
+    
 def publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, order_id):
     message = "Your post of id"+ order_id+" has been ordered by " + foodbank_name+'(contact number: '+foodbank_phone_number+')' 
     try:
@@ -53,8 +56,8 @@ def publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, 
             }
         ), 500
         
-def publish_message_to_driver(region, restaurant_name, restaurant_phone_number, driver_phone_number):
-    message = "New posting from restaurant " + restaurant_name+'(contact number: '+restaurant_phone_number+')' + " in region " + region
+def publish_message_to_driver(region, foodbank_name, foodbank_phone_number, driver_phone_number):
+    message = "New order from foodbank"+foodbank_name+'(contact number: '+foodbank_phone_number+')' + " in region " + region
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -149,14 +152,7 @@ def place_order():
                 "message": "Failed to retrieve driver phone number: " + str(e)
             }
         ), 500
-
-    # return jsonify(
-    #    {
-    #        "code": 200,
-    #        "data": [driver["phone_number"] for driver #in drivers]
-    #    }
-    # ), 200
-
+        
     # 4. notify driver with the phone number retrieved from the request above
     for driver_phone_number in driver_phone_numbers:
         publish_message_to_driver(
