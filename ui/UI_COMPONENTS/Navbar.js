@@ -19,10 +19,6 @@ app.component('Navbar', {
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
             <a class="nav-link disabled" aria-current="page">Home</a>
-            <a class="nav-link" href="listing.html">Listing</a>
-            <a class="nav-link" href="history.html">History</a>
-            <a class="nav-link" href="currentdelivery.html">Current Delivery</a>
-            <a class="nav-link" href="settings.html">Settings</a>
             <a class="nav-link" @click="logout" style="cursor: pointer;">Logout</a>
           </div>
         </div>
@@ -51,13 +47,7 @@ app.component('Navbar', {
             this.userType = '';
             this.userNameSession = '';
             const userType = localStorage.getItem('userType');
-            if(userType == 'restaurant'){
-              href_page = '../foodbankUI/signUp.html'
-            } else if (userType == 'foodbank'){
-              href_page = './signUp.html'
-            } else if (userType == 'driver'){
-              href_page = '../foodbankUI/signUp.html'
-            }
+            href_page = './signUp.html'
             localStorage.removeItem('userId');
             localStorage.removeItem('userType');
             localStorage.removeItem('userNameSession');
