@@ -35,6 +35,7 @@ class Order(db.Model):
     driver_name = db.Column(db.String(100))
     dish_name = db.Column(db.String(100))
     status = db.Column(db.Enum('pending', 'ordered', 'accepted', 'picked up', 'delivered', 'done'), nullable=False, default='pending')
+    img_url = db.Column(db.String(200))
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
 
@@ -55,6 +56,7 @@ class Order(db.Model):
         'driver_name': self.driver_name,
         'dish_name': self.dish_name,
         'status': self.status,
+        'img_url': self.img_url,
         'created_at': self.created_at
         } 
 
@@ -91,6 +93,7 @@ def create_order():
     driver_phone_number = data.get('driver_phone_number')
     driver_name = data.get('driver_name')
     dish_name = data.get('dish_name')
+    img_url = data.get('img_url')
 
     new_order = Order(
         region=region,
@@ -106,6 +109,7 @@ def create_order():
         driver_phone_number =   driver_phone_number,
         driver_name = driver_name,
         dish_name=dish_name,
+        img_url = img_url,
         status='pending'
     )
 
@@ -422,10 +426,10 @@ def get_non_pending_or_done_orders(foodbank_id):
         orders = Order.query.filter_by(foodbank_id=foodbank_id).filter(Order.status.notin_(['pending', 'done'])).all()
 
         if not orders:
-            return jsonify({"message": "No orders found."}), 404
+            return jsonify({"code": 404, "message": "No orders found."}), 404
 
         return jsonify({
-            "message": "Orders retrieved successfully.",
+            "code": 200,
             "orders": [order.json() for order in orders]
         }), 200
 
