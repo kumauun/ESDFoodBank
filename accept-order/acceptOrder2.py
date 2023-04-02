@@ -65,12 +65,36 @@ def accept_order():
         print(ex_str)
         print("Order management microservice is unavailable: " + str(e))
         return jsonify({"code": 500, "message": "Failed to accept order: " + ex_str}), 500
-    return jsonify(
-        {
-            "code": 200,
-            "data": "success accept order"
-        }
-    ), 200
+    
+    #amqp notify
+    
+@app.route("/order_delivered", methods=['PUT'])
+def order_delivered():
+    
+        order_id= request.json['order_id']
+        delivered_order = {
+                "status": "delivered"
+            }
+        try:
+            result = requests.put(
+                f"{order_URL}/delivered_order/{order_id}", json=delivered_order)
+            response = result.json()
+            print(response)
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+            print(ex_str)
+            print("Order management microservice is unavailable: " + str(e))
+            return jsonify({"code": 500, "message": "Failed to update order status: " + ex_str}), 500
+        
+    
+        return jsonify(
+            {
+                "code": 200,
+                "data": "success delivered order"
+            }
+        ), 200
 
 
 if __name__ == '__main__':

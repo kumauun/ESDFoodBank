@@ -64,7 +64,7 @@ def place_order():
         print("Order management microservice is unavailable: " + str(e))
         return jsonify({"code": 500, "message": "Failed to place order: " + ex_str}), 500
     
-    
+    #amqp notify
     
     return jsonify(
         {
