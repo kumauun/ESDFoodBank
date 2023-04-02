@@ -417,6 +417,7 @@ def get_non_done_postings(restaurant_id):
 
 @app.route("/get_non_pending_or_done_orders/<int:foodbank_id>", methods=['GET'])
 def get_non_pending_or_done_orders(foodbank_id):
+    print('cihui')
     try:
         orders = Order.query.filter_by(foodbank_id=foodbank_id).filter(Order.status.notin_(['pending', 'done'])).all()
 
@@ -432,9 +433,9 @@ def get_non_pending_or_done_orders(foodbank_id):
         return jsonify({"message": str(e)}), 500
     
 @app.route("/get_current_deliveries/<int:driver_id>", methods=['GET'])
-
 def get_current_deliveries(driver_id):
-    orderlist = Order.query.filter_by(driver_id=driver_id, status='accepted').all()
+    valid_statuses = ['accepted', 'picked up', 'delivered']
+    orderlist = Order.query.filter(Order.driver_id == driver_id, Order.status.in_(valid_statuses)).all()
     print(orderlist)
 
     if orderlist:
