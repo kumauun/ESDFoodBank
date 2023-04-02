@@ -11,231 +11,353 @@
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
+
 <body>
-
-<!-- Vue app starts  -->
+    
+<!-- navbar starts  -->
 <div id="app">
-
   <Navbar></Navbar>
+<!-- navbar ends  -->
 
-  <h1 class = "m-5 ">Welcome to Savood {{userNameSession}}!</h1>
+<h1 class = "m-5 "> Welcome to Savood! </h1>
 
-  <div class="container mt-5">
-    <div>
-      <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Order</button>
-      <button @click="toggleListing" class="btn btn-success mx-1">Available Orders</button>
-      <button @click="toggleHistory" class="btn btn-warning mx-1">Past Orders</button>
-    </div>
 
-    <!-- current orders-->
-    <div id="toggle" v-show="showCurrent" class="mt-3 mx-auto">
-      <!-- {{CurrentOrders}} -->
+<div class="container mt-5">
 
-      <h3>Current Order</h3>
+  <div id="toggle">
+    <button @click="toggleCurrent" class="btn btn-primary mx-1">Current Delivery</button>
+    <button @click="toggleNew" class="btn btn-success mx-1">Delivery Requests</button>
+    <button @click="toggleHistory" class="btn btn-warning mx-1">Past Deliveries</button>
 
+    <!-- Current Delivery -->
+    <div id="toggle" class="mt-3 mx-auto" v-show="showCurrent">
+      <h3>Current Delivery</h3>
+      
       <h4 v-if="current_message">{{current_message}}</h4>
-      <div id="currentDelivery" v-if="CurrentOrders">
-        <div class="card d-flex mx-auto mb-3" v-for="order of CurrentOrders">
+      <div id="currentDelivery" v-if="current_orders">
+        <div class="card d-flex mx-auto mb-3" v-for="current_order of current_orders">
           <div class="card-header">
-            Order#{{order.order_id}}
+            {{current_order.order_id}}
           </div>
           <div class="card-body">
             <div class="row">
               <div class="col"><h5 class="card-title">PICK UP</h5></div>
               <div class="col"><h5 class="card-title">DROP OFF</h5></div>
               <div class="col" style="text-align: right; color: blue;">
-                <h5>{{ order.status }}</h5>
+                <h5>{{ current_order.status }}</h5>
               </div>
 
     
             <div class="row">
-              <div class="col" style="text-align: left;"><h3>{{order.restaurant_name}}</h3></div> 
-              <div class="col" style="text-align: left;"><h3>{{order.foodbank_name}}</h3></div> 
-              <div class="col" style="text-align: right;">Created at {{order.created_at}}</div> 
+              <div class="col" style="text-align: left;"><h3>{{current_order.restaurant_name}}</h3></div> 
+              <div class="col" style="text-align: left;"><h3>{{current_order.foodbank_name}}</h3></div> 
+              <div class="col" style="text-align: right;">Created at {{current_order.created_at}}</div> 
             </div>
             
             <div class="row">
-              <div class="col"><p class="card-text">{{order.restaurant_address}}</div>
-              <div class="col" style="text-align: left;">{{order.foodbank_address}} </div> 
+              <div class="col"><p class="card-text">{{current_order.restaurant_address}}</div>
+              <div class="col" style="text-align: left;">{{current_order.foodbank_address}} </div> 
               <div class="col" style="text-align: right;"></div> 
             </div>
             <div class="row">
-              <div class="col"><p class="card-text">{{order.restaurant_phone_number}}</p></div>
-              <div class="col" style="text-align: left;">{{order.foodbank_phone_number}}</div> 
+              <div class="col"><p class="card-text">{{current_order.restaurant_phone_number}}</p></div>
+              <div class="col" style="text-align: left;">{{current_order.foodbank_phone_number}}</div> 
               <div class="col" id="changeStatus" style="text-align: right;">
                 <!-- if current status is accepted, buttons not yet synced to database-->
-                <button v-if="status === 'Accepted'" @click="pickedUp()" class="btn btn-primary mx-1">Picked Up</button>
+                <button v-if="current_order.status === 'accepted'" @click="setPickedUpOrder(current_order.order_id)" class="btn btn-primary mx-1">Picked Up</button>
                 <!-- if current status is picked up -->
-                <button v-if="status === 'Picked Up'" @click="delivered()" class="btn btn-primary mx-1">Delivered</button>
+                <button v-if="current_order.status === 'picked up'" @click="setDeliveredOrder(current_order.order_id)" class="btn btn-primary mx-1">Delivered</button>
                 <!-- <button v-show="showPickedup" @click="delivered()" class="btn btn-primary mx-1">Delivered</button> -->
               </div> 
             </div>
           </div>
         </div>
       </div>
-      </div>
-
-
-      <div class="card">
-        <div class="card-header">
-          Order #12233
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col"><h5 class="card-title">Makanmakan</h5></div>
-            <div class="col text-left"><h5>Justin Bieber</h5></div>
-            <div class="col text-right text-orange"><h5>Picked Up</h5></div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">100 Kasai Road</p></div>
-            <div class="col text-left">SHC7878J</div>
-            <div class="col text-right">Order Created today at 18:10</div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">298188</p></div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">+6581234567</p></div>
-            <div class="col text-left">+6570351268</div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">Non-vegetarian Lunchboxes</p></div>
-          </div>
-        </div>
-      </div>
     </div>
-    
-    <div v-show="showListing" class="mt-3" v-if="AvailableOrders">
-      <!-- {{AvailableOrders}} -->
-      <h3>Available Orders</h3>
-      <div class="card" v-for="availableOrder of AvailableOrders" v-if="AvailableOrders">
-        <div class="card-header">
-          Order #{{availableOrder.order_id}}
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col"><h5 class="card-title">{{availableOrder.restaurant_name}}</h5></div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">{{availableOrder.restaurant_address}}</p></div>
-            <div class="col text-right">{{availableOrder.created_at}}</div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">{{availableOrder.restaurant_phone_number}}</p></div>
-          </div>
-          <div class="row">
-            <div class="col"><p class="card-text">{{availableOrder.dish_name}}</p></div>
-          </div>
-          <div class="row">
-            <div class="col text-right">
-              <button type="button" class="btn btn-primary" @click="setChosenOrder(availableOrder.order_id)">Place Order</button>
+    </div>
+
+    <!-- Delivery Requests -->
+    <div id="toggle" class="mt-3" v-show="showNew">
+      <h3>Delivery Requests</h3>
+
+      <div class="text-center mb-3">
+        <form>
+          <label for="region"><h4>Select Region:</h4></label>
+          <select name="region" id="region" @change="changeRegion($event)" style="width:100px;height:30px;" class="mx-3">
+            <option value="North">North</option>
+            <option value="South">South</option>
+            <option value="East">East</option>
+            <option value="West">West</option>
+            <option value="Central">Central</option>
+          </select>
+        </form>
+      </div>
+
+      <div id="cardContainer">
+
+        <div class="row row-cols-1 row-cols-md-3 g-4 mx-auto" v-for = "posting in postings">
+          <div class="col">
+            <div class="card h-100">
+              <div class="card-header">Order#{{posting.order_id}}</div>
+  
+              <div class="card-body">
+                <div class="row">
+                  <div class="col">
+                    <h6 class="card-title">PICK UP</h6>
+                    <h3 class="card-text">{{posting.restaurant_name}}</h3>
+                    <p class="card-text">{{posting.restaurant_address}}</p>
+                    <p class="card-text">{{posting.restaurant_phone_number}}</p>
+                  </div>
+                  <div class="col">
+                    <h6 class="card-title">DROP OFF</h6>
+                    <h3 class="card-text">{{posting.foodbank_name}}</h3>
+                    <p class="card-text">{{posting.foodbank_address}}</p>
+                    <p class="card-text">{{posting.foodbank_phone_number}}</p>
+                  </div>
+                </div>
+                
+                <div class="row mt-3">
+                  <div class="mx-auto d-flex col-6">
+                    <button type="button" class="btn btn-success mx-auto" @click="setChosenOrder(posting.order_id)">Accept</button>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="card-footer">
+                <small class="text-muted">Created on {{posting.created_at}}</small>
+              </div>
             </div>
           </div>
+
         </div>
+    </div>
+      
+    </div> 
+    
+    <!-- Past Deliveries -->
+    <div id="toggle" class="mt-3" v-show="showHistory">
+      <div id="main-container" class="container">
+        <h3>Past Deliveries</h3>
+        <table class='table table-striped border-1'>
+            <thead class='table-dark'>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Restaurant Name</th>
+                    <th>Foodbank Name</th>
+                    <th>Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody id="orderTable">
+              <tr v-for = "order of previous_orders">
+                <td>{{order.order_id}}</td>
+                <td>{{order.created_at}}</td>
+                <td>{{order.restaurant_name}}</td>
+                <td>{{order.foodbank_name}}</td>
+                <td>{{order.status}}</td>
+              </tr>
+            </tbody>
+      </table>
       </div>
-      <!-- Display available orders details -->
     </div>
 
-    <div v-show="showHistory" class="mt-3" v-if="orders">
-      {{orders}}
-      <!-- Display past orders details -->
-      <div v-show="showHistory" v-if="orders">
-        <h3 class="mt-3">Past Orders</h3>
-        <table class="table table-striped border-1">
-          <thead class="table-dark">
-            <tr>
-              <th>Order ID</th>
-              <th>Date</th>
-              <th>Restaurant Name</th>
-              <th>Dish Name</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="order of orders">
-              <td>{{ order.order_id }}</td>
-              <td>{{ order.created_at }}</td>
-              <td>{{ order.restaurant_name }}</td>
-              <td>{{ order.dish_name }}</td>
-              <td>{{ order.status }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </div>
 
-  <Footer></Footer>
 
+  <!-- Footer -->
+  <div class="container">
+  <div class="container">
+    <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top text-center">
+      <p class="text-muted">Savood © 2022</p>
+    </footer>
+  </div>
 </div>
-<!-- Vie app ends-->
+</div>
+</div>
+
+<!-- <script src="app.js"></script> -->
+
 
 <script>
-
   ORDER_API_URL = 'http://127.0.0.1:5005'
-  PLACE_ORDER_API_URL = 'http://127.0.0.1:5101'
-  
+  ACCEPT_ORDER_API_URL = 'http://127.0.0.1:5102'
   const app = Vue.createApp({
       data() {
         return {
           userId: null,
           userType: null,
           userNameSession: null,
+
           showCurrent: true,
-          showListing: false,
+          showNew: false,
           showHistory: false,
-          orders: null,
-          CurrentOrders: null,
-          AvailableOrders: null,
-
-          //placeorder
-          chosen_order_id: null,
-
-          // current
-          currentOrder: null,
-          current_message: null,
+          showAccepted: true,
+          showPickedUp: false,
 
           //history
           previous_orders: null,
           previous_message: null,
 
+          //current
+          current_orders: null,
+          current_message: null,
+
+          //postings
+          postings: null,
+          posting_region: "North",
+          posting_message: null,
+
+          //accept order
+          chosen_order_id: null,
+
+          //pick up order
+          picked_up_order_id: null,
+
+          //delivered order
+          delivered_order_id: null,
+
+          status: "Accepted",
         };
       },
+
       methods: {
         toggleCurrent() {
           this.showCurrent = true;
-          this.showListing = false;
+          this.showNew = false;
           this.showHistory = false;
-          this.fetchCurrentOrders();
+          this.fetchCurrentOrder();
         },
-        toggleListing() {
+        toggleNew() {
           this.showCurrent = false;
-          this.showListing = true;
+          this.showNew = true;
           this.showHistory = false;
-          this.fetchAvailableOrders()
+          this.fetchOrdersbyRegion();
         },
         toggleHistory() {
           this.showCurrent = false;
-          this.showListing = false;
+          this.showNew = false;
           this.showHistory = true;
-          this.fetchPreviousOrders();
         },
-        async setChosenOrder(orderId) {
-          this.chosen_order_id = orderId;
-          console.log(this.chosen_order_id);
-          await this.submitPlaceOrder();
-          this.toggleCurrent();
-        },
-        async fetchPreviousOrders() {
-          const serviceURL = `${PLACE_ORDER_API_URL}/get_previous_orders/${this.userId}`;
+      //   pickedUp() {
+      //   this.status = "Picked Up";
+      //   this.showAccepted = false;
+      //   this.showPickedUp = true;
+      // },
+      // delivered() {
+      //   this.status = "Delivered";
+      //   this.showPickedUp = false;
+      // },
+
+      changeRegion(event){
+        this.posting_region = event.target.value
+        console.log(this.posting_region)
+        this.fetchOrdersbyRegion();
+      },
+
+      async setChosenOrder(orderId){
+        this.chosen_order_id = orderId;
+        console.log(this.chosen_order_id);
+        await this.submitAcceptOrder();
+        this.toggleCurrent();
+      },
+
+      async setPickedUpOrder(orderId){
+        this.picked_up_order_id = orderId;
+        console.log(this.picked_up_order_id);
+        await this.submitPickedUpOrder();
+        this.toggleCurrent();
+      },
+
+      async setDeliveredOrder(orderId){
+        this.delivered_order_id = orderId;
+        console.log(this.delivered_order_id);
+        await this.submitDeliveredOrder();
+        this.toggleCurrent();
+      },
+
+      //accept orders
+      async submitAcceptOrder(){
+        const serviceURL = `${ACCEPT_ORDER_API_URL}/accept_order`;
+          try {
+            const response = await fetch(serviceURL, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                order_id: this.chosen_order_id,
+                driver_id: this.userId,
+              }),
+            });
+
+            result = await response.json();
+            console.log(result);
+            return Promise.resolve();
+          } catch (error) {
+            this.message = error.message;
+            return Promise.reject(error);
+          }
+
+      },
+
+      async submitPickedUpOrder() {
+        const serviceURL = `${ACCEPT_ORDER_API_URL}/update_order`;
+        try {
+            const response = await fetch(serviceURL, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                order_id: this.picked_up_order_id,
+                status: "picked up",
+              }),
+            });
+
+            result = await response.json();
+            console.log(result);
+            return Promise.resolve();
+          } catch (error) {
+            this.message = error.message;
+            return Promise.reject(error);
+          }
+      },
+
+      async submitDeliveredOrder() {
+        const serviceURL = `${ACCEPT_ORDER_API_URL}/update_order`;
+        try {
+            const response = await fetch(serviceURL, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                order_id: this.delivered_order_id,
+                status: "delivered",
+              }),
+            });
+
+            result = await response.json();
+            console.log(result);
+            return Promise.resolve();
+          } catch (error) {
+            this.message = error.message;
+            return Promise.reject(error);
+          }
+      },
+      
+      async fetchPreviousOrders(){
+       
+        const serviceURL = `http://127.0.0.1:5005/get_driver_past_deliveries/${this.userId}`
 
         try {
           const response = await fetch(serviceURL, { method: 'GET' });
-   
+
           if (response.status === 200) {
             const result = await response.json();
             console.log('status 200')
-            this.orders = result.data.orders;
+            this.previous_orders = result.data.orders;
             console.log(this.orders)
           } else if (response.status === 404) {
             console.log('error 404')
@@ -247,106 +369,93 @@
           console.log('error')
           this.error = `There is a problem retrieving previous orders data, please try again later.<br />${error}`;
           }
-        },
-
-        async fetchCurrentOrders(){
-          const serviceURL = `http://127.0.0.1:5005/get_non_pending_or_done_orders/${this.userId}`;
-
-          try {
-            const response = await fetch(serviceURL, { method: 'GET' });
-
-            if (response.status === 200) {
-              const result = await response.json();
-              console.log('status 200');
-              this.CurrentOrders = result.orders;
-              console.log(this.CurrentOrders);
-            } else if (response.status === 404) {
-              console.log('error 404');
-              console.log(this.error);
-            } else {
-              throw response.status;
-            }
-          } catch (error) {
-              console.log('error');
-              this.error = `There is a problem retrieving non-pending and non-done orders data, please try again later.<br />${error}`;
-          }
-        },
-
-        async fetchAvailableOrders(){
-          const serviceURL = `${PLACE_ORDER_API_URL}/load_orders/${this.userId}`;
-
-          try {
-            const response = await fetch(serviceURL, { method: 'GET' });
-            console.log(response.status)
-            const result = await response.json()
-            console.log(result)
-            if (result.code === 200) {
-              console.log('status 200');
-              this.AvailableOrders = result.data;
-              console.log(this.AvailableOrders);
-              } else if (result.code === 404) {
-                console.log('error 404');
-                this.error = 'Orders not found';
-              } else {
-                throw response.status;
-              }
-          } catch (error) {
-              console.log('error');
-              this.error = `There is a problem retrieving order data, please try again later.<br />${error}`;
-          }
-        },
-
-        async submitPlaceOrder() {
-          const serviceURL = `${PLACE_ORDER_API_URL}/place_order`;
-          try {
-            const response = await fetch(serviceURL, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                order_id: this.chosen_order_id,
-                foodbank_id: this.userId,
-              }),
-            });
-
-            result = await response.json();
-            console.log(result);
-            return Promise.resolve();
-          } catch (error) {
-            this.message = error.message;
-            return Promise.reject(error);
-          }
-        }
       },
 
-      created() {
-        const saveduserId = localStorage.getItem('userId');
-        const saveduserType = localStorage.getItem('userType');
-        const saveduserNameSession = localStorage.getItem('userNameSession')
-        console.log(saveduserId, saveduserType, saveduserNameSession)
-        if (saveduserId) {
-            this.userId = parseInt(saveduserId);
-        }
-        this.userType = saveduserType
-        this.userNameSession = saveduserNameSession
-        console.log(this.userId, this.userType, this.userNameSession)
-        this.toggleCurrent();
+      async fetchCurrentOrder(){
+        const serviceURL = `${ORDER_API_URL}/get_current_deliveries/${this.userId}`
+
+        try {
+          const response = await fetch(serviceURL, { method: 'GET' });
+          const result = await response.json()
+          console.log(result)
+          if (result.code === 200) {
+            console.log('status 200')
+            this.current_orders = result.data.orders;
+            this.current_message = null
+          } else if (result.code === 404) {
+            this.current_orders = null
+            this.current_message = result.message
+          } else {
+            throw response.status;
+          }
+        } catch (error) {
+          console.log('error')
+          this.error = `There is a problem retrieving previous orders data, please try again later.<br />${error}`;
+          }
+      },
+
+      async fetchOrdersbyRegion(){
+        
+        const serviceURL = `${ORDER_API_URL}/get_order_by_region/${this.posting_region}?status=ordered`
+
+        try {
+          const response = await fetch(serviceURL, { method: 'GET' });
+          const result = await response.json()
+          console.log(result)
+          if (result.code === 200) {
+            console.log('status 200')
+            this.postings = result.data.orders;
+            this.posting_message = null
+            console.log(this.postings)
+          } else if (response.code === 404) {
+            this.postings = null
+            this.posting_message = result.message
+          } else {
+            throw response.status;
+          }
+        } catch (error) {
+          console.log('error')
+          this.error = `There is a problem retrieving previous orders data, please try again later.<br />${error}`;
+          }
       }
+    },
 
-    });
+    created() {
+      const saveduserId = localStorage.getItem('userId');
+      const saveduserType = localStorage.getItem('userType');
+      const saveduserNameSession = localStorage.getItem('userNameSession')
+      console.log(saveduserId, saveduserType)
+      if (saveduserId) {
+          this.userId = parseInt(saveduserId);
+      }
+      this.userType = saveduserType
+      this.userNameSession = saveduserNameSession
+      console.log(this.userId, this.userType)
 
-</script>
+      //Call fetchCurrentDeliveries when app is created
+      this.toggleCurrent();
+
+       // Call fetchPreviousOrders when the app is created
+      //this.fetchPreviousOrders();
+
+      //Call fetchOrdersbyRegion when the app is created
+      //this.fetchOrdersbyRegion();
+    }
+    
+  });
+  </script>
 
 
-<!-- Import the Navbar and Footer components -->
-<script src="./UI_COMPONENTS/Navbar.js"></script>
-<!-- <script src="../UI_COMPONENTS/Footer.js"></script> -->
+  
+
+
+
+<script src="../UI_COMPONENTS/Navbar.js"></script>
 
 <script>app.mount('#app');</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
+
 </body>
 </html>
-

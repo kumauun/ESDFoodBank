@@ -9,7 +9,7 @@ import requests
 file_directory = '../'
 sys.path.append(file_directory)
 
-import amqp_setup
+#import amqp_setup
 import pika
 import json
 
@@ -67,17 +67,25 @@ def accept_order():
         return jsonify({"code": 500, "message": "Failed to accept order: " + ex_str}), 500
     
     #amqp notify
+    return jsonify(
+            {
+                "code": 200,
+                "data": "success accepted order"
+            }
+    ), 200
     
-@app.route("/order_delivered", methods=['PUT'])
-def order_delivered():
+@app.route("/update_order", methods=['PUT'])
+def update_order():
     
         order_id= request.json['order_id']
-        delivered_order = {
-                "status": "delivered"
+        status = request.json['status']
+        updated_order = {
+                "order_id": order_id,
+                "status": status
             }
         try:
             result = requests.put(
-                f"{order_URL}/delivered_order/{order_id}", json=delivered_order)
+                f"{order_URL}/update_order_status", json=updated_order)
             response = result.json()
             print(response)
         except Exception as e:
