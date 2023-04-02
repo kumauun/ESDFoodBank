@@ -98,33 +98,33 @@
         <div class="row row-cols-1 row-cols-md-3 g-4 mx-auto" v-for = "posting in postings">
           <div class="col">
             <div class="card h-100">
-              <div class="card-header">{{postings.order_id}}</div>
+              <div class="card-header">Order#{{posting.order_id}}</div>
   
               <div class="card-body">
                 <div class="row">
                   <div class="col">
                     <h6 class="card-title">PICK UP</h6>
-                    <h3 class="card-text">{{postings.restaurant_name}}</h3>
-                    <p class="card-text">{{postings.restaurant_address}}</p>
-                    <p class="card-text">{{postings.restaurant_phone_number}}</p>
+                    <h3 class="card-text">{{posting.restaurant_name}}</h3>
+                    <p class="card-text">{{posting.restaurant_address}}</p>
+                    <p class="card-text">{{posting.restaurant_phone_number}}</p>
                   </div>
                   <div class="col">
                     <h6 class="card-title">DROP OFF</h6>
-                    <h3 class="card-text">{{postings.foodbank_name}}</h3>
-                    <p class="card-text">{{postings.foodbank_address}}</p>
-                    <p class="card-text">{{postings.foodbank_phone_number}}</p>
+                    <h3 class="card-text">{{posting.foodbank_name}}</h3>
+                    <p class="card-text">{{posting.foodbank_address}}</p>
+                    <p class="card-text">{{posting.foodbank_phone_number}}</p>
                   </div>
                 </div>
                 
                 <div class="row mt-3">
                   <div class="mx-auto d-flex col-6">
-                    <button type="button" class="btn btn-success mx-auto" @click="acceptOrder">Accept</button>
+                    <button type="button" class="btn btn-success mx-auto" @click="setChosenOrder(posting.order_id)">Accept</button>
                   </div>
                 </div>
               </div>
   
               <div class="card-footer">
-                <small class="text-muted">Created on {{postings.created_at}}</small>
+                <small class="text-muted">Created on {{posting.created_at}}</small>
               </div>
             </div>
           </div>
@@ -204,6 +204,7 @@
 
 <script>
   ORDER_API_URL = 'http://127.0.0.1:5005'
+  ACCEPT_ORDER_API_URL = 'http://127.0.0.1:5102'
   const app = Vue.createApp({
       data() {
         return {
@@ -230,6 +231,9 @@
           posting_region: "North",
           posting_message: null,
 
+          //accept order
+          chosen_order_id: null,
+
           status: "Accepted",
         };
       },
@@ -245,6 +249,7 @@
           this.showCurrent = false;
           this.showNew = true;
           this.showHistory = false;
+          this.fetchOrdersbyRegion();
         },
         toggleHistory() {
           this.showCurrent = false;
@@ -264,34 +269,40 @@
       changeRegion(event){
         this.posting_region = event.target.value
         console.log(this.posting_region)
+        this.fetchOrdersbyRegion();
+      },
+
+      async setChosenOrder(orderId){
+        this.chosen_order_id = orderId;
+        console.log(this.chosen_order_id);
+        await this.submitAcceptOrder();
+        this.toggleCurrent();
       },
 
       //accept orders
-      acceptOrder(event){
-        
+      async submitAcceptOrder(){
+        const serviceURL = `${ACCEPT_ORDER_API_URL}/accept_order`;
+          try {
+            const response = await fetch(serviceURL, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                order_id: this.chosen_order_id,
+                driver_id: this.userId,
+              }),
+            });
+
+            result = await response.json();
+            console.log(result);
+            return Promise.resolve();
+          } catch (error) {
+            this.message = error.message;
+            return Promise.reject(error);
+          }
 
       },
-
-        async loadListings() {
-        //   try {
-        //     const response = await fetch("${ORDER_API_URL}/get_order/<region>", {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify({
-        //             user_email: this.user_email,
-        //             username: this.username,
-        //             user_type: this.user_type,
-        //             phone_number: this.phone_number,
-        //             region: this.region,
-        //             postal_code: this.postal_code,
-        //             address: this.address,
-        //             password: this.password,
-        //         })
-        //     });
-        // }
-        },
       
       async fetchPreviousOrders(){
        
@@ -299,15 +310,6 @@
 
         try {
           const response = await fetch(serviceURL, { method: 'GET' });
-          // console.log('halo')
-
-          // console.log(response)
-
-          // if (response.status === 200) {
-          //   console.log('200')
-          //   // this.orders = hellow;
-          //   console.log(response)
-          // }
 
           if (response.status === 200) {
             const result = await response.json();
@@ -327,10 +329,12 @@
       },
 
       async fetchCurrentOrder(){
-        const serviceURL = `http://127.0.0.1:5005/get_current_deliveries/${this.userId}`
+        const serviceURL = `${ORDER_API_URL}/get_current_deliveries/${this.userId}`
 
         try {
           const response = await fetch(serviceURL, { method: 'GET' });
+          const result = await response.json()
+          console.log(result)
           if (response.status === 200) {
             const result = await response.json();
             console.log('status 200')
@@ -352,18 +356,18 @@
 
       async fetchOrdersbyRegion(){
         
-        const serviceURL = `http://127.0.0.1:5005/get_order/${this.posting_region}`
+        const serviceURL = `${ORDER_API_URL}/get_order_by_region/${this.posting_region}?status=ordered`
 
         try {
           const response = await fetch(serviceURL, { method: 'GET' });
-          if (response.status === 200) {
-            const result = await response.json();
+          const result = await response.json()
+          console.log(result)
+          if (result.code === 200) {
             console.log('status 200')
             this.postings = result.data.orders;
             this.posting_message = null
-          } else if (response.status === 404) {
-            const result = await response.json();
-            console.log('status 404')
+            console.log(this.postings)
+          } else if (response.code === 404) {
             this.postings = null
             this.posting_message = result.message
           } else {
@@ -389,13 +393,13 @@
       console.log(this.userId, this.userType)
 
       //Call fetchCurrentDeliveries when app is created
-      this.fetchCurrentOrder();
+      this.toggleCurrent();
 
        // Call fetchPreviousOrders when the app is created
-      this.fetchPreviousOrders();
+      //this.fetchPreviousOrders();
 
       //Call fetchOrdersbyRegion when the app is created
-      this.fetchOrdersbyRegion();
+      //this.fetchOrdersbyRegion();
     }
     
   });
