@@ -4,77 +4,118 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq-mgmt
+    restart: always
     ports:
       - "5672:5672"
       - "15672:15672"
 
   ui:
     build: ./ui
+    container_name: ui
     ports:
-      - "5000:5000"
+      - "5000:80"
+    depends_on:
+      - user
+      - restaurant
+      - driver
+      - foodbank
 
   driver:
     build: ./microservices/driver
     container_name: driver_microservice
+    restart: always
     ports:
-      - "5003:5000"
+      - "5003:5003"
     environment:
       - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/driver
+    depends_on:
+      - user
 
   restaurant:
     build: ./microservices/restaurant
     container_name: restaurant_microservice
+    restart: always
     ports:
-      - "5001:5000"
+      - "5001:5001"
     environment:
       - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/restaurant
+    depends_on:
+      - user
 
   foodbank:
     build: ./microservices/foodbank
     container_name: foodbank_microservice
+    restart: always
     ports:
-      - "5002:5000"
+      - "5002:5002"
     environment:
       - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/foodbank
+    depends_on:
+      - user
 
   order-management:
     build: ./microservices/order-management
     container_name: order-management_microservice
+    restart: always
     ports:
-      - "5004:5000"
+      - "5004:5004"
     environment:
-      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/order_database
+      - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/orders_database
+    depends_on:
+      - user
+      - restaurant
+      - driver
+      - foodbank
 
   notification:
     build: ./microservices/notification
     container_name: notification_microservice
+    restart: always
     ports:
       - "5005:5000"
     environment:
       - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+      - post-surplus-food
+      - place-order
+      - accept-order
+
 
   user:
-    build: ./microservices/user
+    build:
+      context: ./microservices/user/
+      dockerfile: Dockerfile
     container_name: user_microservice
+    restart: always
     ports:
-      - "5006:5000"
+      - "5006:5006"
     environment:
       - dbURL=mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/user
   
   post-surplus-food:
     build: ./microservices/post-surplus-food
     container_name: post_surplus_food_microservice
+    restart: always
     ports:
-      - "5007:5000"
+      - "5007:5007"
+    depends_on:
+      - order-management
   
   place-order:
     build: ./microservices/place-order
     container_name: place_order_microservice
+    restart: always
+    depends_on:
+      - order-management
     ports:
-      - "5008:5000"
+      - "5008:5008"
 
   accept-order:
     build: ./microservices/accept-order
     container_name: accept_order_microservice
+    restart: always
     ports:
-      - "5009:5000"
+      - "5009:5009"
+    depends_on:
+      - order-management

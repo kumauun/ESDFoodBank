@@ -56,8 +56,8 @@ channel.basic_consume(queue='restaurant_foodbank_order', on_message_callback=sen
 
 if __name__ == '__main__':
     try:
-        print("Starting RabbitMQ consumer")
         channel.start_consuming()
+        print("Starting RabbitMQ consumer")
     except KeyboardInterrupt:
         print("Stopping RabbitMQ consumer")
         channel.stop_consuming()

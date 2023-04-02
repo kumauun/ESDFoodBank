@@ -14,7 +14,7 @@ RUN python -m pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port the application will run on
-EXPOSE 5005
+EXPOSE 5000
 
 # Set the command to start the application
 CMD [ "python", "./notification.py" ]

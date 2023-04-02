@@ -40,6 +40,10 @@ def load_user(user_id):
     print('Received user_id:', user_id)
     return User.query.get(int(user_id))
 
+@app.route('/')
+def hello_world():
+    return 'Halloooooooo'
+
 @app.route('/login', methods=['GET'])
 def show_login_form():
     return jsonify({'message': 'Please send a POST request to log in'})
