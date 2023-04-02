@@ -10,6 +10,15 @@
 </head>
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://sdk.amazonaws.com/js/aws-sdk-2.958.0.min.js"></script>
+<script>
+  AWS.config.update({
+    accessKeyId: 'AKIAZSYJOJEMTCLTGB4T',
+    secretAccessKey: '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',
+    region: 'us-east-1',
+  });
+
+</script>
 
 <body>
     
@@ -39,28 +48,35 @@
           <div class="card-header">
             Order #{{current_order.order_id}}
           </div>
-          <div class="card-body">
-            <div class="row">
-                <div class="col"><p class="card-text">{{current_order.dish_name}}</p></div>
-                <div class="col" style="text-align: right; color: orange;"><h5>{{current_order.status}}</h5></div> 
+          <div class="row">
+            <div class="col-3">
+              <img :src="current_order.img_url ? current_order.img_url : 'empty.png'" class="img-fluid">
             </div>
+            <div class="col-9">
+            <div class="card-body">
+              <div class="row">
+                  <div class="col"><p class="card-text">{{current_order.dish_name}}</p></div>
+                  <div class="col" style="text-align: right; color: orange;"><h5>{{current_order.status}}</h5></div> 
+              </div>
 
-            <br>
+              <br>
 
-            <div class="row">
-              <div class="col"><h5 class="card-title">{{current_order.foodbank_name}}</h5></div>
-              <div class="col" style="text-align: left;"><h5>{{current_order.driver_name}}</h5></div> 
-              <div class="col" style="text-align: right;">Order Created {{current_order.created_at}}</div> 
+              <div class="row">
+                <div class="col"><h5 class="card-title">{{current_order.foodbank_name}}</h5></div>
+                <div class="col" style="text-align: left;"><h5>{{current_order.driver_name}}</h5></div> 
+                <div class="col" style="text-align: right;">Order Created {{current_order.created_at}}</div> 
+              </div>
+              <div class="row">
+                <div class="col"><p class="card-text">{{current_order.foodbank_address}}</div>
+                <div class="col" style="text-align: left;"></div> 
+                <div class="col" style="text-align: right;"></div> 
+              </div>
+              <div class="row">
+                <div class="col"><p class="card-text">{{current_order.foodbank_phone_number}}</p></div>
+                <div class="col" style="text-align: left;">{{current_order.driver_phone_number}}</div> 
+                <div class="col" style="text-align: right;"></div> 
+              </div>
             </div>
-            <div class="row">
-              <div class="col"><p class="card-text">{{current_order.foodbank_address}}</div>
-              <div class="col" style="text-align: left;"></div> 
-              <div class="col" style="text-align: right;"></div> 
-            </div>
-            <div class="row">
-              <div class="col"><p class="card-text">{{current_order.foodbank_phone_number}}</p></div>
-              <div class="col" style="text-align: left;">{{current_order.driver_phone_number}}</div> 
-              <div class="col" style="text-align: right;"></div> 
             </div>
           </div>
         </div>
@@ -76,8 +92,14 @@
                 <input type="text" class="form-control" id="dishName" v-model="dish_name">
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-success" @click="submitNewDish">Post</button>
+                <button type="submit" class="btn btn-success" @click="submitNewDish" :disabled="dish_name == ''">Post</button>
             </div>
+        </div>
+        <div class="row mb-3 mx-auto">
+          <label for="dishImage" class="col-sm-2 col-form-label">Dish Image</label>
+          <div class="col-sm-4">
+            <input type="file" class="form-control" id="dishImage" ref="dishImage" accept="image/*">
+          </div>
         </div>
     </div>
     
@@ -85,7 +107,7 @@
     <div class="mt-3" v-show="showHistory">
       <div id="main-container" class="container">
         <h3>Past Posts</h3>
-        <h1 v-if="message">{{previous_order_message}}</h1>
+        <h5 v-if="previous_order_message" class="text-center">{{previous_order_message}}</h5>
         <table v-if="previous_orders" class='table table-striped border-1'>
             <thead class='table-dark'>
                 <tr>
@@ -126,7 +148,7 @@
 </body>
 
 <script>
-  const ORDER_MANAGEMENT_URL = "http://127.0.0.1:5005"
+  const ORDER_MANAGEMENT_URL = "http://127.0.0.1:5004"
   const POST_SURPLUS_URL = "http://127.0.0.1:5007"
   const app = Vue.createApp({
       data() {
@@ -172,8 +194,40 @@
           this.get_previous_postings();
         },
 
+        async uploadImage() {
+          const file = this.$refs.dishImage.files[0];
+          if (!file) {
+            return null;
+          }
+
+          const fileType = file.type;
+          const folder = 'images/' + this.userId + '/';
+          const fileName = encodeURIComponent(file.name).replace(/'/g, "%27").replace(/"/g, "%22");
+          const filePath = folder + fileName;
+
+          const s3 = new AWS.S3();
+
+          const params = {
+            Bucket: 'savood-img-storage',
+            Key: filePath,
+            Body: file,
+            ContentType: fileType,
+            ACL: 'public-read'
+          };
+
+          try {
+            const data = await s3.upload(params).promise();
+            console.log(data.Location)
+            return data.Location;
+          } catch (error) {
+            console.error('Error uploading image:', error);
+            return null;
+          }
+          },
+
         async submitNewDish() {
           try {
+            const imageUrl = await this.uploadImage();
             const response = await fetch(`${POST_SURPLUS_URL}/post_food`, {
                 method: 'POST',
                 headers: {
@@ -182,6 +236,7 @@
                 body: JSON.stringify({
                     restaurant_id: this.userId,
                     dish_name: this.dish_name,
+                    img_url: imageUrl
                 })
             });
 
@@ -192,6 +247,8 @@
             } catch (error) {
                 this.message = error.message;
             }
+
+            this.$refs.dishImage.value = ''; 
 
             this.toggleCurrent();
         },
@@ -212,8 +269,8 @@
               this.previous_order_message = null
               console.log(this.previous_orders)
             } else if (result.code == 404) {
-              this.previous_order_message = 'No previous postings'
-              this.previous_orders = []
+              this.previous_order_message = result.message
+              this.previous_orders = null
               console.log(this.previous_orders)
             } else {
               this.previous_orders = null
