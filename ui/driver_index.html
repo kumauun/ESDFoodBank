@@ -19,7 +19,7 @@
   <Navbar></Navbar>
 <!-- navbar ends  -->
 
-<h1 class = "m-5 "> Welcome to Savood! </h1>
+<h1 class = "m-5 "> Welcome to Savood {{userNameSession}}! </h1>
 
 
 <div class="container mt-5">
@@ -430,23 +430,15 @@
       this.userNameSession = saveduserNameSession
       console.log(this.userId, this.userType)
 
-      //Call fetchCurrentDeliveries when app is created
+      if (!this.userId && this.userType != 'driver'){
+          window.location.href = './signUp.html'
+      }
       this.toggleCurrent();
 
-       // Call fetchPreviousOrders when the app is created
-      //this.fetchPreviousOrders();
-
-      //Call fetchOrdersbyRegion when the app is created
-      //this.fetchOrdersbyRegion();
     }
     
   });
   </script>
-
-
-  
-
-
 
 <script src="./UI_COMPONENTS/Navbar.js"></script>
 

@@ -148,7 +148,7 @@
                                     <button type="submit" class="btn btn-primary">Sign in</button>
                                 </div>
                                 <div class="mt-3">
-                                    <p class="message">Not registered? <a href="#" @click="showRegister" >Sign In</a></p>
+                                    <p class="message">Not registered? <a href="#" @click="showRegister" >Sign Up</a></p>
                                 </div>
 
                             </div>
@@ -330,14 +330,25 @@
 
             created() {
                 const saveduserId = localStorage.getItem('userId');
+                const saveduserType = localStorage.getItem('userType');
                 console.log(saveduserId)
                 if (saveduserId) {
                     this.userId = parseInt(saveduserId);
                 }
                 console.log(this.userId)
-
                 
-            },
+                if(this.userId){
+                    if(this.userType == 'restaurant'){
+                        window.location.href = './restaurant_index.html';
+                    } 
+                    if(this.userType == 'foodbank'){
+                        window.location.href = './foodbank_index.html';
+                    } 
+                    if(this.userType == 'driver'){
+                        window.location.href = './driver_index.html';
+                    }
+                
+            }}
 
         }).mount('#app');
     </script>

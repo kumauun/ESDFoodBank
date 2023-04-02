@@ -362,6 +362,9 @@
         this.userType = saveduserType
         this.userNameSession = saveduserNameSession
         console.log(this.userId, this.userType, this.userNameSession)
+        if (!this.userId && this.userType != 'foodbank'){
+          window.location.href = './signUp.html'
+        }
         this.toggleCurrent();
       }
 

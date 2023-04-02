@@ -18,7 +18,7 @@
   <Navbar></Navbar>
 <!-- navbar ends  -->
 
-<h1 class = "m-5 "> Welcome to Savood! </h1>
+<h1 class = "m-5 "> Welcome to Savood {{userNameSession}}! </h1>
 
 
 <div class="container mt-5">
@@ -70,7 +70,6 @@
     <!-- Create New Post -->
     <div class="mt-3" v-show="showNew">
       <h3>Create New Post</h3>
-        
         <div class="row mb-3 mx-auto">
             <label for="dishName" class="col-sm-2 col-form-label">Dish Name</label>
             <div class="col-sm-4">
@@ -127,7 +126,7 @@
 </body>
 
 <script>
-  const ORDER_MANAGEMENT_URL = "http://127.0.0.1:5004"
+  const ORDER_MANAGEMENT_URL = "http://127.0.0.1:5005"
   const POST_SURPLUS_URL = "http://127.0.0.1:5007"
   const app = Vue.createApp({
       data() {
@@ -262,6 +261,9 @@
         this.userType = saveduserType
         this.userNameSession = saveduserNameSession
         console.log(this.userId, this.userType, this.userNameSession)
+        if (!this.userId && this.userType != 'restaurant'){
+          window.location.href = './signUp.html'
+        }
 
         this.toggleCurrent()
       }
