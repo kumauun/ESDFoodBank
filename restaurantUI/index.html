@@ -114,7 +114,13 @@
 </div>
 
 <!--If the footer component fails, insert here-->
-  <Footer></Footer>
+<div class="container">
+  <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top text-center">
+    <p class="text-muted">Savood © 2022</p>
+  </footer>
+</div>
+
+  <!-- <Footer></Footer> -->
 </div>
 </div>
 
@@ -213,6 +219,7 @@
               this.previous_orders = []
               console.log(this.previous_orders)
             } else {
+              this.previous_orders = null
               this.previous_order_message = 'Unknown error occured'
             }
             
