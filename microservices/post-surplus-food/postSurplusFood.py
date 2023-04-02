@@ -18,7 +18,7 @@ CORS(app)
 
 restaurant_URL = "http://localhost:5001/"
 foodbank_URL = "http://localhost:5002/"
-orderManagement_URL = "http://localhost:5005/"
+orderManagement_URL = "http://localhost:5004/"
 
 
 def get_restaurant_by_id(restaurant_id):
@@ -92,6 +92,7 @@ def post_food():
     # 1. retrieve phone number of restaurant that is posting the surplus food
     restaurant_id = request.json['restaurant_id']
     dish_name = request.json['dish_name']
+    img_url = request.json['img_url']
     restaurant = get_restaurant_by_id(restaurant_id)
     if restaurant is None:
         return jsonify(
@@ -113,6 +114,7 @@ def post_food():
         "restaurant_address": restaurant_address,
         "region": region,
         "dish_name": dish_name,
+        "img_url": img_url,
         "status": "pending"
     }
     try:
