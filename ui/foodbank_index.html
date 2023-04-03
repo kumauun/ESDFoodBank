@@ -110,7 +110,9 @@
             <div class="row">
               <div class="col"><p class="card-text">{{AvailableOrder.foodbank_phone_number}}</p></div>
               <div class="col" style="text-align: left;">{{AvailableOrder.driver_phone_number}}</div> 
-              <div class="col" style="text-align: right;"></div> 
+              <div class="col" style="text-align: right;">
+                <button class="btn btn-primary mx-1" v-if="AvailableOrder.status == 'pending'" @click="setChosenOrder(AvailableOrder.order_id)">Place Order</button>
+              </div> 
             </div>
           </div>
           </div>
