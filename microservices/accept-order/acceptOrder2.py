@@ -28,7 +28,14 @@ def get_driver_by_id(driver_id):
         return result.json()['data']
     else:
         return None
-    
+
+def get_order_by_id(order_id):
+    result = requests.get(f"{order_URL}/get_order/{order_id}")
+    if result.status_code == 200:
+        print(result.json())
+        return result.json()['data']
+    else:
+        return None
     
     
 def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, order_status):
@@ -169,12 +176,16 @@ def delivered_order():
 def update_order():
     
         order_id= request.json['order_id']
-    
         status = request.json['status']
+        # order = get_order_by_id(order_id)
+
         updated_order = {
                 "order_id": order_id,
                 "status": status
             }
+        
+        # foodbank_phone_number = order['foodbank_phone_number']
+        # restaurant_phone_number = order['restaurant_phone_number']
         try:
             result = requests.put(
                 f"{order_URL}/update_order_status", json=updated_order)
