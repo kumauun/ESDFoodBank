@@ -67,7 +67,7 @@
               <div class="col"><p class="card-text">{{current_order.foodbank_phone_number}}</p></div>
               <div class="col" style="text-align: left;">{{current_order.driver_phone_number}}</div> 
               <div class="col" style="text-align: right;">
-                <button class="btn btn-primary mx-1" v-if="current_order.status == 'accepted'" @click="setChosenOrder(current_order.order_id)">Picked up</button>
+                <button class="btn btn-primary mx-1" v-if="current_order.status == 'accepted'" @click="setPickedUpOrder(current_order.order_id)">Picked up</button>
                 <button class="btn btn-primary mx-1" v-if="current_order.status == 'picked up'" @click="setDeliveredOrder(current_order.order_id)">Delivered</button>
               </div> 
             </div>
