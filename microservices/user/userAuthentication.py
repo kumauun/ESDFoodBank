@@ -111,7 +111,7 @@ def signup():
 
          # Send a POST request to the other microservice
         print("About to send a post req to resto table")
-        url = "http://localhost:5001/new_restaurant"
+        url = "http://restaurant:5001/new_restaurant"
         response = requests.post(url, json=payload)
 
     elif new_user.user_type == 'foodbank':
@@ -125,7 +125,7 @@ def signup():
             'region': region,
         }
 
-        url = "http://localhost:5002/new_foodbank"
+        url = "http://foodbank:5002/new_foodbank"
         response = requests.post(url, json=payload)
 
     elif new_user.user_type == 'driver':
@@ -138,7 +138,7 @@ def signup():
             'availability': True
         }
 
-        url = "http://localhost:5003/new_driver"
+        url = "http://driver:5003/new_driver"
         response = requests.post(url, json=payload)
 
 

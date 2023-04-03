@@ -1,7 +1,7 @@
 import requests
 import json
 
-base_url = "http://127.0.0.1:5005"  # Update the port number if your microservice is running on a different port
+base_url = "http://docker.host.internal:5005"  # Update the port number if your microservice is running on a different port
 
 # Test creating a new order
 new_order_data = {

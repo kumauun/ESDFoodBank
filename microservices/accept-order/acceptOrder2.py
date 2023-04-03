@@ -17,10 +17,10 @@ app = Flask(__name__)
 CORS(app)
 
 # all URL 
-restaurant_URL="http://localhost:5001/"
-foodbank_URL= "http://localhost:5002/"
-driver_URL = "http://localhost:5003/"
-order_URL = "http://localhost:5004/"
+restaurant_URL="http://restaurant:5001/"
+foodbank_URL= "http://foodbank:5002/"
+driver_URL = "http://driver:5003/"
+order_URL = "http://order-management:5004/"
 
 def get_driver_by_id(driver_id):
     result = requests.get(f"{driver_URL}/get_driver/{driver_id}")

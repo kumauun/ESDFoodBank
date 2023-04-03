@@ -16,9 +16,9 @@ sys.path.append(file_directory)
 app = Flask(__name__)
 CORS(app)
 
-restaurant_URL = "http://localhost:5001/"
-foodbank_URL = "http://localhost:5002/"
-orderManagement_URL = "http://localhost:5004/"
+restaurant_URL = "http://restaurant:5001/"
+foodbank_URL = "http://foodbank:5002/"
+orderManagement_URL = "http://order-management:5004/"
 
 
 def get_restaurant_by_id(restaurant_id):

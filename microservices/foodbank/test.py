@@ -1,7 +1,7 @@
 import requests
 
 # Replace this with the URL of your Flask application
-flask_url = "http://localhost:5002/"
+flask_url = "http://foodbank:5002/"
 
 # Replace this with the ID of the restaurant you want to retrieve
 restaurant_id = 5

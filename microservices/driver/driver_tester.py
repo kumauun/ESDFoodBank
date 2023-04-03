@@ -1,7 +1,7 @@
 import requests
 import json
 
-base_url = "http://127.0.0.1:5003"
+base_url = "http://driver:5003"
 
 # Test create_driver
 data = {

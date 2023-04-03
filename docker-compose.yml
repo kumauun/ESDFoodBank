@@ -15,6 +15,10 @@ services:
     container_name: ui
     ports:
       - "5000:80"
+    networks:
+      default:
+        aliases:
+          - user-api
     depends_on:
       - user
       - restaurant

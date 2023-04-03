@@ -9,7 +9,7 @@ order_data = {
         
     }
 
-response = requests.put("http://127.0.0.1:5008/place_order", json=order_data)
+response = requests.put("http://place-order:5008/place_order", json=order_data)
 print("New Order Response:", json.dumps(response.json(), indent=2))
 if response.status_code == 200:
     print("Test passed")
