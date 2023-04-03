@@ -20,6 +20,9 @@ db = SQLAlchemy(app)
 
 CORS(app, resources={r'*': {'origins': '*'}})
 
+def utcnow_with_timezone():
+    return datetime.utcnow() + timedelta(hours=8)
+
 class Order(db.Model):
     __tablename__ = 'orders'
 
