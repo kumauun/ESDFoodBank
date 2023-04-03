@@ -32,7 +32,7 @@ def get_driver_by_id(driver_id):
     
     
 def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, order_status):
-    message = "Your order of id"+ order_id+" has been"+order_status +"by " + driver_name+'(contact number: '+driver_phone_number+')' 
+    message = "Your order of id"+ str(order_id)+" has been"+order_status +"by " + driver_name+'(contact number: '+driver_phone_number+')' 
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -59,7 +59,33 @@ def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_
             }
         ), 500
         
-        
+def publish_message_to_restaurant(order_id):
+    message = "Your order of id"+ str(order_id)+" has been delivered"
+    try:
+        # publish message to RabbitMQ exchange
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+
+        # declare the exchange
+        channel.exchange_declare(exchange='driver_deliver', exchange_type='direct')
+        channel.queue_declare(queue='driver', durable=True)
+        channel.queue_bind(queue='driver', exchange='driver_deliver', routing_key='driver')
+        # publish message to RabbitMQ exchange
+        channel.basic_publish(
+            exchange='driver_deliver',
+            routing_key='driver',
+            body=message
+        )
+        # close the connection
+        connection.close()
+    except Exception as e:
+        print("An error occurred while publishing the message: " + str(e))
+        return jsonify(
+            {
+                "code": 500,
+                "message": "Failed to notify foodbank: " + str(e)
+            }
+        ), 500        
         
 @app.route("/accept_order", methods=['PUT'])
 def accept_order():
@@ -101,14 +127,44 @@ def accept_order():
     #amqp notify
     
     publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, "accepted")
-    
+    print("message sent from:"+ driver_phone_number)
     return jsonify(
             {
                 "code": 200,
                 "data": "success accepted order"
             }
     ), 200
-
+    
+@app.route("/delivered_order", methods=['PUT'])
+def delivered_order():
+    
+        order_id= request.json['order_id']
+      
+        updated_order = {
+                "order_id": order_id,
+                "status": "delivered"
+            }
+        try:
+            result = requests.put(
+                f"{order_URL}/delivered_order/{order_id}", json=updated_order)
+            response = result.json()
+            print(response)
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+            print(ex_str)
+            print("Order management microservice is unavailable: " + str(e))
+            return jsonify({"code": 500, "message": "Failed to update order status: " + ex_str}), 500
+        publish_message_to_restaurant(order_id)
+        print("order is completed")
+        return jsonify(
+            {
+                "code": 200,
+                "data": "success delivered order"
+            }
+        ), 200
+        
 @app.route("/update_order", methods=['PUT'])
 def update_order():
     
@@ -135,6 +191,7 @@ def update_order():
             return jsonify({"code": 500, "message": "Failed to update order status: " + ex_str}), 500
         
         publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, "delivered")
+        print("order is completed")
         return jsonify(
             {
                 "code": 200,
