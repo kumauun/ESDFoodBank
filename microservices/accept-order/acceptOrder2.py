@@ -130,6 +130,20 @@ def accept_order():
         print(ex_str)
         print("Order management microservice is unavailable: " + str(e))
         return jsonify({"code": 500, "message": "Failed to accept order: " + ex_str}), 500
+
+    try:
+        result = requests.put(
+            f"{driver_URL}/update_driver_status/{driver_id}", json=accept_order)
+        response = result.json()
+        print(response)
+
+    except Exception as e:
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+        print(ex_str)
+        print("Driver microservice is unavailable: " + str(e))
+        return jsonify({"code": 500, "message": "Failed to update driver status: " + ex_str}), 500
     
     #amqp notify
     
@@ -177,6 +191,7 @@ def update_order():
     
         order_id= request.json['order_id']
         status = request.json['status']
+        driver_id = request.json['driver_id']
         # order = get_order_by_id(order_id)
 
         updated_order = {
@@ -200,6 +215,22 @@ def update_order():
             return jsonify({"code": 500, "message": "Failed to update order status: " + ex_str}), 500
         
         publish_message(order_id, status)
+
+        if status == 'delivered':
+            try:
+                result = requests.put(
+                    f"{driver_URL}/update_driver_status/{driver_id}", json=updated_order)
+                response = result.json()
+                print(response)
+
+            except Exception as e:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+                print(ex_str)
+                print("Driver microservice is unavailable: " + str(e))
+                return jsonify({"code": 500, "message": "Failed to update driver status: " + ex_str}), 500
+
         
         return jsonify(
             {

@@ -33,7 +33,7 @@
     <div id="toggle" class="mt-3 mx-auto" v-show="showCurrent">
       <h3>Current Delivery</h3>
       
-      <h4 v-if="current_message">{{current_message}}</h4>
+      <h5 v-if="current_message" class="text-center">{{current_message}}</h5>
       <!--current_orders-->
       <div class="card d-flex mx-auto mb-3" v-for="current_order of current_orders" v-if="current_orders">
         <div class="card-header">
@@ -66,7 +66,7 @@
               <div class="col"><p class="card-text">{{current_order.foodbank_phone_number}}</p></div>
               <div class="col" style="text-align: left;">{{current_order.driver_phone_number}}</div> 
               <div class="col" style="text-align: right;">
-                <button class="btn btn-primary mx-1" v-if="current_order.status == 'accepted'" @click="setPickedUpOrder(current_order.order_id)">Picked up</button>
+                <button class="btn btn-primary mx-1" v-if="current_order.status == 'accepted'" @click="setChosenOrder(current_order.order_id)">Picked up</button>
                 <button class="btn btn-primary mx-1" v-if="current_order.status == 'picked up'" @click="setDeliveredOrder(current_order.order_id)">Delivered</button>
               </div> 
             </div>
@@ -89,50 +89,51 @@
             <option value="East">East</option>
             <option value="West">West</option>
             <option value="Central">Central</option>
+            <option value="North-East">North-East</option>
           </select>
         </form>
       </div>
 
       <h5 class="text-center" v-if="posting_message">{{posting_message}}</h5>
 
-      <div id="cardContainer">
+      <div class="card d-flex mx-auto mb-3" v-for="posting of postings" v-if="postings">
+        <div class="card-header">
+          Order #{{posting.order_id}}
+        </div>
+        <div class="row">
+          <div class="col-3 d-flex">
+            <img :src="posting.img_url ? posting.img_url : './img/empty.png'" class="img-fluid">
+          </div>
+          <div class="col-9">
+          <div class="card-body">
+            <div class="row">
+                <div class="col"><p class="card-text">{{posting.dish_name}}</p></div>
+                <div class="col" style="text-align: right; color: orange;"><h5>{{posting.status}}</h5></div> 
+            </div>
 
-        <div class="row row-cols-1 row-cols-md-3 g-4 mx-auto" v-for = "posting in postings">
-          <div class="col">
-            <div class="card h-100">
-              <div class="card-header">Order#{{posting.order_id}}</div>
-  
-              <div class="card-body">
-                <div class="row">
-                  <div class="col">
-                    <h6 class="card-title">PICK UP</h6>
-                    <h3 class="card-text">{{posting.restaurant_name}}</h3>
-                    <p class="card-text">{{posting.restaurant_address}}</p>
-                    <p class="card-text">{{posting.restaurant_phone_number}}</p>
-                  </div>
-                  <div class="col">
-                    <h6 class="card-title">DROP OFF</h6>
-                    <h3 class="card-text">{{posting.foodbank_name}}</h3>
-                    <p class="card-text">{{posting.foodbank_address}}</p>
-                    <p class="card-text">{{posting.foodbank_phone_number}}</p>
-                  </div>
-                </div>
-                
-                <div class="row mt-3">
-                  <div class="mx-auto d-flex col-6">
-                    <button type="button" class="btn btn-success mx-auto" @click="setChosenOrder(posting.order_id)">Accept</button>
-                  </div>
-                </div>
-              </div>
-  
-              <div class="card-footer">
-                <small class="text-muted">Created on {{posting.created_at}}</small>
-              </div>
+            <br>
+
+            <div class="row">
+              <div class="col"><h5 class="card-title">Foodbank: {{posting.foodbank_name}}</h5></div>
+              <div class="col" style="text-align: left;"><h5>Driver: {{posting.driver_name ? posting.driver_name : 'No driver yet'}}</h5></div> 
+              <div class="col" style="text-align: right;">Order Created {{posting.created_at}}</div> 
+            </div>
+            <div class="row">
+              <div class="col"><p class="card-text">{{posting.foodbank_address}}</div>
+              <div class="col" style="text-align: left;"></div> 
+              <div class="col" style="text-align: right;"></div> 
+            </div>
+            <div class="row">
+              <div class="col"><p class="card-text">{{posting.foodbank_phone_number}}</p></div>
+              <div class="col" style="text-align: left;">{{posting.driver_phone_number}}</div> 
+              <div class="col" style="text-align: right;">
+                <button class="btn btn-primary mx-1" v-if="posting.status == 'ordered'" @click="setPickedUpOrder(posting.order_id)">Accept</button>
+              </div> 
             </div>
           </div>
-
+          </div>
         </div>
-    </div>
+      </div>
       
     </div> 
     
@@ -183,6 +184,7 @@
 <script>
   ORDER_API_URL = 'http://127.0.0.1:5004'
   ACCEPT_ORDER_API_URL = 'http://127.0.0.1:5009'
+  DRIVER_API_URL = 'http://127.0.0.1:5003'
   const app = Vue.createApp({
       data() {
         return {
@@ -195,6 +197,8 @@
           showHistory: false,
           showAccepted: true,
           showPickedUp: false,
+
+          driver_availability: null,
 
           //history
           previous_orders: null,
@@ -229,10 +233,11 @@
           this.showHistory = false;
           this.fetchCurrentOrder();
         },
-        toggleNew() {
+        async toggleNew() {
           this.showCurrent = false;
           this.showNew = true;
           this.showHistory = false;
+          await this.getDriverAvailability();
           this.fetchOrdersbyRegion();
         },
         toggleHistory() {
@@ -267,6 +272,21 @@
           console.log(this.delivered_order_id);
           await this.submitDeliveredOrder();
           this.toggleCurrent();
+        },
+
+        async getDriverAvailability(){
+          const serviceURL = `${DRIVER_API_URL}/get_driver/${this.userId}`;
+          try {
+              const response = await fetch(serviceURL, { method: 'GET' });
+              const result = await response.json();
+              this.driver_availability = result.data.availability
+              console.log(result);
+              return Promise.resolve();
+            } catch (error) {
+              this.message = error.message;
+              return Promise.reject(error);
+            }
+
         },
 
       //accept orders
@@ -380,7 +400,7 @@
               this.current_message = null
             } else if (result.code === 404) {
               this.current_orders = null
-              this.current_message = result.message
+              this.current_message = "You do not have any active deliveries"
               console.log(current_message)
             } else {
               throw response.status;

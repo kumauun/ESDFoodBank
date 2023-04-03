@@ -13,8 +13,8 @@
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.958.0.min.js"></script>
 <script>
   AWS.config.update({
-    accessKeyId: 'xxx',
-    secretAccessKey: 'xxx',
+    accessKeyId: 'AKIAZSYJOJEMWQ7JOP6H',
+    secretAccessKey: '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',
     region: 'us-east-1',
   });
 
@@ -214,7 +214,6 @@
 
           try {
             const data = await s3.upload(params).promise();
-            console.log(data.Location)
             return data.Location;
           } catch (error) {
             console.error('Error uploading image:', error);
@@ -237,6 +236,7 @@
                 })
             });
 
+            console.log(imageUrl)
             const data = await response.json();
             console.log(data)
             
