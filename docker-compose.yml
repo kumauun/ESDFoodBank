@@ -3,7 +3,7 @@ version: '3.8'
 services:
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq-mgmt
+
     restart: always
     ports:
       - "5672:5672"
@@ -71,11 +71,11 @@ services:
   notification:
     build: ./microservices/notification
     container_name: notification_microservice
-    # restart: always
+    restart: always
     ports:
       - "5005:5000"
     environment:
-      - RABBITMQ_HOST=rabbitmq
+      rabbit_host: rabbitmq
     depends_on:
       - rabbitmq
       - post-surplus-food

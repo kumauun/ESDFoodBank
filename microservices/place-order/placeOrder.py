@@ -38,7 +38,7 @@ def get_order_by_id(order_id):
 def publish_message_to_restaurant(message):
     try:
         # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
         channel = connection.channel()
 
         # declare the exchange
@@ -65,7 +65,7 @@ def publish_message_to_restaurant(message):
 def publish_message_to_driver(message):
     try:
         # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
         channel = connection.channel()
 
         # declare the exchange
