@@ -59,8 +59,8 @@ def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_
             }
         ), 500
         
-def publish_message_to_restaurant(order_id):
-    message = "Your order of id"+ str(order_id)+" has been delivered"
+def publish_message(order_id, status):
+    message = "Your order of id"+ str(order_id)+" has been"+ status
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -135,7 +135,7 @@ def accept_order():
             }
     ), 200
     
-@app.route("/delivered_order", methods=['PUT'])
+'''@app.route("/delivered_order", methods=['PUT'])
 def delivered_order():
     
         order_id= request.json['order_id']
@@ -164,14 +164,12 @@ def delivered_order():
                 "data": "success delivered order"
             }
         ), 200
-        
+'''      
 @app.route("/update_order", methods=['PUT'])
 def update_order():
     
         order_id= request.json['order_id']
-        region = request.json['region']
-        driver_name = request.json['driver_name']
-        driver_phone_number = request.json['driver_phone_number']
+    
         status = request.json['status']
         updated_order = {
                 "order_id": order_id,
@@ -190,8 +188,8 @@ def update_order():
             print("Order management microservice is unavailable: " + str(e))
             return jsonify({"code": 500, "message": "Failed to update order status: " + ex_str}), 500
         
-        publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, "delivered")
-        print("order is completed")
+        publish_message(order_id, status)
+        
         return jsonify(
             {
                 "code": 200,
