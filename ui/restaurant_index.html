@@ -47,8 +47,8 @@
           Order #{{current_order.order_id}}
         </div>
         <div class="row">
-          <div class="col-3">
-            <img :src="current_order.img_url ? current_order.img_url : '../img/empty.png'" class="img-fluid">
+          <div class="col-3 d-flex">
+            <img :src="current_order.img_url ? current_order.img_url : './img/empty.png'" class="img-fluid">
           </div>
           <div class="col-9">
           <div class="card-body">
@@ -60,7 +60,7 @@
             <br>
 
             <div class="row">
-              <div class="col"><h5 class="card-title">Foodbank: {{current_order.foodbank_name}}</h5></div>
+              <div class="col"><h5 class="card-title">Foodbank: {{current_order.foodbank_name ? current_order.foodbank_name : 'No foodbank yet'}}</h5></div>
               <div class="col" style="text-align: left;"><h5>Driver: {{current_order.driver_name ? current_order.driver_name : 'No driver yet'}}</h5></div> 
               <div class="col" style="text-align: right;">Order Created {{current_order.created_at}}</div> 
             </div>

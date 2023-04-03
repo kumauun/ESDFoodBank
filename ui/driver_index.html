@@ -40,8 +40,8 @@
           Order #{{current_order.order_id}}
         </div>
         <div class="row">
-          <div class="col-3">
-            <img :src="current_order.img_url ? current_order.img_url : '../img/empty.png'" class="img-fluid">
+          <div class="col-3 d-flex">
+            <img :src="current_order.img_url ? current_order.img_url : './img/empty.png'" class="img-fluid">
           </div>
           <div class="col-9">
           <div class="card-body">
