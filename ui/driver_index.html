@@ -306,6 +306,7 @@
                 },
                 body: JSON.stringify({
                   order_id: this.picked_up_order_id,
+                  driver_id: this.userId,
                   status: "picked up",
                 }),
               });
@@ -329,6 +330,7 @@
                 },
                 body: JSON.stringify({
                   order_id: this.delivered_order_id,
+                  driver_id: this.userId,
                   status: "delivered",
                 }),
               });
