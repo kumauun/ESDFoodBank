@@ -5,13 +5,16 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.sql.expression import not_, or_
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from os import environ
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or "mysql+mysqlconnector://admin:rootroot@db-savood.c0hav88yk9mq.us-east-1.rds.amazonaws.com:3306/orders_database"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+def utcnow_with_timezone():
+    return datetime.utcnow() + timedelta(hours=8)
 
 db = SQLAlchemy(app)
 
@@ -36,7 +39,7 @@ class Order(db.Model):
     dish_name = db.Column(db.String(100))
     status = db.Column(db.Enum('pending', 'ordered', 'accepted', 'picked up', 'delivered', 'done'), nullable=False, default='pending')
     img_url = db.Column(db.String(200))
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=utcnow_with_timezone)
 
 
     def json(self):
