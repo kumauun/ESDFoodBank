@@ -42,7 +42,7 @@ def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_
     message = "Your order of id"+ str(order_id)+" has been"+order_status +"by " + driver_name+'(contact number: '+driver_phone_number+')' 
     try:
         # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
         channel = connection.channel()
 
         # declare the exchange
@@ -70,7 +70,7 @@ def publish_message(order_id, status):
     message = "Your order of id"+ str(order_id)+" has been"+ status
     try:
         # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
         channel = connection.channel()
 
         # declare the exchange

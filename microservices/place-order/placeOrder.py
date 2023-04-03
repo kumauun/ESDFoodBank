@@ -32,7 +32,7 @@ def publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, 
     message = f"Your post of id {order_id} has been ordered by {foodbank_name} (contact number: '+{foodbank_phone_number}+')" 
     try:
         # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
         channel = connection.channel()
 
         # declare the exchange
@@ -60,7 +60,7 @@ def publish_message_to_driver(region, foodbank_name, foodbank_phone_number, driv
     message = "New order from foodbank"+foodbank_name+'(contact number: '+foodbank_phone_number+')' + " in region " + region
     try:
         # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
         channel = connection.channel()
 
         # declare the exchange

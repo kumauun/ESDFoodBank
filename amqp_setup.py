@@ -1,7 +1,7 @@
 import pika
 from os import environ
 
-hostname = environ.get('rabbit_host') or 'rabbitmq'
+hostname = 'rabbitmq'
 port = environ.get('rabbit_port') or 5672
 
 connection = pika.BlockingConnection(

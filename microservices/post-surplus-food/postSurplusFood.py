@@ -10,9 +10,9 @@ import sys
 from os import environ
 
 import requests
-file_directory = '../'
+file_directory = '../../'
 sys.path.append(file_directory)
-# import amqp_setup
+#import amqp_setup
 app = Flask(__name__)
 CORS(app)
 
@@ -54,7 +54,7 @@ def publish_message_to_foodbank(region, restaurant_name, restaurant_phone_number
     message = "New posting from restaurant " + restaurant_name+'(contact number: '+restaurant_phone_number+')' + " in region " + region
     try:
         # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
         channel = connection.channel()
 
         # declare the exchange

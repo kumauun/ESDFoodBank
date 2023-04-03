@@ -1,9 +1,9 @@
 import pika
 import json
 
-RABBITMQ_HOST = 'rabbitmq-mgmt'
+RABBITMQ_HOST = 'rabbitmq'
 
-with pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST)) as connection:
+with pika.BlockingConnection(pika.ConnectionParameters('rabbitmq')) as connection:
     channel = connection.channel()
 
     #sms function nannti edit twilio 
@@ -41,3 +41,26 @@ with pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST)) as c
     channel.queue_declare(queue='driver', durable=True)
     channel.queue_bind(queue='driver', exchange='driver_deliver', routing_key='driver')
     channel.basic_consume(queue='driver', on_message_callback=callback, auto_ack=True)
+    
+    
+'''
+
+
+
+
+Traceback (most recent call last):
+  File "/usr/src/app/./notif.py", line 6, in <module>
+    with pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_HOST)) as connection:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pika/adapters/blocking_connection.py", line 360, in __init__
+    self._impl = self._create_connection(parameters, _impl_class)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/pika/adapters/blocking_connection.py", line 451, in _create_connection
+    raise self._reap_last_connection_workflow_error(error)
+pika.exceptions.AMQPConnectionError
+
+
+
+
+
+'''
