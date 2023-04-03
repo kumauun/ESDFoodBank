@@ -71,7 +71,7 @@ services:
   notification:
     build: ./microservices/notification
     container_name: notification_microservice
-    restart: always
+    # restart: always
     ports:
       - "5005:5000"
     environment:
