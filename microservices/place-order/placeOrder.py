@@ -25,11 +25,17 @@ def get_foodbank_by_id(foodbank_id):
         return result.json()['data']
     else:
         return None
+
+def get_order_by_id(order_id):
+    result = requests.get(f"{order_URL}/get_order/{order_id}")
+    if result.status_code == 200:
+        return result.json()['data']
+    else:
+        return None
     
     
     
-def publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, order_id):
-    message = f"Your post of id {order_id} has been ordered by {foodbank_name} (contact number: '+{foodbank_phone_number}+')" 
+def publish_message_to_restaurant(message):
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -43,7 +49,7 @@ def publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, 
         channel.basic_publish(
             exchange='restaurant_foodbankorder',
             routing_key='foodbankorder',
-            body=message
+            body=json.dumps(message)
         )
         # close the connection
         connection.close()
@@ -56,8 +62,7 @@ def publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, 
             }
         ), 500
         
-def publish_message_to_driver(region, foodbank_name, foodbank_phone_number, driver_phone_number):
-    message = "New order from foodbank"+foodbank_name+'(contact number: '+foodbank_phone_number+')' + " in region " + region
+def publish_message_to_driver(message):
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -71,7 +76,7 @@ def publish_message_to_driver(region, foodbank_name, foodbank_phone_number, driv
         channel.basic_publish(
             exchange='notify_driver',
             routing_key='new_order',
-            body=message
+            body=json.dumps(message)
         )
         # close the connection
         connection.close()
@@ -91,9 +96,10 @@ def place_order():
     print(request.json)
     order_id= request.json['order_id']
     foodbank_id = request.json['foodbank_id']
-    print('bukan foodbank_id ini yang salah')
+    
     print(f'received order_id: {order_id}, foodbank_id: {foodbank_id}')
     foodbank= get_foodbank_by_id(foodbank_id)
+    order = get_order_by_id(order_id)
     if foodbank is None:
         return jsonify(
             {
@@ -105,6 +111,16 @@ def place_order():
     foodbank_name = foodbank['foodbank_name']
     foodbank_phone_number = foodbank['phone_number']
     foodbank_address = foodbank['foodbank_address']
+
+    if order is None:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Target order not found."
+            }
+        ), 404
+    restaurant_phone_number = order['restaurant_phone_number']
+    
     place_order = {
         "foodbank_id": foodbank_id,
         "foodbank_phone_number": foodbank_phone_number,
@@ -127,7 +143,11 @@ def place_order():
         return jsonify({"code": 500, "message": "Failed to place order: " + ex_str}), 500
     
     #amqp notify
-    publish_message_to_restaurant(region, foodbank_name, foodbank_phone_number, order_id)
+    template_message = f"Your post of id {order_id} has been ordered by {foodbank_name} (contact number: '{foodbank_phone_number}')" 
+    message = { "code": 200, "template_message": template_message, "target_phone_numbers": [restaurant_phone_number]}
+    publish_message_to_restaurant(message)
+    print(template_message)
+    print(f"Message sent to restaurant: {restaurant_phone_number}")
     
     try:
         # invoke foodbank microservice to get the phone number of foodbanks in the region
@@ -155,10 +175,11 @@ def place_order():
         ), 500
         
     # 4. notify driver with the phone number retrieved from the request above
-    for driver_phone_number in driver_phone_numbers:
-        publish_message_to_driver(
-            region, foodbank_name, foodbank_phone_number, driver_phone_number)
-        print("Sent message to:"+driver_phone_number)
+    template_message = f"New order from foodbank {foodbank_name} '(contact number: '{foodbank_phone_number}')' in {region} region."
+    message = { "code": 200, "template_message": template_message, "target_phone_numbers": driver_phone_numbers}
+    publish_message_to_driver(message)
+    print(template_message)
+    print(f"Sent message to: {driver_phone_numbers}")
 
 
     return jsonify(

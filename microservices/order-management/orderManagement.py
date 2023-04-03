@@ -72,11 +72,13 @@ def get_order(order_id):
         order = Order.query.filter_by(order_id=order_id).first()
 
         if not order:
-            return jsonify({"message": "Order not found."}), 404
+            return jsonify({
+                "code": 404,
+                "message": "Order not found."}), 404
 
         return jsonify({
-            "message": "Order retrieved successfully.",
-            "order": order.json()
+            "code": 200,
+            "data": order.json()
         }), 200
 
     except Exception as e:

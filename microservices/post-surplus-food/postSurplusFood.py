@@ -50,8 +50,7 @@ def get_restaurant_by_id(restaurant_id):
    #             }
    #         ), 500
 
-def publish_message_to_foodbank(region, restaurant_name, restaurant_phone_number, foodbank_phone_number):
-    message = "New posting from restaurant " + restaurant_name+'(contact number: '+restaurant_phone_number+')' + " in region " + region
+def publish_message_to_foodbank(message):
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -65,7 +64,7 @@ def publish_message_to_foodbank(region, restaurant_name, restaurant_phone_number
         channel.basic_publish(
             exchange='notify_foodbank',
             routing_key='new_posting',
-            body=message
+            body=json.dumps(message)
         )
         # close the connection
         connection.close()
@@ -163,10 +162,11 @@ def post_food():
     # ), 200
 
     # 4. notify foodbank with the phone number retrieved from the request above
-    for foodbank_phone_number in foodbank_phone_numbers:
-        publish_message_to_foodbank(
-            region, restaurant_name, restaurant_phone_number, foodbank_phone_number)
-        print("Sent message to:"+foodbank_phone_number)
+    template_message = f"New posting from restaurant {restaurant_name} (contact number: '{restaurant_phone_number}') in you region. Place your order now!"
+    message = { "code": 200, "template_message": template_message, "target_phone_numbers": foodbank_phone_numbers}
+    publish_message_to_foodbank(message)
+    print(template_message)
+    print(f"Sent message to: {foodbank_phone_numbers}")
 
     return jsonify(
         {

@@ -38,8 +38,7 @@ def get_order_by_id(order_id):
         return None
     
     
-def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, order_status):
-    message = "Your order of id"+ str(order_id)+" has been"+order_status +"by " + driver_name+'(contact number: '+driver_phone_number+')' 
+def publish_message_to_foodbank(message):
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -53,7 +52,7 @@ def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_
         channel.basic_publish(
             exchange='driver_order',
             routing_key='driver',
-            body=message
+            body=json.dumps(message)
         )
         # close the connection
         connection.close()
@@ -66,8 +65,7 @@ def publish_message_to_foodbank(region, driver_name, driver_phone_number, order_
             }
         ), 500
         
-def publish_message(order_id, status):
-    message = "Your order of id"+ str(order_id)+" has been"+ status
+def publish_message(message):
     try:
         # publish message to RabbitMQ exchange
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
@@ -81,7 +79,7 @@ def publish_message(order_id, status):
         channel.basic_publish(
             exchange='driver_deliver',
             routing_key='driver',
-            body=message
+            body=json.dumps(message)
         )
         # close the connection
         connection.close()
@@ -110,6 +108,17 @@ def accept_order():
     region = driver['region']
     driver_name = driver['driver_name']
     driver_phone_number = driver['phone_number']
+
+    order = get_order_by_id(order_id)
+    if order is None:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Target order not found."
+            }
+        ), 404
+    
+    foodbank_phone_number = order['foodbank_phone_number']
     
     accept_order = {
         "driver_id": driver_id,
@@ -146,9 +155,11 @@ def accept_order():
         return jsonify({"code": 500, "message": "Failed to update driver status: " + ex_str}), 500
     
     #amqp notify
-    
-    publish_message_to_foodbank(region, driver_name, driver_phone_number, order_id, "accepted")
-    print("message sent from:"+ driver_phone_number)
+    template_message = f"Your order of id {order_id} has been accepted by {driver_name} '(contact number: {driver_phone_number}')" 
+    message = {"code": 200, "template_message": template_message, "target_phone_numbers": [foodbank_phone_number]}
+    publish_message_to_foodbank(message)
+    print(template_message)
+    print(f"message sent to foodbank {foodbank_phone_number}")
     return jsonify(
             {
                 "code": 200,
@@ -192,15 +203,15 @@ def update_order():
         order_id= request.json['order_id']
         status = request.json['status']
         driver_id = request.json['driver_id']
-        # order = get_order_by_id(order_id)
+        order = get_order_by_id(order_id)
 
         updated_order = {
                 "order_id": order_id,
                 "status": status
             }
         
-        # foodbank_phone_number = order['foodbank_phone_number']
-        # restaurant_phone_number = order['restaurant_phone_number']
+        foodbank_phone_number = order['foodbank_phone_number']
+        restaurant_phone_number = order['restaurant_phone_number']
         try:
             result = requests.put(
                 f"{order_URL}/update_order_status", json=updated_order)
@@ -214,7 +225,12 @@ def update_order():
             print("Order management microservice is unavailable: " + str(e))
             return jsonify({"code": 500, "message": "Failed to update order status: " + ex_str}), 500
         
-        publish_message(order_id, status)
+        template_message = f"Your order of id {order_id} has been {status}"
+        message = {"code": 200, "template_message": template_message, "target_phone_numbers": [foodbank_phone_number, restaurant_phone_number]}
+        publish_message(message)
+        print(template_message)
+        print(f"Published message to foodbank: {foodbank_phone_number} and restaurant: {restaurant_phone_number}")
+
 
         if status == 'delivered':
             try:
