@@ -8,7 +8,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-
+    
+  
   ui:
     build: ./ui
     container_name: ui
@@ -70,7 +71,7 @@ services:
   notification:
     build: ./microservices/notification
     container_name: notification_microservice
-    restart: always
+    # restart: always
     ports:
       - "5005:5000"
     environment:
@@ -119,3 +120,4 @@ services:
       - "5009:5009"
     depends_on:
       - order-management
+
