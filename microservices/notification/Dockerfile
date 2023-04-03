@@ -22,4 +22,4 @@ COPY . .
 EXPOSE 5000
 
 # Set the command to start the application
-CMD [ "python", "./notif.py" ]
+CMD [ "python", "./notif2.py" ]

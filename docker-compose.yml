@@ -77,7 +77,7 @@ services:
     container_name: notification_microservice
     restart: always
     ports:
-      - "5005:5000"
+      - "5005:5005"
     environment:
       rabbit_host: rabbitmq
     depends_on:
@@ -104,6 +104,8 @@ services:
     restart: always
     ports:
       - "5007:5007"
+    environment:
+      rabbit_host: rabbitmq
     depends_on:
       - order-management
   
@@ -115,6 +117,8 @@ services:
       - order-management
     ports:
       - "5008:5008"
+    environment:
+      rabbit_host: rabbitmq
 
   accept-order:
     build: ./microservices/accept-order
@@ -122,6 +126,8 @@ services:
     restart: always
     ports:
       - "5009:5009"
+    environment:
+      rabbit_host: rabbitmq
     depends_on:
       - order-management
 

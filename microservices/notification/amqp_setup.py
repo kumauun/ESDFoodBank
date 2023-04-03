@@ -1,56 +1,34 @@
 import pika
 from os import environ ###
 
-# These module-level variables are initialized whenever a new instance of python interpreter imports the module;
-# In each instance of python interpreter (i.e., a program run), the same module is only imported once (guaranteed by the interpreter).
 
-hostname = environ.get('rabbit_host') or 'localhost' ###
-port = environ.get('rabbit_port') or 5672 ###
+hostname = environ.get('rabbit_host') or 'localhost' 
+port = environ.get('rabbit_port') or 5672 
 # connect to the broker and set up a communication channel in the connection
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(
         host=hostname, port=port,
         heartbeat=3600, blocked_connection_timeout=3600, # these parameters to prolong the expiration time (in seconds) of the connection
 ))
-    # Note about AMQP connection: various network firewalls, filters, gateways (e.g., SMU VPN on wifi), may hinder the connections;
-    # If "pika.exceptions.AMQPConnectionError" happens, may try again after disconnecting the wifi and/or disabling firewalls.
-    # If see: Stream connection lost: ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)
-    # - Try: simply re-run the program or refresh the page.
-    # For rare cases, it's incompatibility between RabbitMQ and the machine running it,
-    # - Use the Docker version of RabbitMQ instead: https://www.rabbitmq.com/download.html
 channel = connection.channel()
 
-
-# Set up the exchange if the exchange doesn't exist
-# - use a 'topic' exchange to enable interaction
-exchangename= "notify_foodbank" #?##
-exchangetype= "direct" #?##
+exchangename= "notify_foodbank" 
+exchangetype= "direct" 
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
-    # 'durable' makes the exchange survive broker restarts
-
-# Here can be a place to set up all queues needed by the microservices,
-# - instead of setting up the queues using RabbitMQ UI.
-
-############   Foodbank queue   #############
-# notif ke foodbank ada new posting
+    
 
 #delcare Error queue
 queue_name = 'new_food' #?##
 channel.queue_declare(queue=queue_name, durable=True) 
 routing_key = 'new_posting'
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) 
-    # bind the queue to the exchange via the key
-    # any routing_key with two words and ending with '.error' will be matched
 
 
-
-# Set up the queue to receive notifications about new posting to foodbank
-# notify driver there is new order
-exchangename= "notify_driver" #?##
-exchangetype= "direct" #?##
+exchangename= "notify_driver" 
+exchangetype= "direct" 
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 
-queue_name = 'new_order' #?##
+queue_name = 'new_order' 
 channel.queue_declare(queue=queue_name, durable=True)
 routing_key = 'new_order'
 channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key=routing_key) 

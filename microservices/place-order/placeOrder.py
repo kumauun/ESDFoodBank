@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-import os, sys
+import os
 from os import environ
 
 import requests
 
-# import amqp_setup
+import sys
+import amqp_setup
 import pika
 import json
 
@@ -36,56 +37,32 @@ def get_order_by_id(order_id):
     
     
 def publish_message_to_restaurant(message):
+    amqp_setup.check_setup()
     try:
-        # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
-        channel = connection.channel()
-
-        # declare the exchange
-        channel.exchange_declare(exchange='restaurant_foodbankorder', exchange_type='direct')
-        channel.queue_declare(queue='foodbankorder', durable=True)
-        channel.queue_bind(queue='foodbankorder', exchange='restaurant_foodbankorder', routing_key='foodbankorder')
-        # publish message to RabbitMQ exchange
-        channel.basic_publish(
-            exchange='restaurant_foodbankorder',
-            routing_key='foodbankorder',
-            body=json.dumps(message)
-        )
-        # close the connection
-        connection.close()
+        amqp_setup.channel.basic_publish(exchange='restaurant_foodbankorder', routing_key="foodbankorder", 
+            body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+    
     except Exception as e:
         print("An error occurred while publishing the message: " + str(e))
         return jsonify(
             {
                 "code": 500,
-                "message": "Failed to notify restaurant: " + str(e)
+                "message": "Failed to notify restaurants: " + str(e)
             }
         ), 500
         
 def publish_message_to_driver(message):
+    amqp_setup.check_setup()
     try:
-        # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
-        channel = connection.channel()
-
-        # declare the exchange
-        channel.exchange_declare(exchange='notify_driver', exchange_type='direct')
-        channel.queue_declare(queue='new_order', durable=True)
-        channel.queue_bind(queue='new_order', exchange='notify_driver', routing_key='new_order')
-        # publish message to RabbitMQ exchange
-        channel.basic_publish(
-            exchange='notify_driver',
-            routing_key='new_order',
-            body=json.dumps(message)
-        )
-        # close the connection
-        connection.close()
+        amqp_setup.channel.basic_publish(exchange='notify_driver', routing_key="new_order", 
+            body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+    
     except Exception as e:
         print("An error occurred while publishing the message: " + str(e))
         return jsonify(
             {
                 "code": 500,
-                "message": "Failed to notify driver: " + str(e)
+                "message": "Failed to notify drivers: " + str(e)
             }
         ), 500
 

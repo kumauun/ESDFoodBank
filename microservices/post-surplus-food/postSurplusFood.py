@@ -7,12 +7,11 @@ from flask_cors import CORS
 
 import os
 import sys
+import amqp_setup
 from os import environ
 
 import requests
-file_directory = '../../'
-sys.path.append(file_directory)
-#import amqp_setup
+
 app = Flask(__name__)
 CORS(app)
 
@@ -29,45 +28,12 @@ def get_restaurant_by_id(restaurant_id):
         return None
 
 
-#    def publish_message_to_foodbank(region, restaurant_phone_number, foodbank_phone_number):
- #       message = {
- #           "restaurant_phone_number": restaurant_phone_number, "foodbank_phone_number": foodbank_phone_number,
- #           "region": region
- #       }
- #       try:
-  #          # publish message to RabbitMQ exchange
-   #         
-   #         
-   #         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="foodbank.new_posting",
-   #                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
-   #         print("Sent message to RabbitMQ Exchange")
-   #     except Exception as e:
-   #         print("An error occurred while publishing the message: " + str(e))
-   #         return jsonify(
-   #             {
-   #                 "code": 500,
-   #                 "message": "Failed to notify foodbank: " + str(e)
-   #             }
-   #         ), 500
-
 def publish_message_to_foodbank(message):
+    amqp_setup.check_setup()
     try:
-        # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
-        channel = connection.channel()
-
-        # declare the exchange
-        channel.exchange_declare(exchange='notify_foodbank', exchange_type='direct')
-        channel.queue_declare(queue='new_food', durable=True)
-        channel.queue_bind(queue='new_food', exchange='notify_foodbank', routing_key='new_posting')
-        # publish message to RabbitMQ exchange
-        channel.basic_publish(
-            exchange='notify_foodbank',
-            routing_key='new_posting',
-            body=json.dumps(message)
-        )
-        # close the connection
-        connection.close()
+        amqp_setup.channel.basic_publish(exchange='notify_foodbank', routing_key="new_posting", 
+            body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+    
     except Exception as e:
         print("An error occurred while publishing the message: " + str(e))
         return jsonify(

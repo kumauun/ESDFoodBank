@@ -6,10 +6,9 @@ from os import environ
 
 import requests
 
-file_directory = '../'
-sys.path.append(file_directory)
 
-#import amqp_setup
+
+import amqp_setup
 import pika
 import json
 
@@ -39,23 +38,11 @@ def get_order_by_id(order_id):
     
     
 def publish_message_to_foodbank(message):
+    amqp_setup.check_setup()
     try:
-        # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
-        channel = connection.channel()
-
-        # declare the exchange
-        channel.exchange_declare(exchange='driver_order', exchange_type='direct')
-        channel.queue_declare(queue='driver', durable=True)
-        channel.queue_bind(queue='driver', exchange='driver_order', routing_key='driver')
-        # publish message to RabbitMQ exchange
-        channel.basic_publish(
-            exchange='driver_order',
-            routing_key='driver',
-            body=json.dumps(message)
-        )
-        # close the connection
-        connection.close()
+        amqp_setup.channel.basic_publish(exchange='driver_order', routing_key="driver", 
+            body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+    
     except Exception as e:
         print("An error occurred while publishing the message: " + str(e))
         return jsonify(
@@ -66,29 +53,17 @@ def publish_message_to_foodbank(message):
         ), 500
         
 def publish_message(message):
+    amqp_setup.check_setup()
     try:
-        # publish message to RabbitMQ exchange
-        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
-        channel = connection.channel()
-
-        # declare the exchange
-        channel.exchange_declare(exchange='driver_deliver', exchange_type='direct')
-        channel.queue_declare(queue='driver', durable=True)
-        channel.queue_bind(queue='driver', exchange='driver_deliver', routing_key='driver')
-        # publish message to RabbitMQ exchange
-        channel.basic_publish(
-            exchange='driver_deliver',
-            routing_key='driver',
-            body=json.dumps(message)
-        )
-        # close the connection
-        connection.close()
+        amqp_setup.channel.basic_publish(exchange='driver_deliver', routing_key="driver", 
+            body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
+    
     except Exception as e:
         print("An error occurred while publishing the message: " + str(e))
         return jsonify(
             {
                 "code": 500,
-                "message": "Failed to notify foodbank: " + str(e)
+                "message": "Failed to notify restaurant and foodbanks: " + str(e)
             }
         ), 500        
         
