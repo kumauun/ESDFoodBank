@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.sql.expression import not_, or_
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 from os import environ
 
@@ -16,6 +16,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 CORS(app, resources={r'*': {'origins': '*'}})
+
+def utcnow_with_timezone():
+    return datetime.utcnow() + timedelta(hours=8)
 
 class Order(db.Model):
     __tablename__ = 'orders'
