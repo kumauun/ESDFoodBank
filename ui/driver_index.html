@@ -34,6 +34,7 @@
       <h3>Current Delivery</h3>
       
       <h5 v-if="current_message" class="text-center">{{current_message}}</h5>
+      <h5 v-if="current_message" class="text-center">{{current_message}}</h5>
       <!--current_orders-->
       <div class="card d-flex mx-auto mb-3" v-for="current_order of current_orders" v-if="current_orders">
         <div class="card-header">
@@ -66,7 +67,7 @@
               <div class="col"><p class="card-text">{{current_order.foodbank_phone_number}}</p></div>
               <div class="col" style="text-align: left;">{{current_order.driver_phone_number}}</div> 
               <div class="col" style="text-align: right;">
-                <button class="btn btn-primary mx-1" v-if="current_order.status == 'accepted'" @click="setChosenOrder(current_order.order_id)">Picked up</button>
+                <button class="btn btn-primary mx-1" v-if="current_order.status == 'accepted'" @click="setPickedUpOrder(current_order.order_id)">Picked up</button>
                 <button class="btn btn-primary mx-1" v-if="current_order.status == 'picked up'" @click="setDeliveredOrder(current_order.order_id)">Delivered</button>
               </div> 
             </div>
@@ -89,6 +90,7 @@
             <option value="East">East</option>
             <option value="West">West</option>
             <option value="Central">Central</option>
+            <option value="North-East">North-East</option>
             <option value="North-East">North-East</option>
           </select>
         </form>
@@ -127,12 +129,14 @@
               <div class="col"><p class="card-text">{{posting.foodbank_phone_number}}</p></div>
               <div class="col" style="text-align: left;">{{posting.driver_phone_number}}</div> 
               <div class="col" style="text-align: right;">
-                <button class="btn btn-primary mx-1" v-if="posting.status == 'ordered'" @click="setPickedUpOrder(posting.order_id)">Accept</button>
+                <button class="btn btn-primary mx-1" v-if="posting.status == 'ordered'" @click="setChosenOrder(posting.order_id)">Accept</button>
               </div> 
             </div>
           </div>
           </div>
+          </div>
         </div>
+      </div>
       </div>
       
     </div> 
@@ -185,6 +189,7 @@
   ORDER_API_URL = 'http://127.0.0.1:5004'
   ACCEPT_ORDER_API_URL = 'http://127.0.0.1:5009'
   DRIVER_API_URL = 'http://127.0.0.1:5003'
+  DRIVER_API_URL = 'http://127.0.0.1:5003'
   const app = Vue.createApp({
       data() {
         return {
@@ -197,6 +202,8 @@
           showHistory: false,
           showAccepted: true,
           showPickedUp: false,
+
+          driver_availability: null,
 
           driver_availability: null,
 
@@ -238,6 +245,7 @@
           this.showNew = true;
           this.showHistory = false;
           await this.getDriverAvailability();
+          await this.getDriverAvailability();
           this.fetchOrdersbyRegion();
         },
         toggleHistory() {
@@ -272,6 +280,21 @@
           console.log(this.delivered_order_id);
           await this.submitDeliveredOrder();
           this.toggleCurrent();
+        },
+
+        async getDriverAvailability(){
+          const serviceURL = `${DRIVER_API_URL}/get_driver/${this.userId}`;
+          try {
+              const response = await fetch(serviceURL, { method: 'GET' });
+              const result = await response.json();
+              this.driver_availability = result.data.availability
+              console.log(result);
+              return Promise.resolve();
+            } catch (error) {
+              this.message = error.message;
+              return Promise.reject(error);
+            }
+
         },
 
         async getDriverAvailability(){
@@ -400,6 +423,7 @@
               this.current_message = null
             } else if (result.code === 404) {
               this.current_orders = null
+              this.current_message = "You do not have any active deliveries"
               this.current_message = "You do not have any active deliveries"
               console.log(current_message)
             } else {
