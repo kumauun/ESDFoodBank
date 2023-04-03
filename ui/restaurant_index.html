@@ -41,43 +41,40 @@
     <!-- Current Delivery -->
     <div class="mt-3 mx-auto" v-show="showCurrent">
       <h3>Current Posts</h3>
-
-      <!-- sample if pending -->
-      <div v-for="current_order of current_orders">
-        <div class="card d-flex mx-auto mb-3">
-          <div class="card-header">
-            Order #{{current_order.order_id}}
+      <h5 v-if="current_order_message" class="text-center">{{current_order_message}}</h5>
+      <div class="card d-flex mx-auto mb-3" v-for="current_order of current_orders" v-if="current_orders">
+        <div class="card-header">
+          Order #{{current_order.order_id}}
+        </div>
+        <div class="row">
+          <div class="col-3">
+            <img :src="current_order.img_url ? current_order.img_url : 'empty.png'" class="img-fluid">
           </div>
-          <div class="row">
-            <div class="col-3">
-              <img :src="current_order.img_url ? current_order.img_url : 'empty.png'" class="img-fluid">
+          <div class="col-9">
+          <div class="card-body">
+            <div class="row">
+                <div class="col"><p class="card-text">{{current_order.dish_name}}</p></div>
+                <div class="col" style="text-align: right; color: orange;"><h5>{{current_order.status}}</h5></div> 
             </div>
-            <div class="col-9">
-            <div class="card-body">
-              <div class="row">
-                  <div class="col"><p class="card-text">{{current_order.dish_name}}</p></div>
-                  <div class="col" style="text-align: right; color: orange;"><h5>{{current_order.status}}</h5></div> 
-              </div>
 
-              <br>
+            <br>
 
-              <div class="row">
-                <div class="col"><h5 class="card-title">{{current_order.foodbank_name}}</h5></div>
-                <div class="col" style="text-align: left;"><h5>{{current_order.driver_name}}</h5></div> 
-                <div class="col" style="text-align: right;">Order Created {{current_order.created_at}}</div> 
-              </div>
-              <div class="row">
-                <div class="col"><p class="card-text">{{current_order.foodbank_address}}</div>
-                <div class="col" style="text-align: left;"></div> 
-                <div class="col" style="text-align: right;"></div> 
-              </div>
-              <div class="row">
-                <div class="col"><p class="card-text">{{current_order.foodbank_phone_number}}</p></div>
-                <div class="col" style="text-align: left;">{{current_order.driver_phone_number}}</div> 
-                <div class="col" style="text-align: right;"></div> 
-              </div>
+            <div class="row">
+              <div class="col"><h5 class="card-title">Foodbank: {{current_order.foodbank_name}}</h5></div>
+              <div class="col" style="text-align: left;"><h5>Driver: {{current_order.driver_name ? current_order.driver_name : 'No driver yet'}}</h5></div> 
+              <div class="col" style="text-align: right;">Order Created {{current_order.created_at}}</div> 
             </div>
+            <div class="row">
+              <div class="col"><p class="card-text">{{current_order.foodbank_address}}</div>
+              <div class="col" style="text-align: left;"></div> 
+              <div class="col" style="text-align: right;"></div> 
             </div>
+            <div class="row">
+              <div class="col"><p class="card-text">{{current_order.foodbank_phone_number}}</p></div>
+              <div class="col" style="text-align: left;">{{current_order.driver_phone_number}}</div> 
+              <div class="col" style="text-align: right;"></div> 
+            </div>
+          </div>
           </div>
         </div>
       </div>
