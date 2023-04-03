@@ -63,10 +63,9 @@ def get_driver_region_availaibility(region):
         return jsonify(
             {
                 "code": 200,
-                "data": {
-                    "drivers": [driver.json() for driver in driverlist]
-                }
+                "data": [driver.json() for driver in driverlist]
             }
+            
         )
     return jsonify(
         {

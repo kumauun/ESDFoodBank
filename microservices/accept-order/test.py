@@ -2,13 +2,13 @@ import requests
 import json
 
 order_data = {
-        "order_id": 25,
-        "driver_id": 1,
-        "region": "West",
+        "order_id": 7,
+        "driver_id": 18,
+        "region": "East",
        
     }
 
-response = requests.put("http://127.0.0.1:5102/accept_order", json=order_data)
+response = requests.put("http://127.0.0.1:5009/accept_order", json=order_data)
 print("New Order Response:", json.dumps(response.json(), indent=2))
 if response.status_code == 200:
     print("Test passed")

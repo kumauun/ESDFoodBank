@@ -131,10 +131,11 @@ def place_order():
     
     try:
         # invoke foodbank microservice to get the phone number of foodbanks in the region
-        result = requests.get(driver_URL + f"/get_driver/{region}")
+        result = requests.get(driver_URL + f"/get_available_driver_region/{region}")
         drivers = result.json()['data']
-        driver_phone_numbers = [driver['phone_number']
-                                  for driver in drivers]
+        print(drivers)
+        print('test')
+        driver_phone_numbers = [driver['phone_number'] for driver in drivers]
 
         if not driver_phone_numbers:
             return jsonify(
