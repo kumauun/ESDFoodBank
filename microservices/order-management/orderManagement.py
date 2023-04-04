@@ -484,7 +484,7 @@ def get_driver_past_deliveries(driver_id):
     return jsonify(
         {
             "code": 404,
-            "message": "There are no postings."
+            "message": "There are no past deliveries."
         }
     ), 404
 

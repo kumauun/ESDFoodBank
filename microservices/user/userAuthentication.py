@@ -74,7 +74,7 @@ def signup():
     user_type = data.get('user_type')
     phone_number = data.get('phone_number')
     region = data.get('region')
-    postal_code = data.get('postal_code')
+    # postal_code = data.get('postal_code') 
     address = data.get('address')
     password = data.get('password')
     username = data.get('username')
